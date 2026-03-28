@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import '../models/routine_model.dart';
 import '../models/workout_session_model.dart';
 import '../repositories/workouts_repository.dart';
+import '../services/beep_service.dart';
+import '../services/settings_service.dart';
 import '../services/timer_service.dart';
 
 class WorkoutScreen extends StatefulWidget {
@@ -14,11 +16,13 @@ class WorkoutScreen extends StatefulWidget {
     required this.ownerUid,
     required this.routine,
     required this.workoutsRepository,
+    required this.settingsService,
   });
 
   final String ownerUid;
   final RoutineModel routine;
   final WorkoutsRepository workoutsRepository;
+  final SettingsService settingsService;
 
   @override
   State<WorkoutScreen> createState() => _WorkoutScreenState();
@@ -27,6 +31,7 @@ class WorkoutScreen extends StatefulWidget {
 class _WorkoutScreenState extends State<WorkoutScreen> {
   late final List<WorkoutSet> _sets;
   late final TimerService _timer;
+  late final BeepService _beep;
   late final DateTime _startTime;
   String? _workoutId;
 
@@ -34,6 +39,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
   void initState() {
     super.initState();
     _timer = TimerService();
+    _beep = BeepService();
     _startTime = DateTime.now();
 
     // Generar todas las series a partir de la rutina.
@@ -57,7 +63,20 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
   }
 
   void _onTimerTick() {
-    if (mounted) setState(() {});
+    if (mounted) {
+      setState(() {});
+
+      // Reproducir beeps en la cuenta atrás
+      final settings = widget.settingsService;
+      if (settings.countdownSoundEnabled && _timer.isRunning) {
+        final remaining = _timer.remainingSeconds;
+        if (remaining > 0 && remaining <= settings.countdownBeepFrom) {
+          _beep.playShortBeep();
+        } else if (remaining == 0) {
+          _beep.playLongBeep();
+        }
+      }
+    }
   }
 
   Future<void> _createSession() async {
@@ -82,7 +101,11 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
         final routineEx = widget.routine.exercises.firstWhere(
           (e) => e.exerciseId == _sets[index].exerciseId,
         );
-        _timer.start(routineEx.restSeconds);
+        // Usar el descanso de la rutina o el predeterminado de settings
+        final restSeconds = routineEx.restSeconds > 0
+            ? routineEx.restSeconds
+            : widget.settingsService.defaultRestSeconds;
+        _timer.start(restSeconds);
       }
     });
   }
@@ -95,6 +118,79 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
   void _updateReps(int index, String value) {
     final parsed = int.tryParse(value);
     if (parsed != null) _sets[index].reps = parsed;
+  }
+
+  void _showTimerPicker() {
+    int seconds = widget.settingsService.defaultRestSeconds;
+    showDialog(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setDialogState) {
+          String fmt(int s) {
+            final m = s ~/ 60;
+            final r = s % 60;
+            return '${m.toString().padLeft(2, '0')}:${r.toString().padLeft(2, '0')}';
+          }
+
+          return AlertDialog(
+            title: const Text('Iniciar descanso'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    IconButton(
+                      onPressed: seconds > 5
+                          ? () => setDialogState(() => seconds -= 5)
+                          : null,
+                      icon: const Icon(Icons.remove),
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      fmt(seconds),
+                      style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                    ),
+                    const SizedBox(width: 8),
+                    IconButton(
+                      onPressed: seconds < 600
+                          ? () => setDialogState(() => seconds += 5)
+                          : null,
+                      icon: const Icon(Icons.add),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                Wrap(
+                  spacing: 8,
+                  children: [30, 45, 60, 90, 120, 180].map((s) {
+                    return ActionChip(
+                      label: Text(fmt(s)),
+                      onPressed: () => setDialogState(() => seconds = s),
+                    );
+                  }).toList(),
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx),
+                child: const Text('Cancelar'),
+              ),
+              FilledButton(
+                onPressed: () {
+                  Navigator.pop(ctx);
+                  _timer.start(seconds);
+                },
+                child: const Text('Iniciar'),
+              ),
+            ],
+          );
+        },
+      ),
+    );
   }
 
   Future<void> _finishWorkout() async {
@@ -173,7 +269,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                     if (_timer.isRunning) {
                       _timer.stop();
                     } else {
-                      _timer.start(90);
+                      _showTimerPicker();
                     }
                   },
                   child: Container(

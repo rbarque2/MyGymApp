@@ -5,6 +5,7 @@ import '../repositories/exercises_repository.dart';
 import '../repositories/routines_repository.dart';
 import '../repositories/workouts_repository.dart';
 import '../services/auth_service.dart';
+import '../services/settings_service.dart';
 import 'home_screen.dart';
 import 'login_screen.dart';
 
@@ -20,6 +21,7 @@ class _RootScreenState extends State<RootScreen> {
   late final ExercisesRepository _exercisesRepository;
   late final RoutinesRepository _routinesRepository;
   late final WorkoutsRepository _workoutsRepository;
+  late final SettingsService _settingsService;
 
   @override
   void initState() {
@@ -28,6 +30,7 @@ class _RootScreenState extends State<RootScreen> {
     _exercisesRepository = ExercisesRepository();
     _routinesRepository = RoutinesRepository();
     _workoutsRepository = WorkoutsRepository();
+    _settingsService = SettingsService();
   }
 
   @override
@@ -50,6 +53,7 @@ class _RootScreenState extends State<RootScreen> {
           exercisesRepository: _exercisesRepository,
           routinesRepository: _routinesRepository,
           workoutsRepository: _workoutsRepository,
+          settingsService: _settingsService,
         );
       },
     );

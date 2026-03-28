@@ -192,7 +192,7 @@ class _RoutineEditorScreenState extends State<RoutineEditorScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Error al guardar la rutina.')),
+          SnackBar(content: Text('Error al guardar la rutina: $e')),
         );
       }
     } finally {
