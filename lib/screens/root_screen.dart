@@ -31,6 +31,7 @@ class _RootScreenState extends State<RootScreen> {
     _routinesRepository = RoutinesRepository();
     _workoutsRepository = WorkoutsRepository();
     _settingsService = SettingsService();
+    _settingsService.load();
   }
 
   @override

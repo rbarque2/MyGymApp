@@ -9,6 +9,7 @@ class RoutineExercise {
     required this.reps,
     this.weightKg,
     this.restSeconds = 90,
+    this.photoUrl,
   });
 
   final String exerciseId;
@@ -17,6 +18,7 @@ class RoutineExercise {
   final int reps;
   final double? weightKg;
   final int restSeconds;
+  final String? photoUrl;
 
   factory RoutineExercise.fromMap(Map<String, dynamic> map) {
     return RoutineExercise(
@@ -26,6 +28,7 @@ class RoutineExercise {
       reps: (map['reps'] as num?)?.toInt() ?? 10,
       weightKg: (map['weightKg'] as num?)?.toDouble(),
       restSeconds: (map['restSeconds'] as num?)?.toInt() ?? 90,
+      photoUrl: map['photoUrl'] as String?,
     );
   }
 
@@ -37,6 +40,7 @@ class RoutineExercise {
       'reps': reps,
       'weightKg': weightKg,
       'restSeconds': restSeconds,
+      'photoUrl': photoUrl,
     };
   }
 
@@ -47,6 +51,7 @@ class RoutineExercise {
     int? reps,
     double? weightKg,
     int? restSeconds,
+    String? photoUrl,
   }) {
     return RoutineExercise(
       exerciseId: exerciseId ?? this.exerciseId,
@@ -55,6 +60,7 @@ class RoutineExercise {
       reps: reps ?? this.reps,
       weightKg: weightKg ?? this.weightKg,
       restSeconds: restSeconds ?? this.restSeconds,
+      photoUrl: photoUrl ?? this.photoUrl,
     );
   }
 }
@@ -66,6 +72,7 @@ class RoutineModel {
     required this.name,
     this.description,
     required this.exercises,
+    this.tags = const [],
     this.createdAt,
   });
 
@@ -74,6 +81,7 @@ class RoutineModel {
   final String name;
   final String? description;
   final List<RoutineExercise> exercises;
+  final List<String> tags;
   final Timestamp? createdAt;
 
   factory RoutineModel.fromDoc(DocumentSnapshot<Map<String, dynamic>> doc) {
@@ -87,6 +95,7 @@ class RoutineModel {
       exercises: rawExercises
           .map((e) => RoutineExercise.fromMap(e as Map<String, dynamic>))
           .toList(),
+      tags: (data['tags'] as List<dynamic>?)?.cast<String>() ?? const [],
       createdAt: data['createdAt'] as Timestamp?,
     );
   }
@@ -97,6 +106,7 @@ class RoutineModel {
       'name': name,
       'description': description,
       'exercises': exercises.map((e) => e.toMap()).toList(),
+      'tags': tags,
       'createdAt': FieldValue.serverTimestamp(),
     };
     map.removeWhere((_, v) => v == null);
@@ -108,6 +118,7 @@ class RoutineModel {
       'name': name,
       'description': description,
       'exercises': exercises.map((e) => e.toMap()).toList(),
+      'tags': tags,
     };
   }
 
@@ -117,6 +128,7 @@ class RoutineModel {
     String? name,
     String? description,
     List<RoutineExercise>? exercises,
+    List<String>? tags,
     Timestamp? createdAt,
   }) {
     return RoutineModel(
@@ -125,6 +137,7 @@ class RoutineModel {
       name: name ?? this.name,
       description: description ?? this.description,
       exercises: exercises ?? this.exercises,
+      tags: tags ?? this.tags,
       createdAt: createdAt ?? this.createdAt,
     );
   }

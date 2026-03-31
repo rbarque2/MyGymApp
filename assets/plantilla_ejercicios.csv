@@ -1,22 +1,22 @@
-name,muscleGroup,description
-Press banca,chest,Press de banca con barra
-Press inclinado,chest,Press inclinado con mancuernas
-Aperturas,chest,Aperturas con mancuernas en banco plano
-Dominadas,back,Dominadas con peso corporal
-Remo con barra,back,Remo inclinado con barra
-Jalón al pecho,back,Jalón en polea al pecho
-Press militar,shoulders,Press militar con barra de pie
-Elevaciones laterales,shoulders,Elevaciones laterales con mancuernas
-Curl con barra,biceps,Curl de bíceps con barra recta
-Curl martillo,biceps,Curl martillo con mancuernas
-Fondos en paralelas,triceps,Fondos en barras paralelas
-Extensión de tríceps,triceps,Extensión de tríceps en polea
-Sentadilla,legs,Sentadilla con barra
-Prensa de piernas,legs,Prensa de piernas en máquina
-Peso muerto rumano,legs,Peso muerto rumano con barra
-Hip thrust,glutes,Hip thrust con barra
-Patada de glúteo,glutes,Patada de glúteo en polea
-Crunch,abs,Crunch abdominal en suelo
-Plancha,abs,Plancha isométrica
-Correr,cardio,Correr en cinta
-Burpees,fullBody,Burpees completos
+name,muscleGroup,description,photoUrl,linkUrl,tags
+Press banca,chest,Press de banca con barra,,,Pecho|Fuerza
+Press inclinado,chest,Press inclinado con mancuernas,,,Pecho|Fuerza
+Aperturas,chest,Aperturas con mancuernas en banco plano,,,Pecho
+Dominadas,back,Dominadas con peso corporal,,,Espalda|Fuerza
+Remo con barra,back,Remo inclinado con barra,,,Espalda|Fuerza
+Jalón al pecho,back,Jalón en polea al pecho,,,Espalda
+Press militar,shoulders,Press militar con barra de pie,,,Hombros|Fuerza
+Elevaciones laterales,shoulders,Elevaciones laterales con mancuernas,,,Hombros
+Curl con barra,biceps,Curl de bíceps con barra recta,,,Brazos|Fuerza
+Curl martillo,biceps,Curl martillo con mancuernas,,,Brazos
+Fondos en paralelas,triceps,Fondos en barras paralelas,,,Brazos|Fuerza
+Extensión de tríceps,triceps,Extensión de tríceps en polea,,,Brazos
+Sentadilla,legs,Sentadilla con barra,,,Pierna|Fuerza
+Prensa de piernas,legs,Prensa de piernas en máquina,,,Pierna|Fuerza
+Peso muerto rumano,legs,Peso muerto rumano con barra,,,Pierna|Fuerza
+Hip thrust,glutes,Hip thrust con barra,,,Pierna|Fuerza
+Patada de glúteo,glutes,Patada de glúteo en polea,,,Pierna
+Crunch,abs,Crunch abdominal en suelo,,,Core
+Plancha,abs,Plancha isométrica,,,Core
+Correr,cardio,Correr en cinta,,,Cardio
+Burpees,fullBody,Burpees completos,,,HIIT|Full Body|Cardio

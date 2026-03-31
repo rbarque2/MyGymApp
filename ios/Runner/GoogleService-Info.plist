@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>98838895021-21oieaqshdkftrmrcu74gsa3i814dknf.apps.googleusercontent.com</string>
+	<string>98838895021-ria2pk7eatf6koh82g0ieagbnkgmilp0.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.98838895021-21oieaqshdkftrmrcu74gsa3i814dknf</string>
+	<string>com.googleusercontent.apps.98838895021-ria2pk7eatf6koh82g0ieagbnkgmilp0</string>
 	<key>API_KEY</key>
 	<string>AIzaSyCs19EKSNycFPnAw9rqpR620W19IHjkklI</string>
 	<key>GCM_SENDER_ID</key>
@@ -13,7 +13,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.mygymapp.myGymApp</string>
+	<string>com.rafaelbarquero.zarpafit</string>
 	<key>PROJECT_ID</key>
 	<string>mygymrapp</string>
 	<key>STORAGE_BUCKET</key>
@@ -29,6 +29,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:98838895021:ios:46db52b7c6eea643c12924</string>
+	<string>1:98838895021:ios:5bc02fe3e4503f56c12924</string>
 </dict>
 </plist>

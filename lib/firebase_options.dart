@@ -65,11 +65,11 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyCs19EKSNycFPnAw9rqpR620W19IHjkklI',
-    appId: '1:98838895021:ios:46db52b7c6eea643c12924',
+    appId: '1:98838895021:ios:5bc02fe3e4503f56c12924',
     messagingSenderId: '98838895021',
     projectId: 'mygymrapp',
     storageBucket: 'mygymrapp.firebasestorage.app',
-    iosClientId: '98838895021-21oieaqshdkftrmrcu74gsa3i814dknf.apps.googleusercontent.com',
-    iosBundleId: 'com.mygymapp.myGymApp',
+    iosClientId: '98838895021-ria2pk7eatf6koh82g0ieagbnkgmilp0.apps.googleusercontent.com',
+    iosBundleId: 'com.rafaelbarquero.zarpafit',
   );
 }

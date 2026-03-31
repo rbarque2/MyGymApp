@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +10,8 @@ import '../repositories/workouts_repository.dart';
 import '../services/beep_service.dart';
 import '../services/settings_service.dart';
 import '../services/timer_service.dart';
+import '../theme/zarpafit_theme.dart';
+import 'workout_completion_screen.dart';
 
 class WorkoutScreen extends StatefulWidget {
   const WorkoutScreen({
@@ -28,12 +31,20 @@ class WorkoutScreen extends StatefulWidget {
   State<WorkoutScreen> createState() => _WorkoutScreenState();
 }
 
-class _WorkoutScreenState extends State<WorkoutScreen> {
+class _WorkoutScreenState extends State<WorkoutScreen>
+    with TickerProviderStateMixin {
   late final List<WorkoutSet> _sets;
   late final TimerService _timer;
   late final BeepService _beep;
   late final DateTime _startTime;
   String? _workoutId;
+
+  // Current exercise tracking — grouped by exercise
+  int _currentExerciseIndex = 0;
+  int _currentSetInExercise = 0;
+  bool _showingRest = false;
+
+  late AnimationController _pulseController;
 
   @override
   void initState() {
@@ -42,7 +53,11 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
     _beep = BeepService();
     _startTime = DateTime.now();
 
-    // Generar todas las series a partir de la rutina.
+    _pulseController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1000),
+    )..repeat(reverse: true);
+
     _sets = [];
     for (final ex in widget.routine.exercises) {
       for (int s = 1; s <= ex.sets; s++) {
@@ -56,25 +71,45 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
       }
     }
 
-    // Crear documento del workout en Firestore.
     _createSession();
-
     _timer.addListener(_onTimerTick);
   }
+
+  // Get the exercises from the routine
+  List<RoutineExercise> get _exercises => widget.routine.exercises;
+
+  RoutineExercise get _currentExercise => _exercises[_currentExerciseIndex];
+
+  int get _totalSetsForCurrentExercise => _currentExercise.sets;
+
+  // Get the flat index in _sets for the current exercise & set
+  int get _currentFlatIndex {
+    int idx = 0;
+    for (int i = 0; i < _currentExerciseIndex; i++) {
+      idx += _exercises[i].sets;
+    }
+    return idx + _currentSetInExercise;
+  }
+
+  int get _completedCount => _sets.where((s) => s.completed).length;
 
   void _onTimerTick() {
     if (mounted) {
       setState(() {});
 
-      // Reproducir beeps en la cuenta atrás
       final settings = widget.settingsService;
       if (settings.countdownSoundEnabled && _timer.isRunning) {
         final remaining = _timer.remainingSeconds;
         if (remaining > 0 && remaining <= settings.countdownBeepFrom) {
           _beep.playShortBeep();
         } else if (remaining == 0) {
-          _beep.playLongBeep();
+          _beep.playRoar();
         }
+      }
+
+      // When rest timer finishes, go back to exercise view
+      if (!_timer.isRunning && _showingRest) {
+        setState(() => _showingRest = false);
       }
     }
   }
@@ -92,105 +127,44 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
     _workoutId = ref.id;
   }
 
-  void _toggleSet(int index) {
-    setState(() {
-      _sets[index].completed = !_sets[index].completed;
+  void _completeCurrentSet() {
+    final flatIdx = _currentFlatIndex;
+    if (flatIdx >= _sets.length) return;
 
-      // Si se completó, iniciar temporizador de descanso.
-      if (_sets[index].completed) {
-        final routineEx = widget.routine.exercises.firstWhere(
-          (e) => e.exerciseId == _sets[index].exerciseId,
-        );
-        // Usar el descanso de la rutina o el predeterminado de settings
-        final restSeconds = routineEx.restSeconds > 0
-            ? routineEx.restSeconds
-            : widget.settingsService.defaultRestSeconds;
-        _timer.start(restSeconds);
+    setState(() {
+      _sets[flatIdx].completed = true;
+
+      // Check if this was the last set of the last exercise
+      final isLastExercise = _currentExerciseIndex == _exercises.length - 1;
+      final isLastSet =
+          _currentSetInExercise == _totalSetsForCurrentExercise - 1;
+
+      if (isLastExercise && isLastSet) {
+        // Workout complete!
+        _finishWorkout();
+        return;
+      }
+
+      // Start rest timer
+      final restSeconds = _currentExercise.restSeconds > 0
+          ? _currentExercise.restSeconds
+          : widget.settingsService.defaultRestSeconds;
+      _timer.start(restSeconds);
+      _showingRest = true;
+
+      // Advance to next set or exercise
+      if (_currentSetInExercise < _totalSetsForCurrentExercise - 1) {
+        _currentSetInExercise++;
+      } else {
+        _currentExerciseIndex++;
+        _currentSetInExercise = 0;
       }
     });
   }
 
-  void _updateWeight(int index, String value) {
-    final parsed = double.tryParse(value.replaceAll(',', '.'));
-    _sets[index].weightKg = parsed;
-  }
-
-  void _updateReps(int index, String value) {
-    final parsed = int.tryParse(value);
-    if (parsed != null) _sets[index].reps = parsed;
-  }
-
-  void _showTimerPicker() {
-    int seconds = widget.settingsService.defaultRestSeconds;
-    showDialog(
-      context: context,
-      builder: (ctx) => StatefulBuilder(
-        builder: (ctx, setDialogState) {
-          String fmt(int s) {
-            final m = s ~/ 60;
-            final r = s % 60;
-            return '${m.toString().padLeft(2, '0')}:${r.toString().padLeft(2, '0')}';
-          }
-
-          return AlertDialog(
-            title: const Text('Iniciar descanso'),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    IconButton(
-                      onPressed: seconds > 5
-                          ? () => setDialogState(() => seconds -= 5)
-                          : null,
-                      icon: const Icon(Icons.remove),
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      fmt(seconds),
-                      style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
-                    ),
-                    const SizedBox(width: 8),
-                    IconButton(
-                      onPressed: seconds < 600
-                          ? () => setDialogState(() => seconds += 5)
-                          : null,
-                      icon: const Icon(Icons.add),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                Wrap(
-                  spacing: 8,
-                  children: [30, 45, 60, 90, 120, 180].map((s) {
-                    return ActionChip(
-                      label: Text(fmt(s)),
-                      onPressed: () => setDialogState(() => seconds = s),
-                    );
-                  }).toList(),
-                ),
-              ],
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(ctx),
-                child: const Text('Cancelar'),
-              ),
-              FilledButton(
-                onPressed: () {
-                  Navigator.pop(ctx);
-                  _timer.start(seconds);
-                },
-                child: const Text('Iniciar'),
-              ),
-            ],
-          );
-        },
-      ),
-    );
+  void _skipRest() {
+    _timer.stop();
+    setState(() => _showingRest = false);
   }
 
   Future<void> _finishWorkout() async {
@@ -206,204 +180,457 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
 
     if (!mounted) return;
 
-    final completedSets = _sets.where((s) => s.completed).length;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          '¡Entrenamiento completado! $completedSets/${_sets.length} series · $duration min',
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(
+        builder: (_) => WorkoutCompletionScreen(
+          routineName: widget.routine.name,
+          completedSets: _completedCount,
+          totalSets: _sets.length,
+          durationMinutes: duration,
+          exerciseCount: _exercises.length,
         ),
       ),
     );
-    Navigator.pop(context);
+  }
+
+  Future<void> _confirmQuit() async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('¿Salir del entrenamiento?'),
+        content: const Text(
+          'Se guardará tu progreso hasta ahora.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Cancelar'),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(
+              backgroundColor: ZarpaColors.error,
+            ),
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Salir'),
+          ),
+        ],
+      ),
+    );
+    if (confirm == true) {
+      await _finishWorkout();
+    }
   }
 
   @override
   void dispose() {
     _timer.removeListener(_onTimerTick);
     _timer.dispose();
+    _pulseController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final completedCount = _sets.where((s) => s.completed).length;
     final progress =
-        _sets.isEmpty ? 0.0 : completedCount / _sets.length;
+        _sets.isEmpty ? 0.0 : _completedCount / _sets.length;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.routine.name),
-        actions: [
-          TextButton.icon(
-            onPressed: _finishWorkout,
-            icon: const Icon(Icons.check),
-            label: const Text('Terminar'),
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: Column(
+          children: [
+            // Header bar
+            _buildHeader(progress),
+
+            // Main content
+            Expanded(
+              child: _showingRest ? _buildRestView() : _buildExerciseView(),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHeader(double progress) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+      decoration: const BoxDecoration(
+        border: Border(
+          bottom: BorderSide(color: ZarpaColors.surface2),
+        ),
+      ),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              GestureDetector(
+                onTap: _confirmQuit,
+                child: Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: ZarpaColors.surface,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Icon(Icons.close, size: 20),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      widget.routine.name.toUpperCase(),
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 1.5,
+                        color: ZarpaColors.muted,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      '${_completedCount}/${_sets.length} series',
+                      style: const TextStyle(
+                        fontSize: 11,
+                        color: ZarpaColors.mutedLight,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              // Elapsed time
+              Container(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: ZarpaColors.surface,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.timer_outlined,
+                        size: 14, color: ZarpaColors.muted),
+                    const SizedBox(width: 4),
+                    Text(
+                      _formatElapsed(),
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        fontFeatures: [FontFeature.tabularFigures()],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          // Progress bar
+          ClipRRect(
+            borderRadius: BorderRadius.circular(2),
+            child: LinearProgressIndicator(
+              value: progress,
+              minHeight: 3,
+              backgroundColor: ZarpaColors.surface2,
+              valueColor:
+                  const AlwaysStoppedAnimation(ZarpaColors.primary),
+            ),
           ),
         ],
       ),
-      body: Column(
-        children: [
-          // Barra de progreso y temporizador.
+    );
+  }
+
+  String _formatElapsed() {
+    final elapsed = DateTime.now().difference(_startTime);
+    final m = elapsed.inMinutes;
+    final s = elapsed.inSeconds % 60;
+    return '${m.toString().padLeft(2, '0')}:${s.toString().padLeft(2, '0')}';
+  }
+
+  Widget _buildExerciseView() {
+    if (_currentExerciseIndex >= _exercises.length) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    final ex = _currentExercise;
+    final currentSet = _sets[_currentFlatIndex];
+
+    return Column(
+      children: [
+        const Spacer(flex: 2),
+
+        // Emoji
+        const Text('💪', style: TextStyle(fontSize: 64)),
+        const SizedBox(height: 16),
+
+        // Exercise name
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 32),
+          child: Text(
+            ex.exerciseName,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontSize: 28,
+              fontWeight: FontWeight.w800,
+              letterSpacing: -0.5,
+            ),
+          ),
+        ),
+        const SizedBox(height: 8),
+
+        // Weight info
+        if (currentSet.weightKg != null && currentSet.weightKg! > 0)
+          Text(
+            '${currentSet.weightKg} kg',
+            style: const TextStyle(
+              fontSize: 16,
+              color: ZarpaColors.primary,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        const SizedBox(height: 24),
+
+        // Set dots
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: List.generate(_totalSetsForCurrentExercise, (i) {
+            final isCompleted = i < _currentSetInExercise ||
+                (i <= _currentSetInExercise &&
+                    _sets[_currentFlatIndex - _currentSetInExercise + i]
+                        .completed);
+            final isCurrent = i == _currentSetInExercise;
+            return Container(
+              width: isCurrent ? 14 : 10,
+              height: isCurrent ? 14 : 10,
+              margin: const EdgeInsets.symmetric(horizontal: 4),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: isCompleted
+                    ? ZarpaColors.primary
+                    : isCurrent
+                        ? ZarpaColors.primary.withOpacity(0.4)
+                        : ZarpaColors.surface2,
+                border: isCurrent
+                    ? Border.all(color: ZarpaColors.primary, width: 2)
+                    : null,
+              ),
+            );
+          }),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          'Serie ${_currentSetInExercise + 1} de $_totalSetsForCurrentExercise',
+          style: const TextStyle(
+            fontSize: 12,
+            color: ZarpaColors.muted,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        const SizedBox(height: 32),
+
+        // Giant reps number
+        Text(
+          '${currentSet.reps}',
+          style: const TextStyle(
+            fontSize: 72,
+            fontWeight: FontWeight.w900,
+            color: ZarpaColors.foreground,
+            height: 1,
+          ),
+        ),
+        const Text(
+          'REPETICIONES',
+          style: TextStyle(
+            fontSize: 11,
+            fontWeight: FontWeight.w700,
+            color: ZarpaColors.muted,
+            letterSpacing: 2,
+          ),
+        ),
+
+        const Spacer(flex: 3),
+
+        // Complete button
+        Padding(
+          padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+          child: SizedBox(
+            width: double.infinity,
+            child: FilledButton(
+              style: FilledButton.styleFrom(
+                backgroundColor: ZarpaColors.primary,
+                padding: const EdgeInsets.symmetric(vertical: 18),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+              ),
+              onPressed: _completeCurrentSet,
+              child: const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.check, size: 20, color: Colors.white),
+                  SizedBox(width: 10),
+                  Text(
+                    'SERIE COMPLETADA',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 1.5,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildRestView() {
+    return Column(
+      children: [
+        const Spacer(flex: 2),
+
+        // Rest icon
+        Container(
+          width: 80,
+          height: 80,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: ZarpaColors.primary.withOpacity(0.1),
+          ),
+          child: const Icon(
+            Icons.hourglass_bottom,
+            size: 40,
+            color: ZarpaColors.primary,
+          ),
+        ),
+        const SizedBox(height: 20),
+
+        const Text(
+          'DESCANSO',
+          style: TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w700,
+            color: ZarpaColors.muted,
+            letterSpacing: 2,
+          ),
+        ),
+        const SizedBox(height: 16),
+
+        // Giant timer
+        AnimatedBuilder(
+          animation: _pulseController,
+          builder: (context, child) {
+            return Transform.scale(
+              scale: 1.0 + (_pulseController.value * 0.05),
+              child: Text(
+                _timer.display,
+                style: const TextStyle(
+                  fontSize: 80,
+                  fontWeight: FontWeight.w900,
+                  color: ZarpaColors.primary,
+                  height: 1,
+                  fontFeatures: [FontFeature.tabularFigures()],
+                ),
+              ),
+            );
+          },
+        ),
+        const SizedBox(height: 8),
+        Text(
+          '${_timer.remainingSeconds}s restantes',
+          style: const TextStyle(
+            fontSize: 14,
+            color: ZarpaColors.muted,
+          ),
+        ),
+
+        const SizedBox(height: 24),
+
+        // Next up info
+        if (_currentExerciseIndex < _exercises.length)
           Container(
-            color: Theme.of(context).colorScheme.surfaceContainerHighest,
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            margin: const EdgeInsets.symmetric(horizontal: 40),
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: ZarpaColors.surface,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: ZarpaColors.border),
+            ),
             child: Row(
               children: [
+                const Text('💪', style: TextStyle(fontSize: 24)),
+                const SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        '$completedCount / ${_sets.length} series',
-                        style: Theme.of(context).textTheme.bodyMedium,
+                      const Text(
+                        'SIGUIENTE',
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w700,
+                          color: ZarpaColors.muted,
+                          letterSpacing: 1.5,
+                        ),
                       ),
-                      const SizedBox(height: 4),
-                      LinearProgressIndicator(value: progress),
+                      Text(
+                        _currentExercise.exerciseName,
+                        style: const TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      Text(
+                        'Serie ${_currentSetInExercise + 1} · ${_currentExercise.reps} reps',
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: ZarpaColors.primary,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                     ],
-                  ),
-                ),
-                const SizedBox(width: 24),
-                // Temporizador de descanso.
-                GestureDetector(
-                  onTap: () {
-                    if (_timer.isRunning) {
-                      _timer.stop();
-                    } else {
-                      _showTimerPicker();
-                    }
-                  },
-                  child: Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    decoration: BoxDecoration(
-                      color: _timer.isRunning
-                          ? Theme.of(context).colorScheme.primaryContainer
-                          : Theme.of(context).colorScheme.surfaceContainerLow,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(
-                          _timer.isRunning ? Icons.timer : Icons.timer_outlined,
-                          size: 20,
-                        ),
-                        const SizedBox(width: 6),
-                        Text(
-                          _timer.display,
-                          style:
-                              Theme.of(context).textTheme.titleMedium?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    fontFeatures: [
-                                      const FontFeature.tabularFigures()
-                                    ],
-                                  ),
-                        ),
-                      ],
-                    ),
                   ),
                 ),
               ],
             ),
           ),
-          // Lista de series.
-          Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.all(12),
-              itemCount: _sets.length,
-              itemBuilder: (context, index) {
-                final s = _sets[index];
-                // Mostrar cabecera de ejercicio.
-                final showHeader = index == 0 ||
-                    _sets[index - 1].exerciseId != s.exerciseId;
 
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    if (showHeader) ...[
-                      if (index != 0) const SizedBox(height: 16),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8),
-                        child: Text(
-                          s.exerciseName,
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleMedium
-                              ?.copyWith(fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                    ],
-                    Card(
-                      color: s.completed
-                          ? Theme.of(context)
-                              .colorScheme
-                              .primaryContainer
-                              .withValues(alpha: 0.5)
-                          : null,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 8,
-                        ),
-                        child: Row(
-                          children: [
-                            SizedBox(
-                              width: 40,
-                              child: Text(
-                                'S${s.setNumber}',
-                                style: Theme.of(context).textTheme.bodyLarge,
-                              ),
-                            ),
-                            SizedBox(
-                              width: 70,
-                              child: TextFormField(
-                                initialValue: s.weightKg?.toString() ?? '',
-                                keyboardType:
-                                    const TextInputType.numberWithOptions(
-                                        decimal: true),
-                                decoration: const InputDecoration(
-                                  labelText: 'kg',
-                                  isDense: true,
-                                  border: OutlineInputBorder(),
-                                ),
-                                onChanged: (v) => _updateWeight(index, v),
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            SizedBox(
-                              width: 60,
-                              child: TextFormField(
-                                initialValue: s.reps.toString(),
-                                keyboardType: TextInputType.number,
-                                decoration: const InputDecoration(
-                                  labelText: 'reps',
-                                  isDense: true,
-                                  border: OutlineInputBorder(),
-                                ),
-                                onChanged: (v) => _updateReps(index, v),
-                              ),
-                            ),
-                            const Spacer(),
-                            IconButton(
-                              icon: Icon(
-                                s.completed
-                                    ? Icons.check_circle
-                                    : Icons.radio_button_unchecked,
-                                color: s.completed ? Colors.green : null,
-                                size: 32,
-                              ),
-                              onPressed: () => _toggleSet(index),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                );
-              },
+        const Spacer(flex: 3),
+
+        // Skip rest button
+        Padding(
+          padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+          child: SizedBox(
+            width: double.infinity,
+            child: OutlinedButton(
+              style: OutlinedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                side: const BorderSide(color: ZarpaColors.border),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+              ),
+              onPressed: _skipRest,
+              child: const Text(
+                'SALTAR DESCANSO',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 1.5,
+                  color: ZarpaColors.foreground,
+                ),
+              ),
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

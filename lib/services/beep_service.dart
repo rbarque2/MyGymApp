@@ -1,16 +1,10 @@
-import 'dart:async';
-import 'dart:math';
-import 'dart:typed_data';
-
 import 'package:flutter/foundation.dart';
 
-// Web audio API interop
-// ignore: avoid_web_libraries_in_flutter
-import 'dart:js_interop';
-import 'package:web/web.dart' as web;
+import 'beep_service_native.dart'
+    if (dart.library.js_interop) 'beep_service_web.dart';
 
 /// Servicio de sonido para los beeps de la cuenta atrás.
-/// Usa Web Audio API directamente (compatible con Flutter web).
+/// Usa Web Audio API en web, no-op en otras plataformas.
 class BeepService {
   static BeepService? _instance;
   factory BeepService() => _instance ??= BeepService._();
@@ -18,43 +12,28 @@ class BeepService {
 
   /// Reproduce un beep corto (pip).
   void playShortBeep() {
-    _playTone(frequency: 880, durationMs: 150);
+    try {
+      playShortBeepImpl();
+    } catch (e) {
+      debugPrint('Error al reproducir beep corto: $e');
+    }
   }
 
   /// Reproduce un beep largo (piiiiip).
   void playLongBeep() {
-    _playTone(frequency: 1046, durationMs: 500);
-  }
-
-  void _playTone({required double frequency, required int durationMs}) {
     try {
-      if (kIsWeb) {
-        _playWebTone(frequency, durationMs);
-      }
+      playLongBeepImpl();
     } catch (e) {
-      debugPrint('Error al reproducir beep: $e');
+      debugPrint('Error al reproducir beep largo: $e');
     }
   }
 
-  void _playWebTone(double frequency, int durationMs) {
-    // Generar audio usando AudioContext de Web Audio API
-    final context = web.AudioContext();
-    final oscillator = context.createOscillator();
-    final gainNode = context.createGain();
-
-    oscillator.type = 'sine';
-    oscillator.frequency.value = frequency;
-    gainNode.gain.value = 0.5;
-
-    oscillator.connect(gainNode);
-    gainNode.connect(context.destination);
-
-    oscillator.start();
-
-    // Programar el stop
-    Future.delayed(Duration(milliseconds: durationMs), () {
-      oscillator.stop();
-      context.close();
-    });
+  /// Reproduce un rugido de felino sintetizado.
+  void playRoar() {
+    try {
+      playRoarImpl();
+    } catch (e) {
+      debugPrint('Error al reproducir rugido: $e');
+    }
   }
 }

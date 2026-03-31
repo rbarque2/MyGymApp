@@ -4,6 +4,7 @@ import '../models/exercise_model.dart';
 import '../models/routine_model.dart';
 import '../repositories/exercises_repository.dart';
 import '../repositories/routines_repository.dart';
+import '../theme/zarpafit_theme.dart';
 
 class RoutineEditorScreen extends StatefulWidget {
   const RoutineEditorScreen({
@@ -24,9 +25,15 @@ class RoutineEditorScreen extends StatefulWidget {
 }
 
 class _RoutineEditorScreenState extends State<RoutineEditorScreen> {
+  static const _availableTags = [
+    'Pierna', 'Espalda', 'Pecho', 'Hombros', 'Brazos',
+    'Core', 'HIIT', 'Cardio', 'Fuerza', 'Movilidad', 'Full Body',
+  ];
+
   final _nameCtrl = TextEditingController();
   final _descCtrl = TextEditingController();
   final List<RoutineExercise> _exercises = [];
+  final Set<String> _selectedTags = {};
   bool _saving = false;
 
   bool get _isEditing => widget.existing != null;
@@ -38,6 +45,7 @@ class _RoutineEditorScreenState extends State<RoutineEditorScreen> {
       _nameCtrl.text = widget.existing!.name;
       _descCtrl.text = widget.existing!.description ?? '';
       _exercises.addAll(widget.existing!.exercises);
+      _selectedTags.addAll(widget.existing!.tags);
     }
   }
 
@@ -158,6 +166,7 @@ class _RoutineEditorScreenState extends State<RoutineEditorScreen> {
         reps: int.tryParse(repsCtrl.text) ?? 10,
         weightKg: double.tryParse(weightCtrl.text.replaceAll(',', '.')),
         restSeconds: int.tryParse(restCtrl.text) ?? 90,
+        photoUrl: picked.photoUrl,
       ));
     });
   }
@@ -180,6 +189,7 @@ class _RoutineEditorScreenState extends State<RoutineEditorScreen> {
         description:
             _descCtrl.text.trim().isEmpty ? null : _descCtrl.text.trim(),
         exercises: _exercises,
+        tags: _selectedTags.toList(),
       );
 
       if (_isEditing) {
@@ -236,6 +246,36 @@ class _RoutineEditorScreenState extends State<RoutineEditorScreen> {
               border: OutlineInputBorder(),
             ),
             maxLines: 2,
+          ),
+          const SizedBox(height: 16),
+          const Text('Etiquetas',
+              style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: ZarpaColors.muted)),
+          const SizedBox(height: 6),
+          Wrap(
+            spacing: 6,
+            runSpacing: 6,
+            children: _availableTags.map((tag) {
+              final isSelected = _selectedTags.contains(tag);
+              return FilterChip(
+                label: Text(tag, style: const TextStyle(fontSize: 12)),
+                selected: isSelected,
+                onSelected: (sel) {
+                  setState(() {
+                    if (sel) {
+                      _selectedTags.add(tag);
+                    } else {
+                      _selectedTags.remove(tag);
+                    }
+                  });
+                },
+                selectedColor: ZarpaColors.primary.withOpacity(0.15),
+                checkmarkColor: ZarpaColors.primary,
+                visualDensity: VisualDensity.compact,
+              );
+            }).toList(),
           ),
           const SizedBox(height: 24),
           Row(

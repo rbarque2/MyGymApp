@@ -28,6 +28,8 @@ class ExerciseModel {
     required this.muscleGroup,
     this.description,
     this.photoUrl,
+    this.linkUrl,
+    this.tags = const [],
     this.createdAt,
   });
 
@@ -37,6 +39,8 @@ class ExerciseModel {
   final MuscleGroup muscleGroup;
   final String? description;
   final String? photoUrl;
+  final String? linkUrl;
+  final List<String> tags;
   final Timestamp? createdAt;
 
   factory ExerciseModel.fromDoc(DocumentSnapshot<Map<String, dynamic>> doc) {
@@ -48,6 +52,8 @@ class ExerciseModel {
       muscleGroup: MuscleGroup.fromName(data['muscleGroup'] as String? ?? ''),
       description: data['description'] as String?,
       photoUrl: data['photoUrl'] as String?,
+      linkUrl: data['linkUrl'] as String?,
+      tags: (data['tags'] as List<dynamic>?)?.cast<String>() ?? const [],
       createdAt: data['createdAt'] as Timestamp?,
     );
   }
@@ -59,6 +65,8 @@ class ExerciseModel {
       'muscleGroup': muscleGroup.name,
       'description': description,
       'photoUrl': photoUrl,
+      'linkUrl': linkUrl,
+      'tags': tags,
       'createdAt': FieldValue.serverTimestamp(),
     };
     map.removeWhere((_, v) => v == null);
@@ -71,6 +79,8 @@ class ExerciseModel {
       'muscleGroup': muscleGroup.name,
       'description': description,
       'photoUrl': photoUrl,
+      'linkUrl': linkUrl,
+      'tags': tags,
     };
   }
 
@@ -81,6 +91,8 @@ class ExerciseModel {
     MuscleGroup? muscleGroup,
     String? description,
     String? photoUrl,
+    String? linkUrl,
+    List<String>? tags,
     Timestamp? createdAt,
   }) {
     return ExerciseModel(
@@ -90,6 +102,8 @@ class ExerciseModel {
       muscleGroup: muscleGroup ?? this.muscleGroup,
       description: description ?? this.description,
       photoUrl: photoUrl ?? this.photoUrl,
+      linkUrl: linkUrl ?? this.linkUrl,
+      tags: tags ?? this.tags,
       createdAt: createdAt ?? this.createdAt,
     );
   }

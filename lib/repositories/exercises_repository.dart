@@ -43,6 +43,10 @@ class ExercisesRepository {
     return _col.doc(exercise.id).update(exercise.toUpdateJson());
   }
 
+  Future<void> removePhotoUrl(String id) {
+    return _col.doc(id).update({'photoUrl': FieldValue.delete()});
+  }
+
   Future<void> deleteExercise(String id) {
     return _col.doc(id).delete();
   }
