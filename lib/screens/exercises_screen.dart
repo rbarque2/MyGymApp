@@ -24,11 +24,19 @@ class ExercisesScreen extends StatefulWidget {
 
 class _ExercisesScreenState extends State<ExercisesScreen> {
   MuscleGroup? _filter;
+  String _searchQuery = '';
+  final _searchCtrl = TextEditingController();
 
   static const _availableTags = [
     'Pierna', 'Espalda', 'Pecho', 'Hombros', 'Brazos',
     'Core', 'HIIT', 'Cardio', 'Fuerza', 'Movilidad', 'Full Body',
   ];
+
+  @override
+  void dispose() {
+    _searchCtrl.dispose();
+    super.dispose();
+  }
 
   void _showAddDialog() {
     final nameCtrl = TextEditingController();
@@ -36,6 +44,8 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
     final gifCtrl = TextEditingController();
     final linkCtrl = TextEditingController();
     MuscleGroup selectedGroup = MuscleGroup.chest;
+    ExerciseCategory selectedCategory = ExerciseCategory.strength;
+    MeasurementType selectedMeasurement = MeasurementType.weight;
     final selectedTags = <String>{};
 
     showDialog(
@@ -54,6 +64,36 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
                     labelText: 'Nombre',
                     border: OutlineInputBorder(),
                   ),
+                ),
+                const SizedBox(height: 12),
+                DropdownButtonFormField<ExerciseCategory>(
+                  value: selectedCategory,
+                  decoration: const InputDecoration(
+                    labelText: 'Categoría',
+                    border: OutlineInputBorder(),
+                  ),
+                  items: ExerciseCategory.values
+                      .map((c) => DropdownMenuItem(
+                          value: c, child: Text('${c.icon} ${c.label}')))
+                      .toList(),
+                  onChanged: (v) {
+                    if (v != null) setDialogState(() => selectedCategory = v);
+                  },
+                ),
+                const SizedBox(height: 12),
+                DropdownButtonFormField<MeasurementType>(
+                  value: selectedMeasurement,
+                  decoration: const InputDecoration(
+                    labelText: 'Tipo de medición',
+                    border: OutlineInputBorder(),
+                  ),
+                  items: MeasurementType.values
+                      .map((m) =>
+                          DropdownMenuItem(value: m, child: Text(m.label)))
+                      .toList(),
+                  onChanged: (v) {
+                    if (v != null) setDialogState(() => selectedMeasurement = v);
+                  },
                 ),
                 const SizedBox(height: 12),
                 DropdownButtonFormField<MuscleGroup>(
@@ -163,6 +203,8 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
                     ownerUid: widget.ownerUid,
                     name: name,
                     muscleGroup: selectedGroup,
+                    category: selectedCategory,
+                    measurementType: selectedMeasurement,
                     description: descCtrl.text.trim().isEmpty
                         ? null
                         : descCtrl.text.trim(),
@@ -191,6 +233,8 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
     final photoCtrl = TextEditingController(text: exercise.photoUrl ?? '');
     final linkCtrl = TextEditingController(text: exercise.linkUrl ?? '');
     var selectedGroup = exercise.muscleGroup;
+    var selectedCategory = exercise.category;
+    var selectedMeasurement = exercise.measurementType;
     final selectedTags = <String>{...exercise.tags};
 
     showDialog(
@@ -229,6 +273,36 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
                     labelText: 'Nombre',
                     border: OutlineInputBorder(),
                   ),
+                ),
+                const SizedBox(height: 12),
+                DropdownButtonFormField<ExerciseCategory>(
+                  value: selectedCategory,
+                  decoration: const InputDecoration(
+                    labelText: 'Categoría',
+                    border: OutlineInputBorder(),
+                  ),
+                  items: ExerciseCategory.values
+                      .map((c) => DropdownMenuItem(
+                          value: c, child: Text('${c.icon} ${c.label}')))
+                      .toList(),
+                  onChanged: (v) {
+                    if (v != null) setDialogState(() => selectedCategory = v);
+                  },
+                ),
+                const SizedBox(height: 12),
+                DropdownButtonFormField<MeasurementType>(
+                  value: selectedMeasurement,
+                  decoration: const InputDecoration(
+                    labelText: 'Tipo de medición',
+                    border: OutlineInputBorder(),
+                  ),
+                  items: MeasurementType.values
+                      .map((m) =>
+                          DropdownMenuItem(value: m, child: Text(m.label)))
+                      .toList(),
+                  onChanged: (v) {
+                    if (v != null) setDialogState(() => selectedMeasurement = v);
+                  },
                 ),
                 const SizedBox(height: 12),
                 DropdownButtonFormField<MuscleGroup>(
@@ -335,6 +409,8 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
                 final updated = exercise.copyWith(
                   name: name,
                   muscleGroup: selectedGroup,
+                  category: selectedCategory,
+                  measurementType: selectedMeasurement,
                   description: descCtrl.text.trim().isEmpty
                       ? null
                       : descCtrl.text.trim(),
@@ -549,9 +625,17 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
       final csvString = await rootBundle.loadString('assets/plantilla_ejercicios.csv');
       final lines = const LineSplitter().convert(csvString);
 
-      final existingNames = await _getExistingNames();
-      int count = 0;
-      int skipped = 0;
+      // Obtener ejercicios existentes con su id para poder actualizar
+      final existingExercises = await widget.exercisesRepository
+          .watchExercises(widget.ownerUid)
+          .first;
+      final existingMap = <String, ExerciseModel>{};
+      for (final ex in existingExercises) {
+        existingMap[ex.name.toLowerCase()] = ex;
+      }
+
+      int created = 0;
+      int updated = 0;
 
       for (int i = 1; i < lines.length; i++) {
         final line = lines[i].trim();
@@ -562,47 +646,74 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
 
         final name = parts[0].trim();
         final muscleGroupStr = parts[1].trim();
-        final description = parts.length > 2 ? parts[2].trim() : null;
-        final photoUrl = parts.length > 3 ? parts[3].trim() : null;
-        final linkUrl = parts.length > 4 ? parts[4].trim() : null;
-        final tagsStr = parts.length > 5 ? parts[5].trim() : null;
+        final categoryStr = parts.length > 2 ? parts[2].trim() : '';
+        final measurementStr = parts.length > 3 ? parts[3].trim() : '';
+        final description = parts.length > 4 ? parts[4].trim() : null;
+        final photoUrl = parts.length > 5 ? parts[5].trim() : null;
+        final linkUrl = parts.length > 6 ? parts[6].trim() : null;
+        final tagsStr = parts.length > 7 ? parts[7].trim() : null;
         final tags = (tagsStr != null && tagsStr.isNotEmpty)
             ? tagsStr.split('|').map((t) => t.trim()).where((t) => t.isNotEmpty).toList()
             : <String>[];
 
         if (name.isEmpty) continue;
 
-        // Evitar duplicados
-        if (existingNames.contains(name.toLowerCase())) {
-          skipped++;
-          continue;
-        }
+        final category = categoryStr.isNotEmpty
+            ? ExerciseCategory.fromName(categoryStr)
+            : ExerciseCategory.strength;
+        final measurementType = measurementStr.isNotEmpty
+            ? MeasurementType.fromName(measurementStr)
+            : MeasurementType.weight;
 
-        await widget.exercisesRepository.createExercise(
-          ExerciseModel(
-            id: '',
-            ownerUid: widget.ownerUid,
-            name: name,
-            muscleGroup: MuscleGroup.fromName(muscleGroupStr),
-            description: (description != null && description.isNotEmpty)
-                ? description
-                : null,
-            photoUrl: (photoUrl != null && photoUrl.isNotEmpty)
-                ? photoUrl
-                : null,
-            linkUrl: (linkUrl != null && linkUrl.isNotEmpty)
-                ? linkUrl
-                : null,
-            tags: tags,
-          ),
-        );
-        existingNames.add(name.toLowerCase());
-        count++;
+        final existing = existingMap[name.toLowerCase()];
+        if (existing != null) {
+          // Actualizar ejercicio existente con datos completos
+          await widget.exercisesRepository.updateExercise(
+            existing.copyWith(
+              muscleGroup: MuscleGroup.fromName(muscleGroupStr),
+              category: category,
+              measurementType: measurementType,
+              description: (description != null && description.isNotEmpty)
+                  ? description
+                  : null,
+              photoUrl: (photoUrl != null && photoUrl.isNotEmpty)
+                  ? photoUrl
+                  : null,
+              linkUrl: (linkUrl != null && linkUrl.isNotEmpty)
+                  ? linkUrl
+                  : null,
+              tags: tags,
+            ),
+          );
+          updated++;
+        } else {
+          // Crear nuevo ejercicio
+          await widget.exercisesRepository.createExercise(
+            ExerciseModel(
+              id: '',
+              ownerUid: widget.ownerUid,
+              name: name,
+              muscleGroup: MuscleGroup.fromName(muscleGroupStr),
+              category: category,
+              measurementType: measurementType,
+              description: (description != null && description.isNotEmpty)
+                  ? description
+                  : null,
+              photoUrl: (photoUrl != null && photoUrl.isNotEmpty)
+                  ? photoUrl
+                  : null,
+              linkUrl: (linkUrl != null && linkUrl.isNotEmpty)
+                  ? linkUrl
+                  : null,
+              tags: tags,
+            ),
+          );
+          created++;
+        }
       }
 
       if (mounted) {
-        final msg = '$count ejercicios cargados.'
-            '${skipped > 0 ? ' $skipped duplicados omitidos.' : ''}';
+        final msg = '$created nuevos, $updated actualizados.';
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(msg)),
         );
@@ -744,7 +855,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
             ListTile(
               leading: const Icon(Icons.file_download),
               title: const Text('Cargar plantilla predeterminada'),
-              subtitle: const Text('21 ejercicios básicos de gimnasio'),
+              subtitle: const Text('53 ejercicios con GIF y descripción'),
               onTap: () {
                 Navigator.pop(ctx);
                 _importDefaultTemplate();
@@ -778,46 +889,107 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final topPadding = MediaQuery.of(context).padding.top;
+
     return Scaffold(
       backgroundColor: ZarpaColors.surface,
       body: Column(
         children: [
-          // Barra de filtros
+          // Header con SafeArea
           Container(
             color: Colors.white,
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            child: Row(
+            padding: EdgeInsets.only(top: topPadding),
+            child: Column(
               children: [
-                Expanded(
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
+                // Barra de búsqueda
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: _searchCtrl,
+                          decoration: InputDecoration(
+                            hintText: 'Buscar ejercicio...',
+                            hintStyle: const TextStyle(
+                              color: ZarpaColors.mutedLight,
+                              fontSize: 14,
+                            ),
+                            prefixIcon: const Icon(Icons.search,
+                                size: 20, color: ZarpaColors.muted),
+                            suffixIcon: _searchQuery.isNotEmpty
+                                ? IconButton(
+                                    icon: const Icon(Icons.close, size: 18),
+                                    onPressed: () {
+                                      _searchCtrl.clear();
+                                      setState(() => _searchQuery = '');
+                                    },
+                                  )
+                                : null,
+                            filled: true,
+                            fillColor: ZarpaColors.surface,
+                            contentPadding: const EdgeInsets.symmetric(
+                                vertical: 8, horizontal: 12),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: BorderSide.none,
+                            ),
+                            isDense: true,
+                          ),
+                          style: const TextStyle(fontSize: 14),
+                          onChanged: (v) =>
+                              setState(() => _searchQuery = v.toLowerCase()),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      IconButton.filled(
+                        icon: const Icon(Icons.upload_file, size: 20),
+                        tooltip: 'Importar ejercicios',
+                        onPressed: _showImportOptions,
+                        style: IconButton.styleFrom(
+                          minimumSize: const Size(40, 40),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                // Filtros de grupo muscular
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  child: SizedBox(
+                    height: 36,
+                    child: ListView(
+                      scrollDirection: Axis.horizontal,
                       children: [
                         FilterChip(
-                          label: const Text('Todos'),
+                          label: const Text('Todos',
+                              style: TextStyle(fontSize: 12)),
                           selected: _filter == null,
                           onSelected: (_) => setState(() => _filter = null),
+                          visualDensity: VisualDensity.compact,
+                          materialTapTargetSize:
+                              MaterialTapTargetSize.shrinkWrap,
                         ),
-                        const SizedBox(width: 8),
+                        const SizedBox(width: 6),
                         ...MuscleGroup.values.map(
                           (g) => Padding(
-                            padding: const EdgeInsets.only(right: 8),
+                            padding: const EdgeInsets.only(right: 6),
                             child: FilterChip(
-                              label: Text(g.label),
+                              label: Text(g.label,
+                                  style: const TextStyle(fontSize: 12)),
                               selected: _filter == g,
                               onSelected: (_) => setState(() => _filter = g),
+                              visualDensity: VisualDensity.compact,
+                              materialTapTargetSize:
+                                  MaterialTapTargetSize.shrinkWrap,
                             ),
                           ),
                         ),
                       ],
                     ),
                   ),
-                ),
-                const SizedBox(width: 8),
-                IconButton.filled(
-                  icon: const Icon(Icons.upload_file),
-                  tooltip: 'Importar ejercicios',
-                  onPressed: _showImportOptions,
                 ),
               ],
             ),
@@ -851,7 +1023,24 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
                     ),
                   );
                 }
-                final exercises = snapshot.data ?? [];
+                final allExercises = snapshot.data ?? [];
+                final exercises = _searchQuery.isEmpty
+                    ? allExercises
+                    : allExercises
+                        .where((e) =>
+                            e.name.toLowerCase().contains(_searchQuery) ||
+                            e.muscleGroup.label
+                                .toLowerCase()
+                                .contains(_searchQuery) ||
+                            e.category.label
+                                .toLowerCase()
+                                .contains(_searchQuery) ||
+                            (e.description ?? '')
+                                .toLowerCase()
+                                .contains(_searchQuery) ||
+                            e.tags.any((t) =>
+                                t.toLowerCase().contains(_searchQuery)))
+                        .toList();
                 if (exercises.isEmpty) {
                   return Center(
                     child: Column(
@@ -928,13 +1117,28 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
                                     ),
                                     const SizedBox(height: 4),
                                     Text(
-                                      ex.muscleGroup.label +
-                                          (ex.description != null
-                                              ? ' · ${ex.description}'
-                                              : ''),
+                                      '${ex.category.icon} ${ex.category.label} · ${ex.muscleGroup.label}'
+                                          '${ex.description != null ? ' · ${ex.description}' : ''}',
                                       style: const TextStyle(
                                         color: ZarpaColors.muted,
-                                        fontSize: 14,
+                                        fontSize: 13,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 6, vertical: 2),
+                                      decoration: BoxDecoration(
+                                        color: ZarpaColors.surface2,
+                                        borderRadius: BorderRadius.circular(6),
+                                      ),
+                                      child: Text(
+                                        ex.measurementType.label,
+                                        style: const TextStyle(
+                                          fontSize: 10,
+                                          color: ZarpaColors.muted,
+                                          fontWeight: FontWeight.w600,
+                                        ),
                                       ),
                                     ),
                                     if (ex.tags.isNotEmpty) ...[

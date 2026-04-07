@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import 'exercise_model.dart';
+
 /// Una serie realizada durante un entrenamiento.
 class WorkoutSet {
   WorkoutSet({
@@ -8,7 +10,10 @@ class WorkoutSet {
     required this.setNumber,
     required this.reps,
     this.weightKg,
+    this.durationSeconds,
+    this.distanceMeters,
     this.completed = false,
+    this.measurementType = MeasurementType.weight,
   });
 
   final String exerciseId;
@@ -16,7 +21,10 @@ class WorkoutSet {
   final int setNumber;
   int reps;
   double? weightKg;
+  int? durationSeconds;
+  double? distanceMeters;
   bool completed;
+  final MeasurementType measurementType;
 
   factory WorkoutSet.fromMap(Map<String, dynamic> map) {
     return WorkoutSet(
@@ -25,7 +33,10 @@ class WorkoutSet {
       setNumber: (map['setNumber'] as num?)?.toInt() ?? 1,
       reps: (map['reps'] as num?)?.toInt() ?? 0,
       weightKg: (map['weightKg'] as num?)?.toDouble(),
+      durationSeconds: (map['durationSeconds'] as num?)?.toInt(),
+      distanceMeters: (map['distanceMeters'] as num?)?.toDouble(),
       completed: map['completed'] as bool? ?? false,
+      measurementType: MeasurementType.fromName(map['measurementType'] as String? ?? 'weight'),
     );
   }
 
@@ -36,7 +47,10 @@ class WorkoutSet {
       'setNumber': setNumber,
       'reps': reps,
       'weightKg': weightKg,
+      'durationSeconds': durationSeconds,
+      'distanceMeters': distanceMeters,
       'completed': completed,
+      'measurementType': measurementType.name,
     };
   }
 }

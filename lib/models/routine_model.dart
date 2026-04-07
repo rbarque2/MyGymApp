@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import 'exercise_model.dart';
+
 /// Un ejercicio dentro de una rutina, con series/reps/peso objetivo.
 class RoutineExercise {
   RoutineExercise({
@@ -8,8 +10,11 @@ class RoutineExercise {
     required this.sets,
     required this.reps,
     this.weightKg,
-    this.restSeconds = 90,
+    this.durationSeconds,
+    this.distanceMeters,
+    this.restSeconds = 45,
     this.photoUrl,
+    this.measurementType = MeasurementType.weight,
   });
 
   final String exerciseId;
@@ -17,8 +22,11 @@ class RoutineExercise {
   final int sets;
   final int reps;
   final double? weightKg;
+  final int? durationSeconds;
+  final double? distanceMeters;
   final int restSeconds;
   final String? photoUrl;
+  final MeasurementType measurementType;
 
   factory RoutineExercise.fromMap(Map<String, dynamic> map) {
     return RoutineExercise(
@@ -27,8 +35,11 @@ class RoutineExercise {
       sets: (map['sets'] as num?)?.toInt() ?? 3,
       reps: (map['reps'] as num?)?.toInt() ?? 10,
       weightKg: (map['weightKg'] as num?)?.toDouble(),
-      restSeconds: (map['restSeconds'] as num?)?.toInt() ?? 90,
+      durationSeconds: (map['durationSeconds'] as num?)?.toInt(),
+      distanceMeters: (map['distanceMeters'] as num?)?.toDouble(),
+      restSeconds: (map['restSeconds'] as num?)?.toInt() ?? 45,
       photoUrl: map['photoUrl'] as String?,
+      measurementType: MeasurementType.fromName(map['measurementType'] as String? ?? 'weight'),
     );
   }
 
@@ -39,8 +50,11 @@ class RoutineExercise {
       'sets': sets,
       'reps': reps,
       'weightKg': weightKg,
+      'durationSeconds': durationSeconds,
+      'distanceMeters': distanceMeters,
       'restSeconds': restSeconds,
       'photoUrl': photoUrl,
+      'measurementType': measurementType.name,
     };
   }
 
@@ -50,8 +64,11 @@ class RoutineExercise {
     int? sets,
     int? reps,
     double? weightKg,
+    int? durationSeconds,
+    double? distanceMeters,
     int? restSeconds,
     String? photoUrl,
+    MeasurementType? measurementType,
   }) {
     return RoutineExercise(
       exerciseId: exerciseId ?? this.exerciseId,
@@ -59,8 +76,11 @@ class RoutineExercise {
       sets: sets ?? this.sets,
       reps: reps ?? this.reps,
       weightKg: weightKg ?? this.weightKg,
+      durationSeconds: durationSeconds ?? this.durationSeconds,
+      distanceMeters: distanceMeters ?? this.distanceMeters,
       restSeconds: restSeconds ?? this.restSeconds,
       photoUrl: photoUrl ?? this.photoUrl,
+      measurementType: measurementType ?? this.measurementType,
     );
   }
 }

@@ -2,8 +2,10 @@ import 'dart:async';
 import 'dart:ui';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import '../models/exercise_model.dart';
 import '../models/routine_model.dart';
 import '../models/workout_session_model.dart';
 import '../repositories/workouts_repository.dart';
@@ -45,6 +47,7 @@ class _WorkoutScreenState extends State<WorkoutScreen>
   bool _showingRest = false;
 
   late AnimationController _pulseController;
+  late PageController _pageController;
 
   @override
   void initState() {
@@ -58,6 +61,8 @@ class _WorkoutScreenState extends State<WorkoutScreen>
       duration: const Duration(milliseconds: 1000),
     )..repeat(reverse: true);
 
+    _pageController = PageController(initialPage: 0);
+
     _sets = [];
     for (final ex in widget.routine.exercises) {
       for (int s = 1; s <= ex.sets; s++) {
@@ -67,6 +72,9 @@ class _WorkoutScreenState extends State<WorkoutScreen>
           setNumber: s,
           reps: ex.reps,
           weightKg: ex.weightKg,
+          durationSeconds: ex.durationSeconds,
+          distanceMeters: ex.distanceMeters,
+          measurementType: ex.measurementType,
         ));
       }
     }
@@ -164,7 +172,36 @@ class _WorkoutScreenState extends State<WorkoutScreen>
 
   void _skipRest() {
     _timer.stop();
-    setState(() => _showingRest = false);
+    setState(() {
+      _showingRest = false;
+      // Sync page to current exercise after rest
+      if (_pageController.hasClients &&
+          _pageController.page?.round() != _currentExerciseIndex) {
+        _pageController.jumpToPage(_currentExerciseIndex);
+      }
+    });
+  }
+
+  void _onPageChanged(int page) {
+    if (page == _currentExerciseIndex) return;
+    setState(() {
+      _currentExerciseIndex = page;
+      // Find the first incomplete set for this exercise
+      int flatStart = 0;
+      for (int i = 0; i < page; i++) {
+        flatStart += _exercises[i].sets;
+      }
+      final totalSets = _exercises[page].sets;
+      _currentSetInExercise = 0;
+      for (int s = 0; s < totalSets; s++) {
+        if (!_sets[flatStart + s].completed) {
+          _currentSetInExercise = s;
+          return;
+        }
+      }
+      // All sets completed for this exercise, show last set
+      _currentSetInExercise = totalSets - 1;
+    });
   }
 
   Future<void> _finishWorkout() async {
@@ -226,6 +263,7 @@ class _WorkoutScreenState extends State<WorkoutScreen>
     _timer.removeListener(_onTimerTick);
     _timer.dispose();
     _pulseController.dispose();
+    _pageController.dispose();
     super.dispose();
   }
 
@@ -244,7 +282,15 @@ class _WorkoutScreenState extends State<WorkoutScreen>
 
             // Main content
             Expanded(
-              child: _showingRest ? _buildRestView() : _buildExerciseView(),
+              child: _showingRest
+                  ? _buildRestView()
+                  : PageView.builder(
+                      controller: _pageController,
+                      itemCount: _exercises.length,
+                      onPageChanged: _onPageChanged,
+                      itemBuilder: (_, index) =>
+                          _buildExerciseViewForIndex(index),
+                    ),
             ),
           ],
         ),
@@ -351,20 +397,58 @@ class _WorkoutScreenState extends State<WorkoutScreen>
     return '${m.toString().padLeft(2, '0')}:${s.toString().padLeft(2, '0')}';
   }
 
-  Widget _buildExerciseView() {
-    if (_currentExerciseIndex >= _exercises.length) {
+  Widget _buildExerciseViewForIndex(int exerciseIndex) {
+    if (exerciseIndex >= _exercises.length) {
       return const Center(child: CircularProgressIndicator());
     }
 
-    final ex = _currentExercise;
-    final currentSet = _sets[_currentFlatIndex];
+    final ex = _exercises[exerciseIndex];
+    final isCurrentExercise = exerciseIndex == _currentExerciseIndex;
+    final setInExercise =
+        isCurrentExercise ? _currentSetInExercise : 0;
+
+    // Find flat index for this exercise
+    int flatStart = 0;
+    for (int i = 0; i < exerciseIndex; i++) {
+      flatStart += _exercises[i].sets;
+    }
+    // Find first incomplete set for non-current exercises
+    int displaySet = setInExercise;
+    if (!isCurrentExercise) {
+      for (int s = 0; s < ex.sets; s++) {
+        if (!_sets[flatStart + s].completed) {
+          displaySet = s;
+          break;
+        }
+      }
+    }
+    final flatIdx = flatStart + displaySet;
+    if (flatIdx >= _sets.length) {
+      return const Center(child: CircularProgressIndicator());
+    }
+    final currentSet = _sets[flatIdx];
+    final mt = currentSet.measurementType;
+    final totalSets = ex.sets;
 
     return Column(
       children: [
         const Spacer(flex: 2),
 
-        // Emoji
-        const Text('💪', style: TextStyle(fontSize: 64)),
+        // Exercise GIF/photo or fallback emoji
+        if (ex.photoUrl != null && ex.photoUrl!.isNotEmpty)
+          ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: Image.network(
+              ex.photoUrl!,
+              height: 150,
+              width: 150,
+              fit: BoxFit.cover,
+              errorBuilder: (_, __, ___) =>
+                  Text(_categoryIcon(ex), style: const TextStyle(fontSize: 64)),
+            ),
+          )
+        else
+          Text(_categoryIcon(ex), style: const TextStyle(fontSize: 64)),
         const SizedBox(height: 16),
 
         // Exercise name
@@ -382,27 +466,14 @@ class _WorkoutScreenState extends State<WorkoutScreen>
         ),
         const SizedBox(height: 8),
 
-        // Weight info
-        if (currentSet.weightKg != null && currentSet.weightKg! > 0)
-          Text(
-            '${currentSet.weightKg} kg',
-            style: const TextStyle(
-              fontSize: 16,
-              color: ZarpaColors.primary,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
         const SizedBox(height: 24),
 
         // Set dots
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: List.generate(_totalSetsForCurrentExercise, (i) {
-            final isCompleted = i < _currentSetInExercise ||
-                (i <= _currentSetInExercise &&
-                    _sets[_currentFlatIndex - _currentSetInExercise + i]
-                        .completed);
-            final isCurrent = i == _currentSetInExercise;
+          children: List.generate(totalSets, (i) {
+            final isCompleted = _sets[flatStart + i].completed;
+            final isCurrent = i == displaySet;
             return Container(
               width: isCurrent ? 14 : 10,
               height: isCurrent ? 14 : 10,
@@ -423,7 +494,7 @@ class _WorkoutScreenState extends State<WorkoutScreen>
         ),
         const SizedBox(height: 8),
         Text(
-          'Serie ${_currentSetInExercise + 1} de $_totalSetsForCurrentExercise',
+          'Serie ${displaySet + 1} de $totalSets',
           style: const TextStyle(
             fontSize: 12,
             color: ZarpaColors.muted,
@@ -432,27 +503,36 @@ class _WorkoutScreenState extends State<WorkoutScreen>
         ),
         const SizedBox(height: 32),
 
-        // Giant reps number
-        Text(
-          '${currentSet.reps}',
-          style: const TextStyle(
-            fontSize: 72,
-            fontWeight: FontWeight.w900,
-            color: ZarpaColors.foreground,
-            height: 1,
-          ),
-        ),
-        const Text(
-          'REPETICIONES',
-          style: TextStyle(
-            fontSize: 11,
-            fontWeight: FontWeight.w700,
-            color: ZarpaColors.muted,
-            letterSpacing: 2,
-          ),
-        ),
+        // Giant metric display — editable reps
+        ..._buildEditableMetricDisplay(currentSet, mt),
 
-        const Spacer(flex: 3),
+        // Swipe hint
+        const Spacer(flex: 1),
+        if (_exercises.length > 1)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                if (exerciseIndex > 0)
+                  const Icon(Icons.chevron_left,
+                      size: 16, color: ZarpaColors.mutedLight),
+                Text(
+                  '${exerciseIndex + 1} / ${_exercises.length}',
+                  style: const TextStyle(
+                    fontSize: 11,
+                    color: ZarpaColors.mutedLight,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                if (exerciseIndex < _exercises.length - 1)
+                  const Icon(Icons.chevron_right,
+                      size: 16, color: ZarpaColors.mutedLight),
+              ],
+            ),
+          ),
+
+        const Spacer(flex: 1),
 
         // Complete button
         Padding(
@@ -461,21 +541,38 @@ class _WorkoutScreenState extends State<WorkoutScreen>
             width: double.infinity,
             child: FilledButton(
               style: FilledButton.styleFrom(
-                backgroundColor: ZarpaColors.primary,
+                backgroundColor: isCurrentExercise
+                    ? ZarpaColors.primary
+                    : ZarpaColors.muted,
                 padding: const EdgeInsets.symmetric(vertical: 18),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(14),
                 ),
               ),
-              onPressed: _completeCurrentSet,
-              child: const Row(
+              onPressed: isCurrentExercise
+                  ? _completeCurrentSet
+                  : () {
+                      // Navigate to current exercise
+                      _pageController.animateToPage(
+                        _currentExerciseIndex,
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.easeInOut,
+                      );
+                    },
+              child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.check, size: 20, color: Colors.white),
-                  SizedBox(width: 10),
+                  Icon(
+                    isCurrentExercise ? Icons.check : Icons.arrow_forward,
+                    size: 20,
+                    color: Colors.white,
+                  ),
+                  const SizedBox(width: 10),
                   Text(
-                    'SERIE COMPLETADA',
-                    style: TextStyle(
+                    isCurrentExercise
+                        ? 'SERIE COMPLETADA'
+                        : 'IR AL EJERCICIO ACTUAL',
+                    style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
                       letterSpacing: 1.5,
@@ -489,6 +586,251 @@ class _WorkoutScreenState extends State<WorkoutScreen>
         ),
       ],
     );
+  }
+
+  Widget _stepButton({required IconData icon, required VoidCallback onTap}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 36,
+        height: 36,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: ZarpaColors.surface,
+          border: Border.all(color: ZarpaColors.border),
+        ),
+        child: Icon(icon, size: 18, color: ZarpaColors.foreground),
+      ),
+    );
+  }
+
+  List<Widget> _buildEditableMetricDisplay(
+      WorkoutSet set, MeasurementType mt) {
+    switch (mt) {
+      case MeasurementType.weight:
+        // Reps (1-100) + Peso (0-300 en pasos de 2.5)
+        return [
+          SizedBox(
+            height: 140,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // ── Reps picker ──
+                Column(
+                  children: [
+                    const Text('REPS',
+                        style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                            color: ZarpaColors.muted,
+                            letterSpacing: 2)),
+                    const SizedBox(height: 4),
+                    SizedBox(
+                      width: 80,
+                      height: 120,
+                      child: CupertinoPicker(
+                        scrollController: FixedExtentScrollController(
+                            initialItem: set.reps - 1),
+                        itemExtent: 40,
+                        diameterRatio: 1.2,
+                        squeeze: 1.0,
+                        selectionOverlay:
+                            CupertinoPickerDefaultSelectionOverlay(
+                          background:
+                              ZarpaColors.primary.withOpacity(0.08),
+                        ),
+                        onSelectedItemChanged: (i) =>
+                            setState(() => set.reps = i + 1),
+                        children: List.generate(
+                            100,
+                            (i) => Center(
+                                  child: Text('${i + 1}',
+                                      style: const TextStyle(
+                                          fontSize: 28,
+                                          fontWeight: FontWeight.w800,
+                                          color: ZarpaColors.foreground)),
+                                )),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(width: 32),
+                // ── Weight picker ──
+                Column(
+                  children: [
+                    const Text('KG',
+                        style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                            color: ZarpaColors.muted,
+                            letterSpacing: 2)),
+                    const SizedBox(height: 4),
+                    SizedBox(
+                      width: 100,
+                      height: 120,
+                      child: CupertinoPicker(
+                        scrollController: FixedExtentScrollController(
+                            initialItem:
+                                ((set.weightKg ?? 0) / 2.5).round()),
+                        itemExtent: 40,
+                        diameterRatio: 1.2,
+                        squeeze: 1.0,
+                        selectionOverlay:
+                            CupertinoPickerDefaultSelectionOverlay(
+                          background:
+                              ZarpaColors.primary.withOpacity(0.08),
+                        ),
+                        onSelectedItemChanged: (i) =>
+                            setState(() => set.weightKg = i * 2.5),
+                        children: List.generate(
+                            121, // 0 a 300 kg en pasos de 2.5
+                            (i) => Center(
+                                  child: Text(
+                                      (i * 2.5) ==
+                                              (i * 2.5).roundToDouble()
+                                          ? '${(i * 2.5).toInt()}'
+                                          : (i * 2.5).toStringAsFixed(1),
+                                      style: const TextStyle(
+                                          fontSize: 28,
+                                          fontWeight: FontWeight.w800,
+                                          color: ZarpaColors.foreground)),
+                                )),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ];
+      case MeasurementType.reps:
+        // Solo reps sin peso
+        return [
+          SizedBox(
+            height: 140,
+            child: Column(
+              children: [
+                const Text('REPETICIONES',
+                    style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                        color: ZarpaColors.muted,
+                        letterSpacing: 2)),
+                const SizedBox(height: 4),
+                SizedBox(
+                  width: 100,
+                  height: 120,
+                  child: CupertinoPicker(
+                    scrollController: FixedExtentScrollController(
+                        initialItem: set.reps - 1),
+                    itemExtent: 40,
+                    diameterRatio: 1.2,
+                    squeeze: 1.0,
+                    selectionOverlay:
+                        CupertinoPickerDefaultSelectionOverlay(
+                      background: ZarpaColors.primary.withOpacity(0.08),
+                    ),
+                    onSelectedItemChanged: (i) =>
+                        setState(() => set.reps = i + 1),
+                    children: List.generate(
+                        100,
+                        (i) => Center(
+                              child: Text('${i + 1}',
+                                  style: const TextStyle(
+                                      fontSize: 32,
+                                      fontWeight: FontWeight.w800,
+                                      color: ZarpaColors.foreground)),
+                            )),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ];
+      case MeasurementType.time:
+        final secs = set.durationSeconds ?? 30;
+        final m = secs ~/ 60;
+        final s = secs % 60;
+        return [
+          Text(
+            '${m.toString().padLeft(2, '0')}:${s.toString().padLeft(2, '0')}',
+            style: const TextStyle(
+              fontSize: 72,
+              fontWeight: FontWeight.w900,
+              color: ZarpaColors.foreground,
+              height: 1,
+              fontFeatures: [FontFeature.tabularFigures()],
+            ),
+          ),
+          const Text(
+            'DURACIÓN',
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w700,
+              color: ZarpaColors.muted,
+              letterSpacing: 2,
+            ),
+          ),
+        ];
+      case MeasurementType.distance:
+        final meters = set.distanceMeters ?? 0;
+        final display = meters >= 1000
+            ? '${(meters / 1000).toStringAsFixed(1)} km'
+            : '${meters.toStringAsFixed(0)} m';
+        return [
+          Text(
+            display,
+            style: const TextStyle(
+              fontSize: 64,
+              fontWeight: FontWeight.w900,
+              color: ZarpaColors.foreground,
+              height: 1,
+            ),
+          ),
+          const Text(
+            'DISTANCIA',
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w700,
+              color: ZarpaColors.muted,
+              letterSpacing: 2,
+            ),
+          ),
+        ];
+    }
+  }
+
+  String _categoryIcon(RoutineExercise ex) {
+    // Try to match the exercise's measurement type to a category icon
+    switch (ex.measurementType) {
+      case MeasurementType.time:
+        return '⏱️';
+      case MeasurementType.distance:
+        return '🏃';
+      case MeasurementType.reps:
+        return '💪';
+      case MeasurementType.weight:
+        return '🏋️';
+    }
+  }
+
+  String _nextUpDetail() {
+    final ex = _currentExercise;
+    switch (ex.measurementType) {
+      case MeasurementType.weight:
+        final w = ex.weightKg != null ? ' · ${ex.weightKg} kg' : '';
+        return '${ex.reps} reps$w';
+      case MeasurementType.reps:
+        return '${ex.reps} reps';
+      case MeasurementType.time:
+        final secs = ex.durationSeconds ?? 30;
+        return '${secs}s';
+      case MeasurementType.distance:
+        final m = ex.distanceMeters ?? 0;
+        return m >= 1000
+            ? '${(m / 1000).toStringAsFixed(1)} km'
+            : '${m.toStringAsFixed(0)} m';
+    }
   }
 
   Widget _buildRestView() {
@@ -588,7 +930,7 @@ class _WorkoutScreenState extends State<WorkoutScreen>
                         ),
                       ),
                       Text(
-                        'Serie ${_currentSetInExercise + 1} · ${_currentExercise.reps} reps',
+                        'Serie ${_currentSetInExercise + 1} · ${_nextUpDetail()}',
                         style: const TextStyle(
                           fontSize: 12,
                           color: ZarpaColors.primary,

@@ -8,9 +8,20 @@ import '../repositories/workouts_repository.dart';
 import '../services/settings_service.dart';
 import '../theme/zarpafit_theme.dart';
 import 'exercises_screen.dart';
+import 'programs_section.dart';
 import 'routine_detail_screen.dart';
 import 'routine_editor_screen.dart';
 import 'workout_screen.dart';
+
+/// Gradientes para tarjetas de rutina.
+const _routineGradients = <List<Color>>[
+  [Color(0xFF6EC6FF), Color(0xFF2196F3)], // azul claro
+  [Color(0xFFCE93D8), Color(0xFF9C27B0)], // lavanda
+  [Color(0xFF80CBC4), Color(0xFF009688)], // menta
+  [Color(0xFFFFCC80), Color(0xFFFF9800)], // melocotón
+  [Color(0xFFEF9A9A), Color(0xFFE53935)], // coral
+  [Color(0xFFA5D6A7), Color(0xFF43A047)], // verde
+];
 
 class RoutinesScreen extends StatefulWidget {
   const RoutinesScreen({
@@ -33,7 +44,7 @@ class RoutinesScreen extends StatefulWidget {
 }
 
 class _RoutinesScreenState extends State<RoutinesScreen> {
-  int _selectedSection = 0; // 0 = Rutinas, 1 = Entreno Libre
+  int _selectedSection = 0; // 0 = Rutinas, 1 = Programas, 2 = Entreno Libre
   final _searchCtrl = TextEditingController();
   String _searchQuery = '';
   String? _tagFilter;
@@ -179,62 +190,9 @@ class _RoutinesScreenState extends State<RoutinesScreen> {
                 padding: const EdgeInsets.all(4),
                 child: Row(
                   children: [
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: () => setState(() => _selectedSection = 0),
-                        child: AnimatedContainer(
-                          duration: const Duration(milliseconds: 200),
-                          padding: const EdgeInsets.symmetric(vertical: 10),
-                          decoration: BoxDecoration(
-                            color: _selectedSection == 0
-                                ? ZarpaColors.primary
-                                : Colors.transparent,
-                            borderRadius: BorderRadius.circular(9),
-                          ),
-                          child: Center(
-                            child: Text(
-                              'RUTINAS',
-                              style: TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w700,
-                                letterSpacing: 0.5,
-                                color: _selectedSection == 0
-                                    ? Colors.white
-                                    : ZarpaColors.muted,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: () => setState(() => _selectedSection = 1),
-                        child: AnimatedContainer(
-                          duration: const Duration(milliseconds: 200),
-                          padding: const EdgeInsets.symmetric(vertical: 10),
-                          decoration: BoxDecoration(
-                            color: _selectedSection == 1
-                                ? ZarpaColors.primary
-                                : Colors.transparent,
-                            borderRadius: BorderRadius.circular(9),
-                          ),
-                          child: Center(
-                            child: Text(
-                              'ENTRENO LIBRE',
-                              style: TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w700,
-                                letterSpacing: 0.5,
-                                color: _selectedSection == 1
-                                    ? Colors.white
-                                    : ZarpaColors.muted,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
+                    _buildSectionTab('RUTINAS', 0),
+                    _buildSectionTab('PROGRAMAS', 1),
+                    _buildSectionTab('LIBRE', 2),
                   ],
                 ),
               ),
@@ -243,9 +201,16 @@ class _RoutinesScreenState extends State<RoutinesScreen> {
 
             // Content
             Expanded(
-              child: _selectedSection == 0
-                  ? _buildRutinasSection()
-                  : _buildEntrenoLibreSection(),
+              child: switch (_selectedSection) {
+                0 => _buildRutinasSection(),
+                1 => ProgramsSection(
+                  ownerUid: widget.ownerUid,
+                  workoutsRepository: widget.workoutsRepository,
+                  settingsService: widget.settingsService,
+                  routinesRepository: widget.routinesRepository,
+                ),
+                _ => _buildEntrenoLibreSection(),
+              },
             ),
           ],
         ),
@@ -257,6 +222,34 @@ class _RoutinesScreenState extends State<RoutinesScreen> {
               child: const Icon(Icons.add),
             )
           : null,
+    );
+  }
+
+  Widget _buildSectionTab(String label, int index) {
+    final selected = _selectedSection == index;
+    return Expanded(
+      child: GestureDetector(
+        onTap: () => setState(() => _selectedSection = index),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          decoration: BoxDecoration(
+            color: selected ? ZarpaColors.primary : Colors.transparent,
+            borderRadius: BorderRadius.circular(9),
+          ),
+          child: Center(
+            child: Text(
+              label,
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 0.5,
+                color: selected ? Colors.white : ZarpaColors.muted,
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 
@@ -328,6 +321,7 @@ class _RoutinesScreenState extends State<RoutinesScreen> {
             final r = routines[index];
             return _RoutineCard(
               routine: r,
+              colorIndex: index,
               onTap: () => _openDetail(context, r),
               onStart: r.exercises.isEmpty
                   ? null
@@ -498,169 +492,200 @@ class _RoutineCard extends StatelessWidget {
     this.onStart,
     required this.onEdit,
     required this.onDelete,
+    this.colorIndex = 0,
   });
   final RoutineModel routine;
   final VoidCallback onTap;
   final VoidCallback? onStart;
   final VoidCallback onEdit;
   final VoidCallback onDelete;
+  final int colorIndex;
+
+  List<Color> get _gradient =>
+      _routineGradients[colorIndex % _routineGradients.length];
 
   @override
   Widget build(BuildContext context) {
     final exCount = routine.exercises.length;
     final totalSets =
         routine.exercises.fold<int>(0, (sum, e) => sum + e.sets);
+    final colors = _gradient;
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(14),
+      padding: const EdgeInsets.only(bottom: 12),
+      child: GestureDetector(
+        onTap: onTap,
         child: Container(
+          height: 160,
           decoration: BoxDecoration(
-            color: ZarpaColors.surface,
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: ZarpaColors.border),
-          ),
-          child: Column(
-            children: [
-              // Top accent bar
-              Container(
-                height: 3,
-                color: ZarpaColors.primary,
+            borderRadius: BorderRadius.circular(20),
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: colors,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: colors[1].withOpacity(0.35),
+                blurRadius: 12,
+                offset: const Offset(0, 6),
               ),
-              InkWell(
-                onTap: onTap,
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Row(
-                    children: [
-                      // Emoji
-                      const Text('💪', style: TextStyle(fontSize: 32)),
-                      const SizedBox(width: 12),
-                      // Info
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              routine.name,
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w700,
+            ],
+          ),
+          child: Stack(
+            children: [
+              // Emoji grande de fondo
+              Positioned(
+                right: -10,
+                bottom: -10,
+                child: Opacity(
+                  opacity: 0.15,
+                  child: const Text('💪',
+                      style: TextStyle(fontSize: 100)),
+                ),
+              ),
+
+              // Contenido
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Header: emoji + menu
+                    Row(
+                      children: [
+                        const Text('💪',
+                            style: TextStyle(fontSize: 28)),
+                        const Spacer(),
+                        // Menú contextual
+                        PopupMenuButton<String>(
+                          icon: Icon(Icons.more_horiz,
+                              size: 20,
+                              color: Colors.white.withOpacity(0.9)),
+                          onSelected: (value) {
+                            if (value == 'edit') onEdit();
+                            if (value == 'start') onStart?.call();
+                            if (value == 'delete') onDelete();
+                          },
+                          itemBuilder: (_) => [
+                            if (onStart != null)
+                              const PopupMenuItem(
+                                value: 'start',
+                                child: ListTile(
+                                  leading: Icon(Icons.play_arrow,
+                                      color: ZarpaColors.primary),
+                                  title: Text('Empezar'),
+                                  contentPadding: EdgeInsets.zero,
+                                ),
+                              ),
+                            const PopupMenuItem(
+                              value: 'edit',
+                              child: ListTile(
+                                leading: Icon(Icons.edit),
+                                title: Text('Editar'),
+                                contentPadding: EdgeInsets.zero,
                               ),
                             ),
-                            if (routine.description != null)
+                            const PopupMenuItem(
+                              value: 'delete',
+                              child: ListTile(
+                                leading: Icon(Icons.delete,
+                                    color: ZarpaColors.error),
+                                title: Text('Eliminar',
+                                    style:
+                                        TextStyle(color: ZarpaColors.error)),
+                                contentPadding: EdgeInsets.zero,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    const Spacer(),
+
+                    // Título
+                    Text(
+                      routine.name,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w800,
+                        color: Colors.white,
+                        height: 1.2,
+                      ),
+                    ),
+                    if (routine.description != null) ...[
+                      const SizedBox(height: 2),
+                      Text(
+                        routine.description!,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.white.withOpacity(0.85),
+                        ),
+                      ),
+                    ],
+                    const SizedBox(height: 8),
+
+                    // Info pills
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 5),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.25),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(Icons.fitness_center,
+                                  size: 12, color: Colors.white),
+                              const SizedBox(width: 4),
                               Text(
-                                routine.description!,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
+                                '$exCount ej · $totalSets series',
                                 style: const TextStyle(
-                                  fontSize: 12,
-                                  color: ZarpaColors.muted,
-                                  height: 1.3,
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w700,
+                                  color: Colors.white,
                                 ),
                               ),
-                            const SizedBox(height: 4),
-                            Row(
+                            ],
+                          ),
+                        ),
+                        if (onStart != null) ...[
+                          const SizedBox(width: 8),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 5),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.25),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: const Row(
+                              mainAxisSize: MainAxisSize.min,
                               children: [
-                                const Icon(Icons.fitness_center,
-                                    size: 12,
-                                    color: ZarpaColors.mutedLight),
-                                const SizedBox(width: 4),
+                                Icon(Icons.play_arrow,
+                                    size: 14, color: Colors.white),
+                                SizedBox(width: 2),
                                 Text(
-                                  '$exCount ej.',
-                                  style: const TextStyle(
+                                  'Iniciar',
+                                  style: TextStyle(
                                     fontSize: 11,
-                                    color: ZarpaColors.muted,
-                                  ),
-                                ),
-                                const SizedBox(width: 12),
-                                const Icon(Icons.repeat,
-                                    size: 12,
-                                    color: ZarpaColors.mutedLight),
-                                const SizedBox(width: 4),
-                                Text(
-                                  '$totalSets series',
-                                  style: const TextStyle(
-                                    fontSize: 11,
-                                    color: ZarpaColors.muted,
+                                    fontWeight: FontWeight.w700,
+                                    color: Colors.white,
                                   ),
                                 ),
                               ],
                             ),
-                            if (routine.tags.isNotEmpty) ...[
-                              const SizedBox(height: 6),
-                              Wrap(
-                                spacing: 4,
-                                runSpacing: 4,
-                                children: routine.tags.map((tag) =>
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 8, vertical: 2),
-                                    decoration: BoxDecoration(
-                                      color: ZarpaColors.primary
-                                          .withOpacity(0.1),
-                                      borderRadius:
-                                          BorderRadius.circular(12),
-                                    ),
-                                    child: Text(
-                                      tag,
-                                      style: const TextStyle(
-                                        fontSize: 10,
-                                        color: ZarpaColors.primary,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                  ),
-                                ).toList(),
-                              ),
-                            ],
-                          ],
-                        ),
-                      ),
-                      // Actions
-                      PopupMenuButton<String>(
-                        icon: const Icon(Icons.chevron_right,
-                            size: 18, color: ZarpaColors.darkBorder),
-                        onSelected: (value) {
-                          if (value == 'edit') onEdit();
-                          if (value == 'start') onStart?.call();
-                          if (value == 'delete') onDelete();
-                        },
-                        itemBuilder: (_) => [
-                          if (onStart != null)
-                            const PopupMenuItem(
-                              value: 'start',
-                              child: ListTile(
-                                leading: Icon(Icons.play_arrow,
-                                    color: ZarpaColors.primary),
-                                title: Text('Empezar'),
-                                contentPadding: EdgeInsets.zero,
-                              ),
-                            ),
-                          const PopupMenuItem(
-                            value: 'edit',
-                            child: ListTile(
-                              leading: Icon(Icons.edit),
-                              title: Text('Editar'),
-                              contentPadding: EdgeInsets.zero,
-                            ),
-                          ),
-                          const PopupMenuItem(
-                            value: 'delete',
-                            child: ListTile(
-                              leading: Icon(Icons.delete,
-                                  color: ZarpaColors.error),
-                              title: Text('Eliminar',
-                                  style:
-                                      TextStyle(color: ZarpaColors.error)),
-                              contentPadding: EdgeInsets.zero,
-                            ),
                           ),
                         ],
-                      ),
-                    ],
-                  ),
+                      ],
+                    ),
+                  ],
                 ),
               ),
             ],

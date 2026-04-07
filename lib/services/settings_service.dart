@@ -8,7 +8,7 @@ class SettingsService extends ChangeNotifier {
   static const _keyBeepFrom = 'countdownBeepFrom';
 
   /// Duración predeterminada del descanso en segundos.
-  int _defaultRestSeconds = 90;
+  int _defaultRestSeconds = 45;
 
   /// Si el sonido de la cuenta atrás está habilitado.
   bool _countdownSoundEnabled = true;
@@ -23,7 +23,7 @@ class SettingsService extends ChangeNotifier {
   /// Carga los valores guardados desde SharedPreferences.
   Future<void> load() async {
     final prefs = await SharedPreferences.getInstance();
-    _defaultRestSeconds = prefs.getInt(_keyRestSeconds) ?? 90;
+    _defaultRestSeconds = prefs.getInt(_keyRestSeconds) ?? 45;
     _countdownSoundEnabled = prefs.getBool(_keySoundEnabled) ?? true;
     _countdownBeepFrom = prefs.getInt(_keyBeepFrom) ?? 3;
     notifyListeners();

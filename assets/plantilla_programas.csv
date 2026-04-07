@@ -1,0 +1,18 @@
+id;title;category;level;subtitle;durationMin;weeks;daysPerWeek;exerciseCount;tags;emoji;equipment;colorIndex;imageUrl;gifUrl;description
+rapido_pecho;Pecho en 40 min;rapidos;intermedio;Fuerza · Pecho;40;;;8;Fuerza|Pecho;🏋️;Gym;0;https://www.fisioterapiaconmueve.com/wp-content/uploads/2018/04/1.jpg;;Press banca + aperturas + cruces. Trabajo completo de pectoral.
+rapido_pierna;Pierna en 45 min;rapidos;intermedio;Fuerza · Pierna;45;;;7;Fuerza|Pierna;🦵;Gym;1;;;Sentadilla + prensa + extensiones + curl femoral.
+rapido_espalda;Espalda en 30 min;rapidos;intermedio;Fuerza · Espalda;30;;;6;Fuerza|Espalda;🏋️;Gym;2;;;Remo + jalón + pullover. Espalda ancha y fuerte.
+rapido_core;Core en 10 min;rapidos;inicio;Core · Sin material;10;;;6;Core;🔥;Sin material;3;;;Planchas + crunches + bicicleta. Sin material necesario.
+rapido_hiit;HIIT en 15 min;rapidos;intermedio;Alta intensidad · Sin material;15;;;8;HIIT;⚡;Sin material;4;;;Burpees + mountain climbers + saltos. Quema máxima.
+prog_running_inicio;Running inicio;programas;inicio;De cero a correr 20 min;;4;3;;Running|Cardio;🏃;;5;;;Programa progresivo para empezar a correr desde cero.
+prog_running_avanzado;Running avanzado;programas;avanzado;Mejora tu ritmo y distancia;;6;4;;Running|Cardio;🏃;;0;;;Series + fartlek + carrera continua. Mejora tu marca.
+prog_calistenia_inicio;Calistenia inicio;programas;inicio;Técnica + fuerza corporal;;6;3;;Calistenia;🤸;;1;;;Dominadas asistidas + fondos + pistols. Progresiones.
+prog_hiit_4semanas;Alta intensidad 4 semanas;programas;intermedio;Quema grasa y gana resistencia;;4;4;;HIIT;⚡;;4;;;4 semanas de HIIT progresivo. Resultados visibles.
+calent_superior;Calentamiento tren superior;calentamientos;todos;Hombro / pecho / espalda;8;;;; Movilidad;🔥;;3;;;Rotaciones de hombro + activación escapular + movilidad torácica.
+calent_inferior;Calentamiento tren inferior;calentamientos;todos;Cadera / rodilla / tobillo;10;;;;Movilidad;🔥;;4;;;Sentadilla profunda + zancadas + movilidad de cadera.
+calent_prerunning;Activación pre-running;calentamientos;todos;Tobillo / cadera / core;6;;;;Running|Movilidad;🔥;;5;;;Skipping + activación glúteo + movilidad tobillo.
+mov_hombro;Movilidad de hombro;estiramientos;todos;Recuperación;7;;;;Movilidad;🧘;;2;;;Estiramientos + rotaciones + trabajo con banda.
+mov_cadera;Movilidad de cadera;estiramientos;todos;Recuperación;10;;;;Movilidad;🧘;;5;;;90/90 + mariposa + zancada profunda.
+est_post_pierna;Estiramientos post pierna;estiramientos;todos;Recuperación;8;;;;Estiramientos;🧘;;0;;;Isquio + cuádriceps + gemelos + glúteo.
+est_post_torso;Estiramientos post torso;estiramientos;todos;Recuperación;7;;;;Estiramientos;🧘;;1;;;Pectoral + dorsal + hombro + tríceps.
+est_espalda_cadera;Espalda y cadera;estiramientos;todos;Movilidad general;10;;;;Movilidad|Estiramientos;🧘;;3;;;Cat-cow + child pose + rotaciones + piriforme.

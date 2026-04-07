@@ -1,0 +1,99 @@
+programId,order,name,sets,reps,weightKg,durationSeconds,distanceMeters,restSeconds,measurementType,photoUrl,gifUrl,notes
+rapido_pecho,1,Press banca,4,10,60,,,90,weight,,,Agarre medio bajar a pecho
+rapido_pecho,2,Press inclinado mancuernas,3,12,20,,,90,weight,,,Banco a 30-45°
+rapido_pecho,3,Aperturas con mancuernas,3,15,12,,,60,weight,,,Codos ligeramente flexionados
+rapido_pecho,4,Cruces en polea alta,3,15,,,,60,reps,,,Contracción al cruzar manos
+rapido_pecho,5,Press declinado,3,10,50,,,90,weight,,,
+rapido_pecho,6,Fondos en paralelas,3,12,,,,60,reps,,,Inclinarse hacia delante
+rapido_pecho,7,Pull-over con mancuerna,3,12,16,,,60,weight,,,
+rapido_pecho,8,Flexiones diamante,3,15,,,,45,reps,,,Manos juntas bajo el pecho
+rapido_pierna,1,Sentadilla con barra,4,10,80,,,120,weight,,,Barra alta profundidad paralela
+rapido_pierna,2,Prensa inclinada,4,12,,,,90,reps,,,Pies separados al ancho de hombros
+rapido_pierna,3,Extensión de cuádriceps,3,15,,,,60,reps,,,Contracción arriba 2 seg
+rapido_pierna,4,Curl femoral tumbado,3,12,,,,60,reps,,,
+rapido_pierna,5,Zancadas con mancuernas,3,12,14,,,60,weight,,,12 por pierna
+rapido_pierna,6,Elevación de gemelos,4,20,,,,45,reps,,,Rango completo pausa abajo
+rapido_pierna,7,Hip thrust,3,12,60,,,90,weight,,,Apretar glúteos arriba
+rapido_espalda,1,Jalón al pecho,4,12,,,,60,reps,,,Agarre prono ancho
+rapido_espalda,2,Remo con barra,4,10,50,,,90,weight,,,Espalda a 45° tirar al ombligo
+rapido_espalda,3,Remo mancuerna a 1 brazo,3,12,18,,,60,weight,,,
+rapido_espalda,4,Pull-over en polea,3,15,,,,60,reps,,,Brazos extendidos
+rapido_espalda,5,Face pull,3,15,,,,45,reps,,,Cuerda a la frente rotación externa
+rapido_espalda,6,Encogimientos con barra,3,15,40,,,45,weight,,,Pausa arriba 2 seg
+rapido_core,1,Plancha frontal,3,,,,30,,30,time,,,Cuerpo recto no subir cadera
+rapido_core,2,Crunch abdominal,3,20,,,,30,reps,,,
+rapido_core,3,Bicicleta,3,20,,,,30,reps,,,20 por lado codo a rodilla
+rapido_core,4,Plancha lateral,2,,,,25,,30,time,,,25s por lado
+rapido_core,5,Mountain climbers,3,,,,20,,30,time,,,Ritmo rápido
+rapido_core,6,Elevación de piernas,3,15,,,,30,reps,,,Tumbado no arquear espalda
+rapido_hiit,1,Burpees,3,,,,30,,15,time,,,30s trabajo / 15s descanso
+rapido_hiit,2,Mountain climbers,3,,,,30,,15,time,,,
+rapido_hiit,3,Saltos de estrella,3,,,,30,,15,time,,,
+rapido_hiit,4,Sentadilla con salto,3,,,,30,,15,time,,,
+rapido_hiit,5,Skaters laterales,3,,,,30,,15,time,,,
+rapido_hiit,6,Rodillas altas,3,,,,30,,15,time,,,Ritmo máximo
+rapido_hiit,7,Flexiones explosivas,3,10,,,,15,reps,,,
+rapido_hiit,8,Plancha con toque de hombro,3,,,,30,,15,time,,,Alternar manos sin rotar cadera
+prog_running_inicio,1,Caminar rápido,1,,,,300,,0,time,,,Calentamiento 5 min
+prog_running_inicio,2,Trote suave,4,,,,60,,120,time,,,Sem 1: 1 min trote / 2 min andar
+prog_running_inicio,3,Carrera continua,1,,,,600,,0,time,,,Sem 4: 10 min sin parar
+prog_running_inicio,4,Vuelta a la calma,1,,,,300,,0,time,,,Caminar 5 min + estiramientos
+prog_running_avanzado,1,Carrera continua,1,,,,1800,,0,time,,,Día 1: 30 min ritmo base
+prog_running_avanzado,2,Series 400m,6,,,,,400,90,distance,,,Día 2: ritmo fuerte descanso trotando
+prog_running_avanzado,3,Fartlek,1,,,,2400,,0,time,,,Día 3: 40 min alternar ritmos
+prog_running_avanzado,4,Tirada larga,1,,,,,10000,0,distance,,,Día 4: 10 km ritmo cómodo
+prog_calistenia_inicio,1,Dominadas asistidas,3,5,,,,90,reps,,,Banda elástica o negativas
+prog_calistenia_inicio,2,Fondos en paralelas,3,8,,,,90,reps,,,Rango completo
+prog_calistenia_inicio,3,Flexiones,3,12,,,,60,reps,,,
+prog_calistenia_inicio,4,Sentadilla pistol asistida,3,5,,,,60,reps,,,Sujetarse a TRX o poste
+prog_calistenia_inicio,5,L-sit en paralelas,3,,,,10,,60,time,,,Piernas dobladas si necesario
+prog_calistenia_inicio,6,Plancha frontal,3,,,,30,,45,time,,,
+prog_hiit_4semanas,1,Burpees,4,,,,40,,20,time,,,
+prog_hiit_4semanas,2,Sentadilla con salto,4,,,,40,,20,time,,,
+prog_hiit_4semanas,3,Mountain climbers,4,,,,40,,20,time,,,
+prog_hiit_4semanas,4,Flexiones,4,15,,,,20,reps,,,
+prog_hiit_4semanas,5,Plancha con salto,4,,,,40,,20,time,,,
+prog_hiit_4semanas,6,Sprint en sitio,4,,,,30,,30,time,,,Máxima velocidad
+calent_superior,1,Circunducción de hombros,2,10,,,,0,reps,,,10 adelante + 10 atrás
+calent_superior,2,Rotación externa con banda,2,12,,,,15,reps,,,
+calent_superior,3,Dislocaciones con pica,2,10,,,,15,reps,,,Agarre amplio progresivo
+calent_superior,4,Retracción escapular,2,15,,,,15,reps,,,Juntar escápulas 2 seg
+calent_superior,5,Rotación torácica,2,8,,,,15,reps,,,8 por lado en cuadrupedia
+calent_superior,6,Flexiones en pared,2,12,,,,15,reps,,,Activación pectoral
+calent_inferior,1,Sentadilla profunda,2,10,,,,0,reps,,,Sin peso mantener talones
+calent_inferior,2,Zancada con rotación,2,8,,,,15,reps,,,8 por lado girar torso
+calent_inferior,3,Círculos de cadera,2,10,,,,0,reps,,,10 por sentido
+calent_inferior,4,Activación de glúteo,2,15,,,,15,reps,,,Puente de glúteo
+calent_inferior,5,Movilidad de tobillo,2,10,,,,15,reps,,,Rodilla al frente sobre pared
+calent_inferior,6,Balanceo de pierna,2,10,,,,0,reps,,,10 por pierna frontal y lateral
+calent_prerunning,1,Skipping,2,,,,20,,10,time,,,Rodillas altas brazos activos
+calent_prerunning,2,Talones al glúteo,2,,,,20,,10,time,,,
+calent_prerunning,3,Activación glúteo,2,12,,,,10,reps,,,Clamshell o puente
+calent_prerunning,4,Movilidad tobillo,2,10,,,,10,reps,,,
+calent_prerunning,5,Zancada dinámica,2,8,,,,10,reps,,,8 por pierna
+mov_hombro,1,Estiramiento pectoral en pared,2,,,,30,,10,time,,,30s por lado
+mov_hombro,2,Rotación interna/externa,2,10,,,,10,reps,,,Con banda elástica
+mov_hombro,3,Sleeper stretch,2,,,,30,,10,time,,,Tumbado de lado
+mov_hombro,4,Dislocaciones con banda,2,10,,,,10,reps,,,
+mov_hombro,5,Cruz en pared,2,,,,25,,10,time,,,Brazo extendido contra pared
+mov_cadera,1,90/90,2,,,,30,,10,time,,,30s por lado
+mov_cadera,2,Mariposa sentado,2,,,,30,,10,time,,,Presionar rodillas hacia el suelo
+mov_cadera,3,Zancada profunda,2,,,,30,,10,time,,,30s por lado empujar cadera
+mov_cadera,4,Estiramiento piriforme,2,,,,30,,10,time,,,Tobillo sobre rodilla opuesta
+mov_cadera,5,Sentadilla profunda isométrica,2,,,,30,,10,time,,,Codos empujan rodillas afuera
+est_post_pierna,1,Estiramiento isquiotibiales,2,,,,30,,10,time,,,De pie o sentado 30s por pierna
+est_post_pierna,2,Estiramiento cuádriceps,2,,,,30,,10,time,,,De pie talón al glúteo
+est_post_pierna,3,Estiramiento gemelos,2,,,,25,,10,time,,,Contra pared pierna atrás
+est_post_pierna,4,Estiramiento aductores,2,,,,30,,10,time,,,Zancada lateral
+est_post_pierna,5,Estiramiento glúteo,2,,,,30,,10,time,,,Pierna cruzada sentado
+est_post_torso,1,Estiramiento pectoral,2,,,,25,,10,time,,,Brazo en marco de puerta
+est_post_torso,2,Estiramiento dorsal,2,,,,25,,10,time,,,Colgarse de barra o estirar en pared
+est_post_torso,3,Estiramiento hombro,2,,,,25,,10,time,,,Brazo cruzado al pecho
+est_post_torso,4,Estiramiento tríceps,2,,,,20,,10,time,,,Mano detrás de cabeza codo arriba
+est_post_torso,5,Estiramiento trapecio,2,,,,20,,10,time,,,Inclinar cabeza lateral
+est_espalda_cadera,1,Cat-cow,2,10,,,,0,reps,,,Cuadrupedia alternar flexión/extensión
+est_espalda_cadera,2,Child pose,2,,,,30,,0,time,,,Brazos extendidos frente al suelo
+est_espalda_cadera,3,Rotación torácica,2,8,,,,10,reps,,,8 por lado en cuadrupedia
+est_espalda_cadera,4,Estiramiento piriforme,2,,,,30,,10,time,,,Tumbado tobillo sobre rodilla
+est_espalda_cadera,5,Perro boca abajo,2,,,,30,,10,time,,,Talones al suelo extender columna
+est_espalda_cadera,6,Torsión espinal tumbado,2,,,,30,,0,time,,,30s por lado hombros pegados al suelo
