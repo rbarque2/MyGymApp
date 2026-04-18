@@ -48,6 +48,7 @@ class _WorkoutScreenState extends State<WorkoutScreen>
 
   late AnimationController _pulseController;
   late PageController _pageController;
+  late Set<int> _weightEnabledExercises;
 
   @override
   void initState() {
@@ -81,6 +82,16 @@ class _WorkoutScreenState extends State<WorkoutScreen>
 
     _createSession();
     _timer.addListener(_onTimerTick);
+
+    // Determinar qué ejercicios tienen peso activado por defecto
+    _weightEnabledExercises = {};
+    for (int i = 0; i < _exercises.length; i++) {
+      final ex = _exercises[i];
+      if (ex.measurementType == MeasurementType.weight ||
+          (ex.weightKg != null && ex.weightKg! > 0)) {
+        _weightEnabledExercises.add(i);
+      }
+    }
   }
 
   // Get the exercises from the routine
@@ -504,7 +515,7 @@ class _WorkoutScreenState extends State<WorkoutScreen>
         const SizedBox(height: 32),
 
         // Giant metric display — editable reps
-        ..._buildEditableMetricDisplay(currentSet, mt),
+        ..._buildEditableMetricDisplay(currentSet, mt, exerciseIndex),
 
         // Swipe hint
         const Spacer(flex: 1),
@@ -605,112 +616,58 @@ class _WorkoutScreenState extends State<WorkoutScreen>
   }
 
   List<Widget> _buildEditableMetricDisplay(
-      WorkoutSet set, MeasurementType mt) {
+      WorkoutSet set, MeasurementType mt, int exerciseIndex) {
+    final showWeight = _weightEnabledExercises.contains(exerciseIndex);
+
+    // ── Picker principal según tipo ──
+    Widget mainPicker;
     switch (mt) {
       case MeasurementType.weight:
-        // Reps (1-100) + Peso (0-300 en pasos de 2.5)
-        return [
-          SizedBox(
-            height: 140,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                // ── Reps picker ──
-                Column(
-                  children: [
-                    const Text('REPS',
-                        style: TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w700,
-                            color: ZarpaColors.muted,
-                            letterSpacing: 2)),
-                    const SizedBox(height: 4),
-                    SizedBox(
-                      width: 80,
-                      height: 120,
-                      child: CupertinoPicker(
-                        scrollController: FixedExtentScrollController(
-                            initialItem: set.reps - 1),
-                        itemExtent: 40,
-                        diameterRatio: 1.2,
-                        squeeze: 1.0,
-                        selectionOverlay:
-                            CupertinoPickerDefaultSelectionOverlay(
-                          background:
-                              ZarpaColors.primary.withOpacity(0.08),
-                        ),
-                        onSelectedItemChanged: (i) =>
-                            setState(() => set.reps = i + 1),
-                        children: List.generate(
-                            100,
-                            (i) => Center(
-                                  child: Text('${i + 1}',
-                                      style: const TextStyle(
-                                          fontSize: 28,
-                                          fontWeight: FontWeight.w800,
-                                          color: ZarpaColors.foreground)),
-                                )),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(width: 32),
-                // ── Weight picker ──
-                Column(
-                  children: [
-                    const Text('KG',
-                        style: TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w700,
-                            color: ZarpaColors.muted,
-                            letterSpacing: 2)),
-                    const SizedBox(height: 4),
-                    SizedBox(
-                      width: 100,
-                      height: 120,
-                      child: CupertinoPicker(
-                        scrollController: FixedExtentScrollController(
-                            initialItem:
-                                ((set.weightKg ?? 0) / 2.5).round()),
-                        itemExtent: 40,
-                        diameterRatio: 1.2,
-                        squeeze: 1.0,
-                        selectionOverlay:
-                            CupertinoPickerDefaultSelectionOverlay(
-                          background:
-                              ZarpaColors.primary.withOpacity(0.08),
-                        ),
-                        onSelectedItemChanged: (i) =>
-                            setState(() => set.weightKg = i * 2.5),
-                        children: List.generate(
-                            121, // 0 a 300 kg en pasos de 2.5
-                            (i) => Center(
-                                  child: Text(
-                                      (i * 2.5) ==
-                                              (i * 2.5).roundToDouble()
-                                          ? '${(i * 2.5).toInt()}'
-                                          : (i * 2.5).toStringAsFixed(1),
-                                      style: const TextStyle(
-                                          fontSize: 28,
-                                          fontWeight: FontWeight.w800,
-                                          color: ZarpaColors.foreground)),
-                                )),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ];
       case MeasurementType.reps:
-        // Solo reps sin peso
-        return [
-          SizedBox(
-            height: 140,
-            child: Column(
+        mainPicker = Column(
+          children: [
+            const Text('REPS',
+                style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                    color: ZarpaColors.muted,
+                    letterSpacing: 2)),
+            const SizedBox(height: 4),
+            SizedBox(
+              width: 80,
+              height: 120,
+              child: CupertinoPicker(
+                scrollController:
+                    FixedExtentScrollController(initialItem: set.reps - 1),
+                itemExtent: 40,
+                diameterRatio: 1.2,
+                squeeze: 1.0,
+                selectionOverlay: CupertinoPickerDefaultSelectionOverlay(
+                  background: ZarpaColors.primary.withOpacity(0.08),
+                ),
+                onSelectedItemChanged: (i) =>
+                    setState(() => set.reps = i + 1),
+                children: List.generate(
+                    100,
+                    (i) => Center(
+                          child: Text('${i + 1}',
+                              style: const TextStyle(
+                                  fontSize: 28,
+                                  fontWeight: FontWeight.w800,
+                                  color: ZarpaColors.foreground)),
+                        )),
+              ),
+            ),
+          ],
+        );
+      case MeasurementType.time:
+        final secs = set.durationSeconds ?? 30;
+        mainPicker = Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Column(
               children: [
-                const Text('REPETICIONES',
+                const Text('MIN',
                     style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.w700,
@@ -718,11 +675,11 @@ class _WorkoutScreenState extends State<WorkoutScreen>
                         letterSpacing: 2)),
                 const SizedBox(height: 4),
                 SizedBox(
-                  width: 100,
+                  width: 70,
                   height: 120,
                   child: CupertinoPicker(
                     scrollController: FixedExtentScrollController(
-                        initialItem: set.reps - 1),
+                        initialItem: secs ~/ 60),
                     itemExtent: 40,
                     diameterRatio: 1.2,
                     squeeze: 1.0,
@@ -730,14 +687,16 @@ class _WorkoutScreenState extends State<WorkoutScreen>
                         CupertinoPickerDefaultSelectionOverlay(
                       background: ZarpaColors.primary.withOpacity(0.08),
                     ),
-                    onSelectedItemChanged: (i) =>
-                        setState(() => set.reps = i + 1),
+                    onSelectedItemChanged: (i) {
+                      final curS = (set.durationSeconds ?? 30) % 60;
+                      setState(() => set.durationSeconds = i * 60 + curS);
+                    },
                     children: List.generate(
-                        100,
+                        61,
                         (i) => Center(
-                              child: Text('${i + 1}',
+                              child: Text('$i',
                                   style: const TextStyle(
-                                      fontSize: 32,
+                                      fontSize: 28,
                                       fontWeight: FontWeight.w800,
                                       color: ZarpaColors.foreground)),
                             )),
@@ -745,59 +704,215 @@ class _WorkoutScreenState extends State<WorkoutScreen>
                 ),
               ],
             ),
-          ),
-        ];
-      case MeasurementType.time:
-        final secs = set.durationSeconds ?? 30;
-        final m = secs ~/ 60;
-        final s = secs % 60;
-        return [
-          Text(
-            '${m.toString().padLeft(2, '0')}:${s.toString().padLeft(2, '0')}',
-            style: const TextStyle(
-              fontSize: 72,
-              fontWeight: FontWeight.w900,
-              color: ZarpaColors.foreground,
-              height: 1,
-              fontFeatures: [FontFeature.tabularFigures()],
+            const Padding(
+              padding: EdgeInsets.only(top: 20),
+              child: Text(':',
+                  style: TextStyle(
+                      fontSize: 32,
+                      fontWeight: FontWeight.w900,
+                      color: ZarpaColors.foreground)),
             ),
-          ),
-          const Text(
-            'DURACIÓN',
-            style: TextStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.w700,
-              color: ZarpaColors.muted,
-              letterSpacing: 2,
+            Column(
+              children: [
+                const Text('SEG',
+                    style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                        color: ZarpaColors.muted,
+                        letterSpacing: 2)),
+                const SizedBox(height: 4),
+                SizedBox(
+                  width: 70,
+                  height: 120,
+                  child: CupertinoPicker(
+                    scrollController: FixedExtentScrollController(
+                        initialItem: secs % 60),
+                    itemExtent: 40,
+                    diameterRatio: 1.2,
+                    squeeze: 1.0,
+                    selectionOverlay:
+                        CupertinoPickerDefaultSelectionOverlay(
+                      background: ZarpaColors.primary.withOpacity(0.08),
+                    ),
+                    onSelectedItemChanged: (i) {
+                      final curM = (set.durationSeconds ?? 30) ~/ 60;
+                      setState(() => set.durationSeconds = curM * 60 + i);
+                    },
+                    children: List.generate(
+                        60,
+                        (i) => Center(
+                              child: Text(i.toString().padLeft(2, '0'),
+                                  style: const TextStyle(
+                                      fontSize: 28,
+                                      fontWeight: FontWeight.w800,
+                                      color: ZarpaColors.foreground)),
+                            )),
+                  ),
+                ),
+              ],
             ),
-          ),
-        ];
+          ],
+        );
       case MeasurementType.distance:
-        final meters = set.distanceMeters ?? 0;
-        final display = meters >= 1000
-            ? '${(meters / 1000).toStringAsFixed(1)} km'
-            : '${meters.toStringAsFixed(0)} m';
-        return [
-          Text(
-            display,
-            style: const TextStyle(
-              fontSize: 64,
-              fontWeight: FontWeight.w900,
-              color: ZarpaColors.foreground,
-              height: 1,
+        mainPicker = Column(
+          children: [
+            const Text('METROS',
+                style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                    color: ZarpaColors.muted,
+                    letterSpacing: 2)),
+            const SizedBox(height: 4),
+            SizedBox(
+              width: 100,
+              height: 120,
+              child: CupertinoPicker(
+                scrollController: FixedExtentScrollController(
+                    initialItem: ((set.distanceMeters ?? 0) / 100).round()),
+                itemExtent: 40,
+                diameterRatio: 1.2,
+                squeeze: 1.0,
+                selectionOverlay: CupertinoPickerDefaultSelectionOverlay(
+                  background: ZarpaColors.primary.withOpacity(0.08),
+                ),
+                onSelectedItemChanged: (i) =>
+                    setState(() => set.distanceMeters = i * 100.0),
+                children: List.generate(
+                    201, // 0 a 20000 m en pasos de 100
+                    (i) {
+                  final m = i * 100;
+                  final label =
+                      m >= 1000 ? '${(m / 1000).toStringAsFixed(1)}k' : '$m';
+                  return Center(
+                    child: Text(label,
+                        style: const TextStyle(
+                            fontSize: 28,
+                            fontWeight: FontWeight.w800,
+                            color: ZarpaColors.foreground)),
+                  );
+                }),
+              ),
             ),
-          ),
-          const Text(
-            'DISTANCIA',
-            style: TextStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.w700,
-              color: ZarpaColors.muted,
-              letterSpacing: 2,
-            ),
-          ),
-        ];
+          ],
+        );
     }
+
+    // ── Weight picker (si está activo) ──
+    Widget weightPicker = Column(
+      children: [
+        const Text('KG',
+            style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                color: ZarpaColors.muted,
+                letterSpacing: 2)),
+        const SizedBox(height: 4),
+        SizedBox(
+          width: 80,
+          height: 120,
+          child: CupertinoPicker(
+            scrollController: FixedExtentScrollController(
+                initialItem: ((set.weightKg ?? 0) / 2.5).round()),
+            itemExtent: 40,
+            diameterRatio: 1.2,
+            squeeze: 1.0,
+            selectionOverlay: CupertinoPickerDefaultSelectionOverlay(
+              background: ZarpaColors.primary.withOpacity(0.08),
+            ),
+            onSelectedItemChanged: (i) =>
+                setState(() => set.weightKg = i * 2.5),
+            children: List.generate(
+                121,
+                (i) => Center(
+                      child: Text(
+                          (i * 2.5) == (i * 2.5).roundToDouble()
+                              ? '${(i * 2.5).toInt()}'
+                              : (i * 2.5).toStringAsFixed(1),
+                          style: const TextStyle(
+                              fontSize: 28,
+                              fontWeight: FontWeight.w800,
+                              color: ZarpaColors.foreground)),
+                    )),
+          ),
+        ),
+      ],
+    );
+
+    return [
+      SizedBox(
+        height: 140,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            mainPicker,
+            if (showWeight) ...[
+              const SizedBox(width: 24),
+              weightPicker,
+            ],
+          ],
+        ),
+      ),
+      const SizedBox(height: 8),
+      // ── Toggle peso ──
+      GestureDetector(
+        onTap: () => setState(() {
+          if (showWeight) {
+            _weightEnabledExercises.remove(exerciseIndex);
+            // Limpiar peso de todas las series de este ejercicio
+            final flatStart = _flatIndexForExercise(exerciseIndex);
+            for (int i = 0; i < _exercises[exerciseIndex].sets; i++) {
+              _sets[flatStart + i].weightKg = null;
+            }
+          } else {
+            _weightEnabledExercises.add(exerciseIndex);
+          }
+        }),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+          decoration: BoxDecoration(
+            color: showWeight
+                ? ZarpaColors.primary.withOpacity(0.1)
+                : ZarpaColors.surface,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: showWeight
+                  ? ZarpaColors.primary.withOpacity(0.3)
+                  : ZarpaColors.border,
+            ),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                showWeight
+                    ? Icons.fitness_center
+                    : Icons.fitness_center_outlined,
+                size: 16,
+                color: showWeight ? ZarpaColors.primary : ZarpaColors.muted,
+              ),
+              const SizedBox(width: 6),
+              Text(
+                showWeight ? 'Con peso' : 'Añadir peso',
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color:
+                      showWeight ? ZarpaColors.primary : ZarpaColors.muted,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    ];
+  }
+
+  int _flatIndexForExercise(int exerciseIndex) {
+    int idx = 0;
+    for (int i = 0; i < exerciseIndex; i++) {
+      idx += _exercises[i].sets;
+    }
+    return idx;
   }
 
   String _categoryIcon(RoutineExercise ex) {

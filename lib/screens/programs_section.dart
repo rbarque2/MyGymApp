@@ -50,12 +50,24 @@ class _ProgramsSectionState extends State<ProgramsSection> {
 
   static const _filterTags = [
     'Fuerza',
+    'Pecho',
+    'Espalda',
+    'Pierna',
+    'Hombros',
+    'Brazos',
+    'Bíceps',
+    'Tríceps',
+    'Glúteos',
+    'Core',
+    'Abdominales',
+    'Push',
+    'Pull',
     'Running',
+    'Cardio',
     'HIIT',
     'Calistenia',
     'Movilidad',
     'Estiramientos',
-    'Core',
   ];
 
   @override
