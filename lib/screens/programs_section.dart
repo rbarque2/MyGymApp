@@ -79,8 +79,10 @@ class _ProgramsSectionState extends State<ProgramsSection> {
   Future<void> _loadPrograms() async {
     final fromDb = await _repo.getPrograms();
     if (!mounted) return;
+    final dbIds = fromDb.map((p) => p.id).toSet();
+    final extras = programsCatalog.where((p) => !dbIds.contains(p.id));
     setState(() {
-      _programs = fromDb.isNotEmpty ? fromDb : programsCatalog.toList();
+      _programs = [...fromDb, ...extras];
       _loading = false;
     });
   }
