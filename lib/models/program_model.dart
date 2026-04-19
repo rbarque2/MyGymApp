@@ -5,7 +5,7 @@ import 'exercise_model.dart';
 
 /// Ejercicio dentro de un programa predefinido.
 class ProgramExercise {
-  const ProgramExercise({
+  ProgramExercise({
     required this.name,
     this.sets = 3,
     this.reps,
@@ -15,10 +15,10 @@ class ProgramExercise {
     this.restSeconds = 45,
     this.measurementType = MeasurementType.reps,
     this.photoUrl,
-    this.gifUrl,
+    String? gifUrl,
     this.notes,
     this.order = 0,
-  });
+  }) : gifUrl = gifUrl ?? _gifLibrary[name];
 
   final String name;
   final int sets;
@@ -32,6 +32,364 @@ class ProgramExercise {
   final String? gifUrl;
   final String? notes;
   final int order;
+
+  /// Biblioteca central de GIFs por nombre de ejercicio.
+  ///
+  /// Actúa como fallback cuando un [ProgramExercise] se construye sin
+  /// [gifUrl] explícito. Permite que muchos nombres compartan un mismo
+  /// recurso (dedupe) y que nuevos programas obtengan gif automáticamente
+  /// si el nombre ya está cubierto aquí.
+  static const Map<String, String> _gifLibrary = {
+    // ── Pecho ──
+    'Press banca':
+        'https://fitcron.com/wp-content/uploads/2021/03/00251301-Barbell-Bench-Press_Chest-FIX_720.gif',
+    'Press banca plano':
+        'https://fitcron.com/wp-content/uploads/2021/03/00251301-Barbell-Bench-Press_Chest-FIX_720.gif',
+    'Press banca solo barra':
+        'https://fitcron.com/wp-content/uploads/2021/03/00251301-Barbell-Bench-Press_Chest-FIX_720.gif',
+    'Press banca · 5/3/1':
+        'https://fitcron.com/wp-content/uploads/2021/03/00251301-Barbell-Bench-Press_Chest-FIX_720.gif',
+    'Upper · Press banca':
+        'https://fitcron.com/wp-content/uploads/2021/03/00251301-Barbell-Bench-Press_Chest-FIX_720.gif',
+    'Push · Press banca':
+        'https://fitcron.com/wp-content/uploads/2021/03/00251301-Barbell-Bench-Press_Chest-FIX_720.gif',
+    'Press inclinado mancuernas':
+        'https://fitcron.com/wp-content/uploads/2021/03/03241301-Dumbbell-Incline-Palm-in-Press_Chest_720.gif',
+    'Push · Press inclinado mancuernas':
+        'https://fitcron.com/wp-content/uploads/2021/03/03241301-Dumbbell-Incline-Palm-in-Press_Chest_720.gif',
+    'Press inclinado barra':
+        'https://fitcron.com/wp-content/uploads/2021/03/03241301-Dumbbell-Incline-Palm-in-Press_Chest_720.gif',
+    'Press declinado':
+        'https://fitcron.com/wp-content/uploads/2021/03/03031301-Dumbbell-Decline-Hammer-Press_Chest_720.gif',
+    'Press declinado mancuernas':
+        'https://fitcron.com/wp-content/uploads/2021/03/03031301-Dumbbell-Decline-Hammer-Press_Chest_720.gif',
+    'Aperturas con mancuernas':
+        'https://fitcron.com/wp-content/uploads/2021/03/03081301-Dumbbell-Fly_Chest-FIX_720.gif',
+    'Aperturas en banco inclinado':
+        'https://fitcron.com/wp-content/uploads/2021/03/03081301-Dumbbell-Fly_Chest-FIX_720.gif',
+    'Cruces en polea alta':
+        'https://fitcron.com/wp-content/uploads/2021/03/12701301-Cable-Upper-Chest-Crossovers_Chest_720.gif',
+    'Cruce en polea alta':
+        'https://fitcron.com/wp-content/uploads/2021/03/12701301-Cable-Upper-Chest-Crossovers_Chest_720.gif',
+    'Cruce en polea baja':
+        'https://fitcron.com/wp-content/uploads/2021/03/12701301-Cable-Upper-Chest-Crossovers_Chest_720.gif',
+    'Fondos en paralelas':
+        'https://fitcron.com/wp-content/uploads/2021/03/02511301-Chest-Dip_Chest_720.gif',
+    'Fondos en paralelas lastrados':
+        'https://fitcron.com/wp-content/uploads/2021/03/02511301-Chest-Dip_Chest_720.gif',
+    'Pull-over con mancuerna':
+        'https://fitcron.com/wp-content/uploads/2021/03/03751301-Dumbbell-Pullover_Chest_720.gif',
+    'Pull-over en polea':
+        'https://fitcron.com/wp-content/uploads/2021/03/01841301-Cable-Lying-Extension-Pullover-with-rope-attachment_Back_720.gif',
+    'Flexiones':
+        'https://fitcron.com/wp-content/uploads/2021/03/06621301-Push-up-m_Chest-FIX_720.gif',
+    'Flexiones explosivas':
+        'https://fitcron.com/wp-content/uploads/2021/03/06621301-Push-up-m_Chest-FIX_720.gif',
+    'Flexiones en pared':
+        'https://fitcron.com/wp-content/uploads/2021/03/06621301-Push-up-m_Chest-FIX_720.gif',
+    'Flexiones progresivas':
+        'https://fitcron.com/wp-content/uploads/2021/03/06621301-Push-up-m_Chest-FIX_720.gif',
+    'Push-up burnout':
+        'https://fitcron.com/wp-content/uploads/2021/03/06621301-Push-up-m_Chest-FIX_720.gif',
+    'Flexiones diamante':
+        'https://fitcron.com/wp-content/uploads/2021/03/02831301-Diamond-Push-up_Upper-Arms_720.gif',
+
+    // ── Espalda ──
+    'Jalón al pecho':
+        'https://fitcron.com/wp-content/uploads/2021/04/01981301-Cable-Pulldown_Back_720.gif',
+    'Upper · Jalón al pecho':
+        'https://fitcron.com/wp-content/uploads/2021/04/01981301-Cable-Pulldown_Back_720.gif',
+    'Jalón agarre neutro':
+        'https://fitcron.com/wp-content/uploads/2021/04/01981301-Cable-Pulldown_Back_720.gif',
+    'Dominadas o jalón':
+        'https://fitcron.com/wp-content/uploads/2021/04/14291301-Wide-Grip-Pull-Up_Back_720.gif',
+    'Pull · Dominadas o jalón':
+        'https://fitcron.com/wp-content/uploads/2021/04/14291301-Wide-Grip-Pull-Up_Back_720.gif',
+    'Dominadas lastradas':
+        'https://fitcron.com/wp-content/uploads/2021/04/14291301-Wide-Grip-Pull-Up_Back_720.gif',
+    'Dominadas asistidas':
+        'https://fitcron.com/wp-content/uploads/2021/04/06271301-Mixed-Grip-Chin-up_back_720.gif',
+    'Remo con barra':
+        'https://fitcron.com/wp-content/uploads/2021/04/00491301-Barbell-Incline-Row_Back_720.gif',
+    'Remo barra o máquina':
+        'https://fitcron.com/wp-content/uploads/2021/04/00271301-Barbell-Bent-Over-Row_Back-FIX_720.gif',
+    'Pull · Remo con barra':
+        'https://fitcron.com/wp-content/uploads/2021/04/00271301-Barbell-Bent-Over-Row_Back-FIX_720.gif',
+    'Upper · Remo con barra':
+        'https://fitcron.com/wp-content/uploads/2021/04/00271301-Barbell-Bent-Over-Row_Back-FIX_720.gif',
+    'Remo Pendlay':
+        'https://fitcron.com/wp-content/uploads/2021/04/00271301-Barbell-Bent-Over-Row_Back-FIX_720.gif',
+    'Remo mancuerna a 1 brazo':
+        'https://fitcron.com/wp-content/uploads/2021/04/02921301-Dumbbell-Bent-over-Row_back_Back_720.gif',
+    'Pull · Remo mancuerna':
+        'https://fitcron.com/wp-content/uploads/2021/04/02921301-Dumbbell-Bent-over-Row_back_Back_720.gif',
+    'Remo unilateral':
+        'https://fitcron.com/wp-content/uploads/2021/04/02921301-Dumbbell-Bent-over-Row_back_Back_720.gif',
+    'Remo en máquina':
+        'https://fitcron.com/wp-content/uploads/2021/04/02921301-Dumbbell-Bent-over-Row_back_Back_720.gif',
+    'Remo en T':
+        'https://fitcron.com/wp-content/uploads/2021/04/02921301-Dumbbell-Bent-over-Row_back_Back_720.gif',
+    'Encogimientos con barra':
+        'https://fitcron.com/wp-content/uploads/2021/04/00951301-Barbell-Shrug_Back_720.gif',
+    'Encogimientos con mancuernas':
+        'https://fitcron.com/wp-content/uploads/2021/04/00951301-Barbell-Shrug_Back_720.gif',
+    'Encogimientos pesados':
+        'https://fitcron.com/wp-content/uploads/2021/04/00951301-Barbell-Shrug_Back_720.gif',
+
+    // ── Hombros ──
+    'Elevaciones laterales':
+        'https://fitcron.com/wp-content/uploads/2021/04/03801301-Dumbbell-Rear-Lateral-Raise_Shoulders_720.gif',
+    'Push · Elevaciones laterales':
+        'https://fitcron.com/wp-content/uploads/2021/04/03801301-Dumbbell-Rear-Lateral-Raise_Shoulders_720.gif',
+    'Elevaciones frontales':
+        'https://fitcron.com/wp-content/uploads/2021/04/03801301-Dumbbell-Rear-Lateral-Raise_Shoulders_720.gif',
+    'Pájaros (rear delt)':
+        'https://fitcron.com/wp-content/uploads/2021/04/03801301-Dumbbell-Rear-Lateral-Raise_Shoulders_720.gif',
+    'Face pull':
+        'https://fitcron.com/wp-content/uploads/2021/04/36971301-Cable-Kneeling-Rear-Delt-Row-with-rope-male_Shoulder_720.gif',
+    'Face pull ligero':
+        'https://fitcron.com/wp-content/uploads/2021/04/36971301-Cable-Kneeling-Rear-Delt-Row-with-rope-male_Shoulder_720.gif',
+    'Pull · Face pull':
+        'https://fitcron.com/wp-content/uploads/2021/04/36971301-Cable-Kneeling-Rear-Delt-Row-with-rope-male_Shoulder_720.gif',
+
+    // ── Bíceps ──
+    'Curl alterno con mancuernas':
+        'https://fitcron.com/wp-content/uploads/2021/04/02851301-Dumbbell-Alternate-Biceps-Curl_Upper-Arms_720.gif',
+    'Curl bíceps':
+        'https://fitcron.com/wp-content/uploads/2021/04/02851301-Dumbbell-Alternate-Biceps-Curl_Upper-Arms_720.gif',
+    'Curl con mancuernas':
+        'https://fitcron.com/wp-content/uploads/2021/04/02851301-Dumbbell-Alternate-Biceps-Curl_Upper-Arms_720.gif',
+    'Curl ligero con mancuernas':
+        'https://fitcron.com/wp-content/uploads/2021/04/02851301-Dumbbell-Alternate-Biceps-Curl_Upper-Arms_720.gif',
+    'Curl martillo':
+        'https://fitcron.com/wp-content/uploads/2021/04/02851301-Dumbbell-Alternate-Biceps-Curl_Upper-Arms_720.gif',
+    'Curl martillo cruzado':
+        'https://fitcron.com/wp-content/uploads/2021/04/02851301-Dumbbell-Alternate-Biceps-Curl_Upper-Arms_720.gif',
+    'Curl concentrado':
+        'https://fitcron.com/wp-content/uploads/2021/04/02851301-Dumbbell-Alternate-Biceps-Curl_Upper-Arms_720.gif',
+    'Curl predicador':
+        'https://fitcron.com/wp-content/uploads/2021/04/02851301-Dumbbell-Alternate-Biceps-Curl_Upper-Arms_720.gif',
+    'Curl Zottman':
+        'https://fitcron.com/wp-content/uploads/2021/04/02851301-Dumbbell-Alternate-Biceps-Curl_Upper-Arms_720.gif',
+    'Curl tipo Zottman':
+        'https://fitcron.com/wp-content/uploads/2021/04/02851301-Dumbbell-Alternate-Biceps-Curl_Upper-Arms_720.gif',
+    'Pull · Curl martillo':
+        'https://fitcron.com/wp-content/uploads/2021/04/02851301-Dumbbell-Alternate-Biceps-Curl_Upper-Arms_720.gif',
+    'Pull · Curl barra':
+        'https://fitcron.com/wp-content/uploads/2021/04/02851301-Dumbbell-Alternate-Biceps-Curl_Upper-Arms_720.gif',
+    'Upper · Curl alterno':
+        'https://fitcron.com/wp-content/uploads/2021/04/02851301-Dumbbell-Alternate-Biceps-Curl_Upper-Arms_720.gif',
+    'Curl 21s con barra':
+        'https://fitcron.com/wp-content/uploads/2021/04/02851301-Dumbbell-Alternate-Biceps-Curl_Upper-Arms_720.gif',
+    'Curl cable barra recta':
+        'https://fitcron.com/wp-content/uploads/2021/04/02851301-Dumbbell-Alternate-Biceps-Curl_Upper-Arms_720.gif',
+    'Curl en polea baja':
+        'https://fitcron.com/wp-content/uploads/2021/04/02851301-Dumbbell-Alternate-Biceps-Curl_Upper-Arms_720.gif',
+
+    // ── Tríceps (se reutiliza Bench-Dip) ──
+    'Fondos en banco':
+        'https://fitcron.com/wp-content/uploads/2021/04/02981301-Dumbbell-Bench-Dip_Triceps_720.gif',
+
+    // ── Piernas ──
+    'Sentadilla con barra':
+        'https://fitcron.com/wp-content/uploads/2021/04/00631301-Barbell-Narrow-Stance-Squat_Thighs_720.gif',
+    'Sentadilla':
+        'https://fitcron.com/wp-content/uploads/2021/04/00631301-Barbell-Narrow-Stance-Squat_Thighs_720.gif',
+    'Sentadilla con peso corporal':
+        'https://fitcron.com/wp-content/uploads/2021/04/00631301-Barbell-Narrow-Stance-Squat_Thighs_720.gif',
+    'Sentadilla profunda':
+        'https://fitcron.com/wp-content/uploads/2021/04/00631301-Barbell-Narrow-Stance-Squat_Thighs_720.gif',
+    'Sentadilla con talones elevados':
+        'https://fitcron.com/wp-content/uploads/2021/04/00631301-Barbell-Narrow-Stance-Squat_Thighs_720.gif',
+    'Sentadilla profunda isométrica':
+        'https://fitcron.com/wp-content/uploads/2021/04/00631301-Barbell-Narrow-Stance-Squat_Thighs_720.gif',
+    'Sentadilla · 5/3/1':
+        'https://fitcron.com/wp-content/uploads/2021/04/00631301-Barbell-Narrow-Stance-Squat_Thighs_720.gif',
+    'Legs · Sentadilla con barra':
+        'https://fitcron.com/wp-content/uploads/2021/04/00631301-Barbell-Narrow-Stance-Squat_Thighs_720.gif',
+    'Lower · Sentadilla':
+        'https://fitcron.com/wp-content/uploads/2021/04/00631301-Barbell-Narrow-Stance-Squat_Thighs_720.gif',
+    'Sentadilla pistol asistida':
+        'https://fitcron.com/wp-content/uploads/2021/04/00631301-Barbell-Narrow-Stance-Squat_Thighs_720.gif',
+    'Prensa inclinada':
+        'https://fitcron.com/wp-content/uploads/2021/04/07401301-Sled-45%C2%B0-Leg-Wide-Press_Thighs_720.gif',
+    'Prensa de piernas':
+        'https://fitcron.com/wp-content/uploads/2021/04/07401301-Sled-45%C2%B0-Leg-Wide-Press_Thighs_720.gif',
+    'Legs · Prensa':
+        'https://fitcron.com/wp-content/uploads/2021/04/07401301-Sled-45%C2%B0-Leg-Wide-Press_Thighs_720.gif',
+    'Extensión de cuádriceps':
+        'https://fitcron.com/wp-content/uploads/2021/04/05851301-Lever-Leg-Extension_Thighs_720.gif',
+    'Lower · Extensión cuádriceps':
+        'https://fitcron.com/wp-content/uploads/2021/04/05851301-Lever-Leg-Extension_Thighs_720.gif',
+    'Curl femoral acostado':
+        'https://fitcron.com/wp-content/uploads/2021/04/05861301-Lever-Lying-Leg-Curl_Thighs_720.gif',
+    'Curl femoral tumbado':
+        'https://fitcron.com/wp-content/uploads/2021/04/05991301-Lever-Seated-Leg-Curl_Thighs-FIX_720.gif',
+    'Legs · Curl femoral':
+        'https://fitcron.com/wp-content/uploads/2021/04/05991301-Lever-Seated-Leg-Curl_Thighs-FIX_720.gif',
+    'Lower · Curl femoral':
+        'https://fitcron.com/wp-content/uploads/2021/04/05991301-Lever-Seated-Leg-Curl_Thighs-FIX_720.gif',
+    'Zancadas':
+        'https://fitcron.com/wp-content/uploads/2021/04/03361301-Dumbbell-Lunge_Hips_720.gif',
+    'Zancadas caminando':
+        'https://fitcron.com/wp-content/uploads/2021/04/03361301-Dumbbell-Lunge_Hips_720.gif',
+    'Zancadas con mancuernas':
+        'https://fitcron.com/wp-content/uploads/2021/04/03361301-Dumbbell-Lunge_Hips_720.gif',
+    'Zancada profunda':
+        'https://fitcron.com/wp-content/uploads/2021/04/03361301-Dumbbell-Lunge_Hips_720.gif',
+    'Zancada dinámica':
+        'https://fitcron.com/wp-content/uploads/2021/04/03361301-Dumbbell-Lunge_Hips_720.gif',
+    'Zancada con rotación':
+        'https://fitcron.com/wp-content/uploads/2021/04/03361301-Dumbbell-Lunge_Hips_720.gif',
+    'Lower · Zancada con barra':
+        'https://fitcron.com/wp-content/uploads/2021/04/03361301-Dumbbell-Lunge_Hips_720.gif',
+    'Sentadilla lateral profunda':
+        'https://fitcron.com/wp-content/uploads/2021/04/34481301-Dumbbell-Side-Lunge-VERSION-3_720.gif',
+    'Sentadilla con salto':
+        'https://fitcron.com/wp-content/uploads/2021/04/15521301-Dumbbell-Jumping-Squat_Plyometric_720.gif',
+    'Sentadilla búlgara':
+        'https://fitcron.com/wp-content/uploads/2021/04/03361301-Dumbbell-Lunge_Hips_720.gif',
+    'Sentadilla búlgara con mancuernas':
+        'https://fitcron.com/wp-content/uploads/2021/04/03361301-Dumbbell-Lunge_Hips_720.gif',
+    'Step-up con mancuernas':
+        'https://fitcron.com/wp-content/uploads/2021/04/03361301-Dumbbell-Lunge_Hips_720.gif',
+
+    // ── Glúteos ──
+    'Hip thrust':
+        'https://fitcron.com/wp-content/uploads/2021/04/29641301-Barbell-Glute-Bridge-hands-on-bar_Hips_720.gif',
+    'Hip thrust con barra':
+        'https://fitcron.com/wp-content/uploads/2021/04/29641301-Barbell-Glute-Bridge-hands-on-bar_Hips_720.gif',
+    'Legs · Hip thrust':
+        'https://fitcron.com/wp-content/uploads/2021/04/29641301-Barbell-Glute-Bridge-hands-on-bar_Hips_720.gif',
+    'Lower · Hip thrust':
+        'https://fitcron.com/wp-content/uploads/2021/04/29641301-Barbell-Glute-Bridge-hands-on-bar_Hips_720.gif',
+    'Puente bajo':
+        'https://fitcron.com/wp-content/uploads/2021/04/29641301-Barbell-Glute-Bridge-hands-on-bar_Hips_720.gif',
+    'Puente con banda':
+        'https://fitcron.com/wp-content/uploads/2021/04/29641301-Barbell-Glute-Bridge-hands-on-bar_Hips_720.gif',
+    'Puente de glúteo con banda':
+        'https://fitcron.com/wp-content/uploads/2021/04/29641301-Barbell-Glute-Bridge-hands-on-bar_Hips_720.gif',
+
+    // ── Peso muerto / hip hinge ──
+    'Peso muerto rumano':
+        'https://fitcron.com/wp-content/uploads/2021/04/00851301-Barbell-Romanian-Deadlift_Hips_720.gif',
+    'Legs · Peso muerto rumano':
+        'https://fitcron.com/wp-content/uploads/2021/04/00851301-Barbell-Romanian-Deadlift_Hips_720.gif',
+    'Lower · Peso muerto rumano':
+        'https://fitcron.com/wp-content/uploads/2021/04/00851301-Barbell-Romanian-Deadlift_Hips_720.gif',
+    'Peso muerto convencional':
+        'https://fitcron.com/wp-content/uploads/2021/04/00851301-Barbell-Romanian-Deadlift_Hips_720.gif',
+    'Peso muerto sumo':
+        'https://fitcron.com/wp-content/uploads/2021/04/00851301-Barbell-Romanian-Deadlift_Hips_720.gif',
+    'Peso muerto · 5/3/1':
+        'https://fitcron.com/wp-content/uploads/2021/04/00851301-Barbell-Romanian-Deadlift_Hips_720.gif',
+    'Good morning con barra':
+        'https://fitcron.com/wp-content/uploads/2021/04/00851301-Barbell-Romanian-Deadlift_Hips_720.gif',
+    'Buenos días con barra':
+        'https://fitcron.com/wp-content/uploads/2021/04/00851301-Barbell-Romanian-Deadlift_Hips_720.gif',
+
+    // ── Gemelos ──
+    'Elevación de gemelos':
+        'https://fitcron.com/wp-content/uploads/2021/04/04171301-Dumbbell-Standing-Calf-Raise_Calf_720.gif',
+    'Gemelo de pie en máquina':
+        'https://fitcron.com/wp-content/uploads/2021/04/04171301-Dumbbell-Standing-Calf-Raise_Calf_720.gif',
+    'Gemelo sentado':
+        'https://fitcron.com/wp-content/uploads/2021/04/04171301-Dumbbell-Standing-Calf-Raise_Calf_720.gif',
+    'Gemelo en prensa':
+        'https://fitcron.com/wp-content/uploads/2021/04/04171301-Dumbbell-Standing-Calf-Raise_Calf_720.gif',
+    'Gemelos a 1 pierna con mancuerna':
+        'https://fitcron.com/wp-content/uploads/2021/04/04171301-Dumbbell-Standing-Calf-Raise_Calf_720.gif',
+    'Legs · Gemelos de pie':
+        'https://fitcron.com/wp-content/uploads/2021/04/04171301-Dumbbell-Standing-Calf-Raise_Calf_720.gif',
+    'Lower · Gemelos':
+        'https://fitcron.com/wp-content/uploads/2021/04/04171301-Dumbbell-Standing-Calf-Raise_Calf_720.gif',
+    'Press de pantorrilla':
+        'https://fitcron.com/wp-content/uploads/2021/04/13831301-Hack-Calf-Raise_Calves_720.gif',
+
+    // ── Abdominales / core ──
+    'Crunch abdominal':
+        'https://fitcron.com/wp-content/uploads/2024/05/43321301-Crunch-Hold_Waist_720.gif',
+    'Cable crunch arrodillado':
+        'https://fitcron.com/wp-content/uploads/2024/05/43321301-Crunch-Hold_Waist_720.gif',
+    'Hollow hold':
+        'https://fitcron.com/wp-content/uploads/2024/05/12461301-Hollow-Hold_Waist_720.gif',
+    'Hollow rocks':
+        'https://fitcron.com/wp-content/uploads/2024/05/12461301-Hollow-Hold_Waist_720.gif',
+    'Bicicleta':
+        'https://fitcron.com/wp-content/uploads/2024/05/02621301-Cross-Body-Crunch_waist_720.gif',
+    'Russian twist':
+        'https://fitcron.com/wp-content/uploads/2024/05/02621301-Cross-Body-Crunch_waist_720.gif',
+    'Russian twist con disco':
+        'https://fitcron.com/wp-content/uploads/2024/05/02621301-Cross-Body-Crunch_waist_720.gif',
+    'Elevación de piernas':
+        'https://fitcron.com/wp-content/uploads/2024/05/28021301-Twisted-Leg-Raise_Waist_720.gif',
+    'Elevación de piernas colgado':
+        'https://fitcron.com/wp-content/uploads/2024/05/28021301-Twisted-Leg-Raise_Waist_720.gif',
+    'Elevación piernas colgado':
+        'https://fitcron.com/wp-content/uploads/2024/05/28021301-Twisted-Leg-Raise_Waist_720.gif',
+    'Tijeras de pierna':
+        'https://fitcron.com/wp-content/uploads/2024/05/28021301-Twisted-Leg-Raise_Waist_720.gif',
+    'Plancha frontal':
+        'https://fitcron.com/wp-content/uploads/2021/04/07151301-Side-Plank-m_Waist_720.gif',
+    'Plancha lateral':
+        'https://fitcron.com/wp-content/uploads/2021/04/07151301-Side-Plank-m_Waist_720.gif',
+    'Plancha':
+        'https://fitcron.com/wp-content/uploads/2021/04/07151301-Side-Plank-m_Waist_720.gif',
+    'Plancha frontal lastrada':
+        'https://fitcron.com/wp-content/uploads/2021/04/07151301-Side-Plank-m_Waist_720.gif',
+    'Plancha lateral con elevación pierna':
+        'https://fitcron.com/wp-content/uploads/2021/04/07151301-Side-Plank-m_Waist_720.gif',
+    'Plancha lateral con peso':
+        'https://fitcron.com/wp-content/uploads/2021/04/07151301-Side-Plank-m_Waist_720.gif',
+    'Plancha con toque de hombro':
+        'https://fitcron.com/wp-content/uploads/2021/04/07151301-Side-Plank-m_Waist_720.gif',
+    'Plancha con salto':
+        'https://fitcron.com/wp-content/uploads/2021/04/07151301-Side-Plank-m_Waist_720.gif',
+    'Upper · Plancha':
+        'https://fitcron.com/wp-content/uploads/2021/04/07151301-Side-Plank-m_Waist_720.gif',
+
+    // ── Cardio / HIIT ──
+    'Correr':
+        'https://fitcron.com/wp-content/uploads/2021/03/06841301-Run-equipment_Cardio_720.gif',
+    'Trote suave':
+        'https://fitcron.com/wp-content/uploads/2021/03/06841301-Run-equipment_Cardio_720.gif',
+    'Carrera continua':
+        'https://fitcron.com/wp-content/uploads/2021/03/06841301-Run-equipment_Cardio_720.gif',
+    'Caminar rápido':
+        'https://fitcron.com/wp-content/uploads/2021/03/06841301-Run-equipment_Cardio_720.gif',
+    'Caminar rápido en cinta':
+        'https://fitcron.com/wp-content/uploads/2021/03/06841301-Run-equipment_Cardio_720.gif',
+    'Tirada larga':
+        'https://fitcron.com/wp-content/uploads/2021/03/06841301-Run-equipment_Cardio_720.gif',
+    'Fartlek':
+        'https://fitcron.com/wp-content/uploads/2021/03/06841301-Run-equipment_Cardio_720.gif',
+    'Series 400m':
+        'https://fitcron.com/wp-content/uploads/2021/03/06841301-Run-equipment_Cardio_720.gif',
+    'Vuelta a la calma':
+        'https://fitcron.com/wp-content/uploads/2021/03/06841301-Run-equipment_Cardio_720.gif',
+    'Bike o caminar 5 min':
+        'https://fitcron.com/wp-content/uploads/2021/03/06841301-Run-equipment_Cardio_720.gif',
+    'Remo en bicicleta o cinta':
+        'https://fitcron.com/wp-content/uploads/2021/03/06841301-Run-equipment_Cardio_720.gif',
+    'Burpees':
+        'https://fitcron.com/wp-content/uploads/2021/03/11601301-Burpee_Cardio_720.gif',
+    'Mountain climbers':
+        'https://fitcron.com/wp-content/uploads/2021/03/06301301-Mountain-Climber_Cardio_720.gif',
+    'Rodillas altas':
+        'https://fitcron.com/wp-content/uploads/2021/03/31991301-Skips_Cardio_720.gif',
+    'Skipping':
+        'https://fitcron.com/wp-content/uploads/2021/03/31991301-Skips_Cardio_720.gif',
+    'Talones al glúteo':
+        'https://fitcron.com/wp-content/uploads/2021/03/31991301-Skips_Cardio_720.gif',
+    'Sprint en sitio':
+        'https://fitcron.com/wp-content/uploads/2021/03/31991301-Skips_Cardio_720.gif',
+    'Saltos de tijera':
+        'https://fitcron.com/wp-content/uploads/2021/03/30941301-Jumping-Jack-male_Cardio_720.gif',
+    'Saltos de estrella':
+        'https://fitcron.com/wp-content/uploads/2021/03/30941301-Jumping-Jack-male_Cardio_720.gif',
+    'Skaters laterales':
+        'https://fitcron.com/wp-content/uploads/2021/03/30941301-Jumping-Jack-male_Cardio_720.gif',
+  };
 
   /// Descripción corta (e.g. "3×12 · 60s descanso")
   String get summary {

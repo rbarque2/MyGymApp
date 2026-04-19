@@ -34,7 +34,7 @@ class WorkoutScreen extends StatefulWidget {
 }
 
 class _WorkoutScreenState extends State<WorkoutScreen>
-    with TickerProviderStateMixin {
+    with TickerProviderStateMixin, WidgetsBindingObserver {
   late final List<WorkoutSet> _sets;
   late final TimerService _timer;
   late final BeepService _beep;
@@ -53,6 +53,7 @@ class _WorkoutScreenState extends State<WorkoutScreen>
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _timer = TimerService();
     _beep = BeepService();
     _startTime = DateTime.now();
@@ -150,6 +151,8 @@ class _WorkoutScreenState extends State<WorkoutScreen>
     final flatIdx = _currentFlatIndex;
     if (flatIdx >= _sets.length) return;
 
+    bool advancedExercise = false;
+
     setState(() {
       _sets[flatIdx].completed = true;
 
@@ -177,17 +180,33 @@ class _WorkoutScreenState extends State<WorkoutScreen>
       } else {
         _currentExerciseIndex++;
         _currentSetInExercise = 0;
+        advancedExercise = true;
       }
     });
+
+    // Si avanzamos de ejercicio, animar el PageView al nuevo ejercicio
+    // para que al cerrar el descanso se vea el ejercicio correcto.
+    if (advancedExercise) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted || !_pageController.hasClients) return;
+        _pageController.animateToPage(
+          _currentExerciseIndex,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+        );
+      });
+    }
   }
 
   void _skipRest() {
     _timer.stop();
     setState(() {
       _showingRest = false;
-      // Sync page to current exercise after rest
-      if (_pageController.hasClients &&
-          _pageController.page?.round() != _currentExerciseIndex) {
+    });
+    // Asegurar que el PageView muestra el ejercicio actual tras cerrar descanso.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || !_pageController.hasClients) return;
+      if (_pageController.page?.round() != _currentExerciseIndex) {
         _pageController.jumpToPage(_currentExerciseIndex);
       }
     });
@@ -242,35 +261,65 @@ class _WorkoutScreenState extends State<WorkoutScreen>
   }
 
   Future<void> _confirmQuit() async {
-    final confirm = await showDialog<bool>(
+    final choice = await showDialog<_QuitChoice>(
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('¿Salir del entrenamiento?'),
         content: const Text(
-          'Se guardará tu progreso hasta ahora.',
+          '¿Qué quieres hacer con esta sesión?',
         ),
+        actionsOverflowDirection: VerticalDirection.down,
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
+            onPressed: () => Navigator.pop(ctx, _QuitChoice.cancel),
             child: const Text('Cancelar'),
           ),
+          TextButton(
+            style: TextButton.styleFrom(foregroundColor: ZarpaColors.error),
+            onPressed: () => Navigator.pop(ctx, _QuitChoice.discard),
+            child: const Text('Descartar'),
+          ),
           FilledButton(
-            style: FilledButton.styleFrom(
-              backgroundColor: ZarpaColors.error,
-            ),
-            onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Salir'),
+            onPressed: () => Navigator.pop(ctx, _QuitChoice.save),
+            child: const Text('Guardar y salir'),
           ),
         ],
       ),
     );
-    if (confirm == true) {
+    if (choice == null || choice == _QuitChoice.cancel) return;
+    if (choice == _QuitChoice.discard) {
+      await _discardWorkout();
+    } else {
       await _finishWorkout();
+    }
+  }
+
+  Future<void> _discardWorkout() async {
+    _timer.stop();
+    final id = _workoutId;
+    if (id != null) {
+      try {
+        await widget.workoutsRepository.deleteWorkout(id);
+      } catch (_) {
+        // Si falla, al menos salimos sin guardar cambios.
+      }
+    }
+    if (!mounted) return;
+    Navigator.of(context).pop();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      // Al volver del background, recomputar el tiempo real restante.
+      _timer.refresh();
+      if (mounted) setState(() {});
     }
   }
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _timer.removeListener(_onTimerTick);
     _timer.dispose();
     _pulseController.dispose();
@@ -291,17 +340,27 @@ class _WorkoutScreenState extends State<WorkoutScreen>
             // Header bar
             _buildHeader(progress),
 
-            // Main content
+            // Main content — PageView siempre montado para preservar su estado;
+            // la vista de descanso se superpone cuando está activa.
             Expanded(
-              child: _showingRest
-                  ? _buildRestView()
-                  : PageView.builder(
-                      controller: _pageController,
-                      itemCount: _exercises.length,
-                      onPageChanged: _onPageChanged,
-                      itemBuilder: (_, index) =>
-                          _buildExerciseViewForIndex(index),
+              child: Stack(
+                children: [
+                  PageView.builder(
+                    controller: _pageController,
+                    itemCount: _exercises.length,
+                    onPageChanged: _onPageChanged,
+                    itemBuilder: (_, index) =>
+                        _buildExerciseViewForIndex(index),
+                  ),
+                  if (_showingRest)
+                    Positioned.fill(
+                      child: Container(
+                        color: Colors.white,
+                        child: _buildRestView(),
+                      ),
                     ),
+                ],
+              ),
             ),
           ],
         ),
@@ -443,107 +502,88 @@ class _WorkoutScreenState extends State<WorkoutScreen>
 
     return Column(
       children: [
-        const Spacer(flex: 2),
-
-        // Exercise GIF/photo or fallback emoji
-        if (ex.photoUrl != null && ex.photoUrl!.isNotEmpty)
-          ClipRRect(
-            borderRadius: BorderRadius.circular(12),
-            child: Image.network(
-              ex.photoUrl!,
-              height: 150,
-              width: 150,
-              fit: BoxFit.cover,
-              errorBuilder: (_, __, ___) =>
-                  Text(_categoryIcon(ex), style: const TextStyle(fontSize: 64)),
-            ),
-          )
-        else
-          Text(_categoryIcon(ex), style: const TextStyle(fontSize: 64)),
-        const SizedBox(height: 16),
-
-        // Exercise name
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 32),
-          child: Text(
-            ex.exerciseName,
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.w800,
-              letterSpacing: -0.5,
-            ),
-          ),
-        ),
-        const SizedBox(height: 8),
-
-        const SizedBox(height: 24),
-
-        // Set dots
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: List.generate(totalSets, (i) {
-            final isCompleted = _sets[flatStart + i].completed;
-            final isCurrent = i == displaySet;
-            return Container(
-              width: isCurrent ? 14 : 10,
-              height: isCurrent ? 14 : 10,
-              margin: const EdgeInsets.symmetric(horizontal: 4),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: isCompleted
-                    ? ZarpaColors.primary
-                    : isCurrent
-                        ? ZarpaColors.primary.withOpacity(0.4)
-                        : ZarpaColors.surface2,
-                border: isCurrent
-                    ? Border.all(color: ZarpaColors.primary, width: 2)
-                    : null,
-              ),
-            );
-          }),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          'Serie ${displaySet + 1} de $totalSets',
-          style: const TextStyle(
-            fontSize: 12,
-            color: ZarpaColors.muted,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        const SizedBox(height: 32),
-
-        // Giant metric display — editable reps
-        ..._buildEditableMetricDisplay(currentSet, mt, exerciseIndex),
-
-        // Swipe hint
-        const Spacer(flex: 1),
-        if (_exercises.length > 1)
-          Padding(
-            padding: const EdgeInsets.only(bottom: 8),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+        // Cuerpo scrollable: cabecera + pickers + lista de series
+        Expanded(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.only(top: 16, bottom: 8),
+            child: Column(
               children: [
-                if (exerciseIndex > 0)
-                  const Icon(Icons.chevron_left,
-                      size: 16, color: ZarpaColors.mutedLight),
+                // Exercise GIF/photo or fallback emoji
+                if (ex.photoUrl != null && ex.photoUrl!.isNotEmpty)
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: Image.network(
+                      ex.photoUrl!,
+                      height: 130,
+                      width: 130,
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, __, ___) => Text(_categoryIcon(ex),
+                          style: const TextStyle(fontSize: 56)),
+                    ),
+                  )
+                else
+                  Text(_categoryIcon(ex),
+                      style: const TextStyle(fontSize: 56)),
+                const SizedBox(height: 12),
+
+                // Exercise name
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 32),
+                  child: Text(
+                    ex.exerciseName,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: -0.5,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 6),
                 Text(
-                  '${exerciseIndex + 1} / ${_exercises.length}',
+                  'Serie ${displaySet + 1} de $totalSets',
                   style: const TextStyle(
-                    fontSize: 11,
-                    color: ZarpaColors.mutedLight,
+                    fontSize: 12,
+                    color: ZarpaColors.muted,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                if (exerciseIndex < _exercises.length - 1)
-                  const Icon(Icons.chevron_right,
-                      size: 16, color: ZarpaColors.mutedLight),
+                const SizedBox(height: 20),
+
+                // Giant metric display — editable reps
+                ..._buildEditableMetricDisplay(currentSet, mt, exerciseIndex),
+
+                const SizedBox(height: 20),
+                // Lista vertical de todas las series del ejercicio
+                _buildAllSetsList(exerciseIndex, flatStart, displaySet),
+
+                if (_exercises.length > 1) ...[
+                  const SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      if (exerciseIndex > 0)
+                        const Icon(Icons.chevron_left,
+                            size: 16, color: ZarpaColors.mutedLight),
+                      Text(
+                        '${exerciseIndex + 1} / ${_exercises.length}',
+                        style: const TextStyle(
+                          fontSize: 11,
+                          color: ZarpaColors.mutedLight,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      if (exerciseIndex < _exercises.length - 1)
+                        const Icon(Icons.chevron_right,
+                            size: 16, color: ZarpaColors.mutedLight),
+                    ],
+                  ),
+                ],
+                const SizedBox(height: 12),
               ],
             ),
           ),
-
-        const Spacer(flex: 1),
+        ),
 
         // Complete button
         Padding(
@@ -596,6 +636,40 @@ class _WorkoutScreenState extends State<WorkoutScreen>
           ),
         ),
       ],
+    );
+  }
+
+  Widget _restAdjustButton({
+    required String label,
+    required IconData icon,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+        decoration: BoxDecoration(
+          color: ZarpaColors.surface,
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: ZarpaColors.border),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 16, color: ZarpaColors.foreground),
+            const SizedBox(width: 6),
+            Text(
+              label,
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w700,
+                color: ZarpaColors.foreground,
+                letterSpacing: 0.5,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -907,6 +981,191 @@ class _WorkoutScreenState extends State<WorkoutScreen>
     ];
   }
 
+  Widget _buildAllSetsList(int exerciseIndex, int flatStart, int displaySet) {
+    final totalSets = _exercises[exerciseIndex].sets;
+    final isCurrentExercise = exerciseIndex == _currentExerciseIndex;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(bottom: 8, left: 4, right: 4),
+            child: Row(
+              children: const [
+                Text(
+                  'SERIES',
+                  style: TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w800,
+                    color: ZarpaColors.muted,
+                    letterSpacing: 1.5,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          ...List.generate(totalSets, (i) {
+            final s = _sets[flatStart + i];
+            final isCompleted = s.completed;
+            final isCurrent = isCurrentExercise && i == displaySet;
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: _buildSetRow(
+                index: i,
+                set: s,
+                isCompleted: isCompleted,
+                isCurrent: isCurrent,
+                onTap: isCurrentExercise && !isCompleted
+                    ? () => setState(() => _currentSetInExercise = i)
+                    : null,
+                onCheckTap: isCurrentExercise
+                    ? () => _toggleSetCompletion(flatStart + i)
+                    : null,
+              ),
+            );
+          }),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSetRow({
+    required int index,
+    required WorkoutSet set,
+    required bool isCompleted,
+    required bool isCurrent,
+    required VoidCallback? onTap,
+    required VoidCallback? onCheckTap,
+  }) {
+    final bg = isCompleted
+        ? const Color(0xFFDFFFDB) // verde claro estilo Hevy
+        : isCurrent
+            ? ZarpaColors.primary.withOpacity(0.08)
+            : ZarpaColors.surface;
+    final border = isCurrent && !isCompleted
+        ? ZarpaColors.primary
+        : ZarpaColors.border;
+
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        decoration: BoxDecoration(
+          color: bg,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: border),
+        ),
+        child: Row(
+          children: [
+            // Número de serie
+            Container(
+              width: 28,
+              height: 28,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: isCompleted
+                    ? const Color(0xFF2E7D32)
+                    : ZarpaColors.surface2,
+              ),
+              child: Text(
+                '${index + 1}',
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w800,
+                  color: isCompleted ? Colors.white : ZarpaColors.foreground,
+                ),
+              ),
+            ),
+            const SizedBox(width: 14),
+            // Resumen kg × reps
+            Expanded(
+              child: Text(
+                _setSummary(set),
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: isCompleted
+                      ? const Color(0xFF1B5E20)
+                      : ZarpaColors.foreground,
+                ),
+              ),
+            ),
+            // Check
+            GestureDetector(
+              onTap: onCheckTap,
+              behavior: HitTestBehavior.opaque,
+              child: Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  color: isCompleted
+                      ? const Color(0xFF2E7D32)
+                      : Colors.transparent,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: isCompleted
+                        ? const Color(0xFF2E7D32)
+                        : ZarpaColors.border,
+                    width: 1.5,
+                  ),
+                ),
+                child: Icon(
+                  Icons.check,
+                  size: 20,
+                  color: isCompleted ? Colors.white : ZarpaColors.mutedLight,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _toggleSetCompletion(int flatIdx) {
+    if (flatIdx < 0 || flatIdx >= _sets.length) return;
+    final set = _sets[flatIdx];
+    if (set.completed) {
+      // Desmarcar no reinicia el timer ni cambia índice — sólo cambia estado.
+      setState(() => set.completed = false);
+      return;
+    }
+    // Marcar esta serie como completada. Si es la actual, reutilizar el flujo
+    // completo (que inicia descanso y avanza). Si no, sólo marcar.
+    if (flatIdx == _currentFlatIndex) {
+      _completeCurrentSet();
+    } else {
+      setState(() => set.completed = true);
+    }
+  }
+
+  String _setSummary(WorkoutSet s) {
+    String fmtKg(double w) =>
+        w == w.roundToDouble() ? '${w.toInt()}' : w.toStringAsFixed(1);
+    switch (s.measurementType) {
+      case MeasurementType.weight:
+        final w = s.weightKg ?? 0;
+        return w > 0 ? '${s.reps}×${fmtKg(w)}kg' : '${s.reps} reps';
+      case MeasurementType.reps:
+        final w = s.weightKg ?? 0;
+        return w > 0 ? '${s.reps}×${fmtKg(w)}kg' : '${s.reps} reps';
+      case MeasurementType.time:
+        final secs = s.durationSeconds ?? 0;
+        final m = secs ~/ 60;
+        final sc = secs % 60;
+        return m > 0
+            ? '$m:${sc.toString().padLeft(2, '0')}'
+            : '${secs}s';
+      case MeasurementType.distance:
+        final m = s.distanceMeters ?? 0;
+        return m >= 1000
+            ? '${(m / 1000).toStringAsFixed(1)}km'
+            : '${m.toStringAsFixed(0)}m';
+    }
+  }
+
   int _flatIndexForExercise(int exerciseIndex) {
     int idx = 0;
     for (int i = 0; i < exerciseIndex; i++) {
@@ -1008,6 +1267,26 @@ class _WorkoutScreenState extends State<WorkoutScreen>
           ),
         ),
 
+        const SizedBox(height: 16),
+
+        // ± 10s controls
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            _restAdjustButton(
+              label: '-10s',
+              icon: Icons.remove,
+              onTap: () => _timer.adjustSeconds(-10),
+            ),
+            const SizedBox(width: 12),
+            _restAdjustButton(
+              label: '+10s',
+              icon: Icons.add,
+              onTap: () => _timer.adjustSeconds(10),
+            ),
+          ],
+        ),
+
         const SizedBox(height: 24),
 
         // Next up info
@@ -1091,3 +1370,5 @@ class _WorkoutScreenState extends State<WorkoutScreen>
     );
   }
 }
+
+enum _QuitChoice { cancel, discard, save }

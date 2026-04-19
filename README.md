@@ -25,3 +25,16 @@ App para gestionar entrenamientos de gimnasio. Organiza tus ejercicios, crea rut
 2. Ejecuta `flutterfire configure` para vincular Firebase
 3. `flutter pub get`
 4. `flutter run`
+
+## Changelog
+
+> Registro de actualizaciones. Cada día con cambios se publica como una versión nueva.
+
+### 2026-04-19
+
+- **Timer de descanso en segundo plano**: el temporizador ahora usa un timestamp de fin como fuente de verdad; al cambiar de app y volver, el tiempo restante es el correcto.
+- **Saltar descanso ya no vuelve al primer ejercicio**: el PageView se mantiene montado y la vista de descanso se superpone; además, al completar un ejercicio se sincroniza la página automáticamente.
+- **Controles ±10s en descanso**: botones para sumar o restar 10 segundos al timer de descanso (pulsables varias veces para saltar 20s, 30s, etc.).
+- **Cerrar rutina con opción de descartar**: el diálogo de salida ofrece tres opciones — Cancelar, Descartar (elimina la sesión del histórico) y Guardar y salir.
+- **Lista de series estilo Hevy**: debajo de los pickers aparece una lista vertical apilada con cada serie (nº de serie, kg × reps, check cuadrado). Se puede tocar una fila para editarla o el check para marcarla como completada.
+- **Vista del ejercicio scrollable**: la ficha (foto, nombre, pickers, lista de series) ahora scrollea; el botón "SERIE COMPLETADA" queda fijo abajo.
