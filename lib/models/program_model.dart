@@ -389,6 +389,138 @@ class ProgramExercise {
         'https://fitcron.com/wp-content/uploads/2021/03/30941301-Jumping-Jack-male_Cardio_720.gif',
     'Skaters laterales':
         'https://fitcron.com/wp-content/uploads/2021/03/30941301-Jumping-Jack-male_Cardio_720.gif',
+
+    // ── Tríceps (liftmanual) ──
+    'Press francés':
+        'https://liftmanual.com/wp-content/uploads/2023/04/barbell-lying-triceps-extension.jpg',
+    'Press francés acostado':
+        'https://liftmanual.com/wp-content/uploads/2023/04/barbell-lying-triceps-extension.jpg',
+    'Press francés con barra Z':
+        'https://liftmanual.com/wp-content/uploads/2023/04/barbell-lying-triceps-extension.jpg',
+    'Push · Press francés':
+        'https://liftmanual.com/wp-content/uploads/2023/04/barbell-lying-triceps-extension.jpg',
+    'Upper · Press francés':
+        'https://liftmanual.com/wp-content/uploads/2023/04/barbell-lying-triceps-extension.jpg',
+    'Press cerrado banca':
+        'https://liftmanual.com/wp-content/uploads/2023/04/barbell-close-grip-bench-press.jpg',
+    'Press cerrado con barra':
+        'https://liftmanual.com/wp-content/uploads/2023/04/barbell-close-grip-bench-press.jpg',
+    'Extensión en polea':
+        'https://liftmanual.com/wp-content/uploads/2023/04/cable-pushdown.jpg',
+    'Extensión en polea con cuerda':
+        'https://liftmanual.com/wp-content/uploads/2023/04/cable-pushdown.jpg',
+    'Extensión tríceps polea':
+        'https://liftmanual.com/wp-content/uploads/2023/04/cable-pushdown.jpg',
+    'Extensión polea cuerda':
+        'https://liftmanual.com/wp-content/uploads/2023/04/cable-pushdown.jpg',
+    'Extensión ligera tríceps':
+        'https://liftmanual.com/wp-content/uploads/2023/04/cable-pushdown.jpg',
+    'Push · Extensión polea':
+        'https://liftmanual.com/wp-content/uploads/2023/04/cable-pushdown.jpg',
+    'Extensión sobre la cabeza':
+        'https://liftmanual.com/wp-content/uploads/2023/04/dumbbell-overhead-triceps-extension.jpg',
+    'Patada de tríceps':
+        'https://liftmanual.com/wp-content/uploads/2023/04/dumbbell-kickback.jpg',
+
+    // ── Bíceps / antebrazo (liftmanual) ──
+    'Curl con barra':
+        'https://liftmanual.com/wp-content/uploads/2023/04/barbell-curl.jpg',
+    'Curl de muñeca con barra':
+        'https://liftmanual.com/wp-content/uploads/2023/04/barbell-wrist-curl.jpg',
+    'Curl de muñeca inverso':
+        'https://liftmanual.com/wp-content/uploads/2023/04/barbell-reverse-wrist-curl.jpg',
+
+    // ── Hombros (liftmanual) ──
+    'Press militar con barra':
+        'https://liftmanual.com/wp-content/uploads/2023/04/dumbbell-standing-overhead-press.jpg',
+    'Press militar mancuernas':
+        'https://liftmanual.com/wp-content/uploads/2023/04/dumbbell-standing-overhead-press.jpg',
+    'Press militar · 5/3/1':
+        'https://liftmanual.com/wp-content/uploads/2023/04/dumbbell-standing-overhead-press.jpg',
+    'Push · Press militar':
+        'https://liftmanual.com/wp-content/uploads/2023/04/dumbbell-standing-overhead-press.jpg',
+    'Upper · Press militar mancuernas':
+        'https://liftmanual.com/wp-content/uploads/2023/04/dumbbell-standing-overhead-press.jpg',
+    'Press Arnold':
+        'https://liftmanual.com/wp-content/uploads/2023/04/kettlebell-arnold-press.jpg',
+    'Band pull-aparts':
+        'https://liftmanual.com/wp-content/uploads/2023/04/resistance-band-pull-apart.jpg',
+
+    // ── Glúteos / cadera (liftmanual) ──
+    'Patada de glúteo en polea':
+        'https://liftmanual.com/wp-content/uploads/2023/04/cable-donkey-kickback.jpg',
+    'Patada de glúteo polea':
+        'https://liftmanual.com/wp-content/uploads/2023/04/cable-donkey-kickback.jpg',
+    'Abducción en máquina':
+        'https://liftmanual.com/wp-content/uploads/2023/04/lever-seated-hip-abduction.jpg',
+    'Abducción de cadera':
+        'https://liftmanual.com/wp-content/uploads/2023/04/side-hip-abduction.jpg',
+
+    // ── Core / bodyweight (liftmanual) ──
+    'Hiperextensión':
+        'https://liftmanual.com/wp-content/uploads/2023/04/hyperextension.jpg',
+    'Superman':
+        'https://liftmanual.com/wp-content/uploads/2023/04/superman-w.jpg',
+    'Bird dog':
+        'https://liftmanual.com/wp-content/uploads/2023/04/bird-dog.jpg',
+    'Dead bug':
+        'https://liftmanual.com/wp-content/uploads/2023/04/dead-bug.jpg',
+    'Plancha invertida':
+        'https://liftmanual.com/wp-content/uploads/2023/04/reverse-plank-with-leg-lift.jpg',
+    'Remo invertido':
+        'https://liftmanual.com/wp-content/uploads/2023/04/resistance-band-inverted-row.jpg',
+    'L-sit en paralelas':
+        'https://liftmanual.com/wp-content/uploads/2023/04/l-sit.jpg',
+    'Dragon flag':
+        'https://liftmanual.com/wp-content/uploads/2023/04/negative-dragon-flag.jpg',
+    'Pallof press en polea':
+        'https://liftmanual.com/wp-content/uploads/2023/04/cable-vertical-pallof-press.jpg',
+    'Dead hang':
+        'https://liftmanual.com/wp-content/uploads/2023/04/dead-hang-stretch.jpg',
+    'Farmer carry':
+        'https://liftmanual.com/wp-content/uploads/2023/04/dumbbell-farmers-carry.jpg',
+    'Retracción escapular':
+        'https://liftmanual.com/wp-content/uploads/2023/04/scapula-retraction-protraction.jpg',
+
+    // ── Movilidad / estiramientos (liftmanual) ──
+    'Kneeling Hip Flexor Stretch':
+        'https://liftmanual.com/wp-content/uploads/2023/04/kneeling-hip-flexor.jpg',
+    'Cat-cow':
+        'https://liftmanual.com/wp-content/uploads/2023/04/cat-stretch.jpg',
+    'Chin tucks':
+        'https://liftmanual.com/wp-content/uploads/2023/04/seated-chin-tuck.jpg',
+    'Estiramiento cuádriceps':
+        'https://liftmanual.com/wp-content/uploads/2023/04/quadriceps-stretch.jpg',
+    'Estiramiento cuádriceps de pie':
+        'https://liftmanual.com/wp-content/uploads/2023/04/quadriceps-stretch.jpg',
+    'Estiramiento isquios':
+        'https://liftmanual.com/wp-content/uploads/2023/04/standing-hamstring-stretch.jpg',
+    'Estiramiento isquiotibiales':
+        'https://liftmanual.com/wp-content/uploads/2023/04/standing-hamstring-stretch.jpg',
+    'Estiramiento gemelos':
+        'https://liftmanual.com/wp-content/uploads/2023/04/calves-stretch.jpg',
+    'Estiramiento gemelos en pared':
+        'https://liftmanual.com/wp-content/uploads/2023/04/calves-stretch.jpg',
+
+    // ── Yoga / posturas (liftmanual) ──
+    'Cobra':
+        'https://liftmanual.com/wp-content/uploads/2023/04/cobra-yoga-pose.jpg',
+    'Child pose':
+        'https://liftmanual.com/wp-content/uploads/2023/04/child-pose.jpg',
+    'Pose del niño feliz':
+        'https://liftmanual.com/wp-content/uploads/2023/04/happy-baby-pose.jpg',
+    'Piernas en pared':
+        'https://liftmanual.com/wp-content/uploads/2023/04/legs-up-wall.jpg',
+    'Saludo al sol A':
+        'https://liftmanual.com/wp-content/uploads/2023/04/sun-salutation.jpg',
+    'Triángulo':
+        'https://liftmanual.com/wp-content/uploads/2023/04/revolved-triangle-pose.jpg',
+    'Guerrero II':
+        'https://liftmanual.com/wp-content/uploads/2023/04/warrior-pose.jpg',
+    'Paloma':
+        'https://liftmanual.com/wp-content/uploads/2023/04/double-pigeon-pose.jpg',
+    'Perro boca abajo':
+        'https://liftmanual.com/wp-content/uploads/2023/04/downward-facing-dog-adho-mukha-svanasana.jpg',
   };
 
   /// Descripción corta (e.g. "3×12 · 60s descanso")
@@ -666,7 +798,7 @@ class ProgramModel {
 }
 
 /// Catálogo MVP de programas con ejercicios.
-const programsCatalog = <ProgramModel>[
+final programsCatalog = <ProgramModel>[
   // ── Sesiones rápidas ──
   ProgramModel(
     id: 'rapido_pecho',
@@ -704,6 +836,7 @@ const programsCatalog = <ProgramModel>[
     emoji: '🦵',
     equipment: 'Gym',
     colorIndex: 1,
+    imageUrl: 'https://images.unsplash.com/photo-1558611848-73f7eb4001a1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w5MjkzNDR8MHwxfHNlYXJjaHwxfHxiYXJiZWxsJTIwc3F1YXQlMjBneW18ZW58MHwwfHx8MTc3NjYwNjI5MHww&ixlib=rb-4.1.0&q=80&w=1080',
     exercises: [
       ProgramExercise(order: 1, name: 'Sentadilla con barra', sets: 4, reps: 10, weightKg: 80, restSeconds: 45, measurementType: MeasurementType.weight, gifUrl: 'https://fitcron.com/wp-content/uploads/2021/04/00631301-Barbell-Narrow-Stance-Squat_Thighs_720.gif', notes: 'Barra alta, profundidad paralela'),
       ProgramExercise(order: 2, name: 'Prensa inclinada', sets: 4, reps: 12, restSeconds: 45, measurementType: MeasurementType.reps, gifUrl: 'https://fitcron.com/wp-content/uploads/2021/04/07401301-Sled-45%C2%B0-Leg-Wide-Press_Thighs_720.gif', notes: 'Pies separados al ancho de hombros'),
@@ -726,6 +859,7 @@ const programsCatalog = <ProgramModel>[
     emoji: '🏋️',
     equipment: 'Gym',
     colorIndex: 2,
+    imageUrl: 'https://images.unsplash.com/photo-1677165733273-dcc3724c00e8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w5MjkzNDR8MHwxfHNlYXJjaHwxfHxwdWxsJTIwdXAlMjBiYXIlMjBiYWNrJTIwd29ya291dHxlbnwwfDB8fHwxNzc2NjA2MjkxfDA&ixlib=rb-4.1.0&q=80&w=1080',
     exercises: [
       ProgramExercise(order: 1, name: 'Jalón al pecho', sets: 4, reps: 12, restSeconds: 45, measurementType: MeasurementType.reps, gifUrl: 'https://fitcron.com/wp-content/uploads/2021/04/01981301-Cable-Pulldown_Back_720.gif', notes: 'Agarre prono ancho'),
       ProgramExercise(order: 2, name: 'Remo con barra', sets: 4, reps: 10, weightKg: 50, restSeconds: 45, measurementType: MeasurementType.weight, gifUrl: 'https://fitcron.com/wp-content/uploads/2021/04/00491301-Barbell-Incline-Row_Back_720.gif', notes: 'Espalda a 45°, tirar al ombligo'),
@@ -747,6 +881,7 @@ const programsCatalog = <ProgramModel>[
     emoji: '🔥',
     equipment: 'Sin material',
     colorIndex: 3,
+    imageUrl: 'https://images.unsplash.com/photo-1717821681365-36b0da044a75?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w5MjkzNDR8MHwxfHNlYXJjaHwxfHxwbGFuayUyMGFicyUyMHdvcmtvdXR8ZW58MHwwfHx8MTc3NjYwNjI5Mnww&ixlib=rb-4.1.0&q=80&w=1080',
     exercises: [
       ProgramExercise(order: 1, name: 'Plancha frontal', sets: 3, durationSeconds: 30, restSeconds: 45, measurementType: MeasurementType.time, gifUrl: 'https://fitcron.com/wp-content/uploads/2021/04/07151301-Side-Plank-m_Waist_720.gif', notes: 'Cuerpo recto, no subir cadera'),
       ProgramExercise(order: 2, name: 'Crunch abdominal', sets: 3, reps: 20, restSeconds: 45, measurementType: MeasurementType.reps, gifUrl: 'https://fitcron.com/wp-content/uploads/2024/05/43321301-Crunch-Hold_Waist_720.gif'),
@@ -768,6 +903,7 @@ const programsCatalog = <ProgramModel>[
     emoji: '💪',
     equipment: 'Gym',
     colorIndex: 1,
+    imageUrl: 'https://images.unsplash.com/photo-1585342565162-3704ff9b221d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w5MjkzNDR8MHwxfHNlYXJjaHwxfHxiaWNlcHMlMjBjdXJsJTIwZHVtYmJlbGx8ZW58MHwwfHx8MTc3NjYwNjI5M3ww&ixlib=rb-4.1.0&q=80&w=1080',
     exercises: [
       ProgramExercise(order: 1, name: 'Curl con barra', sets: 4, reps: 10, weightKg: 30, restSeconds: 60, measurementType: MeasurementType.weight, gifUrl: 'https://fitcron.com/wp-content/uploads/2021/04/00271301-Barbell-Bent-Over-Row_Back-FIX_720.gif', notes: 'Codos pegados al cuerpo'),
       ProgramExercise(order: 2, name: 'Curl alterno con mancuernas', sets: 3, reps: 12, weightKg: 12, restSeconds: 60, measurementType: MeasurementType.weight, gifUrl: 'https://fitcron.com/wp-content/uploads/2021/04/02851301-Dumbbell-Alternate-Biceps-Curl_Upper-Arms_720.gif', notes: 'Sin balanceo'),
@@ -789,6 +925,7 @@ const programsCatalog = <ProgramModel>[
     emoji: '🦾',
     equipment: 'Gym',
     colorIndex: 2,
+    imageUrl: 'https://images.unsplash.com/photo-1598268030450-7a476f602bf6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w5MjkzNDR8MHwxfHNlYXJjaHwxfHx0cmljZXBzJTIwZ3ltfGVufDB8MHx8fDE3NzY2MDcyMDN8MA&ixlib=rb-4.1.0&q=80&w=1080',
     exercises: [
       ProgramExercise(order: 1, name: 'Press francés con barra Z', sets: 4, reps: 10, weightKg: 25, restSeconds: 60, measurementType: MeasurementType.weight, notes: 'Codos fijos, bajar a la frente'),
       ProgramExercise(order: 2, name: 'Extensión en polea con cuerda', sets: 3, reps: 12, restSeconds: 60, measurementType: MeasurementType.reps, notes: 'Separar cuerda al final'),
@@ -810,6 +947,7 @@ const programsCatalog = <ProgramModel>[
     emoji: '🏔️',
     equipment: 'Gym',
     colorIndex: 0,
+    imageUrl: 'https://images.unsplash.com/photo-1548933122-5fedf3661c57?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w5MjkzNDR8MHwxfHNlYXJjaHwxfHxzaG91bGRlciUyMHByZXNzJTIwZ3ltfGVufDB8MHx8fDE3NzY2MDYyOTV8MA&ixlib=rb-4.1.0&q=80&w=1080',
     exercises: [
       ProgramExercise(order: 1, name: 'Press militar con barra', sets: 4, reps: 8, weightKg: 40, restSeconds: 60, measurementType: MeasurementType.weight, notes: 'De pie, glúteos apretados'),
       ProgramExercise(order: 2, name: 'Press Arnold', sets: 3, reps: 10, weightKg: 14, restSeconds: 60, measurementType: MeasurementType.weight, notes: 'Rotación al subir'),
@@ -832,6 +970,7 @@ const programsCatalog = <ProgramModel>[
     emoji: '🍑',
     equipment: 'Gym',
     colorIndex: 3,
+    imageUrl: 'https://images.unsplash.com/photo-1767404890803-228d5390fcd4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w5MjkzNDR8MHwxfHNlYXJjaHwxfHxnbHV0ZSUyMHdvcmtvdXR8ZW58MHwwfHx8MTc3NjYwNjM1M3ww&ixlib=rb-4.1.0&q=80&w=1080',
     exercises: [
       ProgramExercise(order: 1, name: 'Hip thrust con barra', sets: 4, reps: 10, weightKg: 70, restSeconds: 60, measurementType: MeasurementType.weight, gifUrl: 'https://fitcron.com/wp-content/uploads/2021/04/29641301-Barbell-Glute-Bridge-hands-on-bar_Hips_720.gif', notes: 'Bloquear cadera arriba'),
       ProgramExercise(order: 2, name: 'Sentadilla búlgara', sets: 3, reps: 12, weightKg: 14, restSeconds: 60, measurementType: MeasurementType.weight, notes: '12 por pierna, pie atrás en banco'),
@@ -853,6 +992,7 @@ const programsCatalog = <ProgramModel>[
     emoji: '🔥',
     equipment: 'Sin material',
     colorIndex: 4,
+    imageUrl: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w5MjkzNDR8MHwxfHNlYXJjaHwxfHxhYnMlMjB3b3Jrb3V0fGVufDB8MHx8fDE3NzY2MDYzNTR8MA&ixlib=rb-4.1.0&q=80&w=1080',
     exercises: [
       ProgramExercise(order: 1, name: 'Crunch abdominal', sets: 3, reps: 20, restSeconds: 30, measurementType: MeasurementType.reps, gifUrl: 'https://fitcron.com/wp-content/uploads/2024/05/43321301-Crunch-Hold_Waist_720.gif'),
       ProgramExercise(order: 2, name: 'Elevación de piernas colgado', sets: 3, reps: 12, restSeconds: 45, measurementType: MeasurementType.reps, notes: 'O en silla romana'),
@@ -875,6 +1015,7 @@ const programsCatalog = <ProgramModel>[
     emoji: '💪',
     equipment: 'Gym',
     colorIndex: 5,
+    imageUrl: 'https://images.unsplash.com/photo-1759300642211-4e81a270a358?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w5MjkzNDR8MHwxfHNlYXJjaHwxfHxhcm0lMjB3b3Jrb3V0JTIwZHVtYmJlbGx8ZW58MHwwfHx8MTc3NjYwNjI5OHww&ixlib=rb-4.1.0&q=80&w=1080',
     exercises: [
       ProgramExercise(order: 1, name: 'Curl con barra', sets: 4, reps: 10, weightKg: 30, restSeconds: 30, measurementType: MeasurementType.weight, notes: 'Superserie con press francés'),
       ProgramExercise(order: 2, name: 'Press francés', sets: 4, reps: 10, weightKg: 25, restSeconds: 60, measurementType: MeasurementType.weight),
@@ -896,6 +1037,7 @@ const programsCatalog = <ProgramModel>[
     emoji: '🦵',
     equipment: 'Gym',
     colorIndex: 0,
+    imageUrl: 'https://images.unsplash.com/photo-1641785041080-54b0413a2aa9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w5MjkzNDR8MHwxfHNlYXJjaHwxfHxjYWxmJTIwcmFpc2UlMjBneW18ZW58MHwwfHx8MTc3NjYwNjMwMHww&ixlib=rb-4.1.0&q=80&w=1080',
     exercises: [
       ProgramExercise(order: 1, name: 'Gemelo de pie en máquina', sets: 4, reps: 15, restSeconds: 45, measurementType: MeasurementType.reps, gifUrl: 'https://fitcron.com/wp-content/uploads/2021/04/04171301-Dumbbell-Standing-Calf-Raise_Calf_720.gif', notes: 'Pausa arriba 2 seg'),
       ProgramExercise(order: 2, name: 'Gemelo sentado', sets: 4, reps: 20, restSeconds: 45, measurementType: MeasurementType.reps, notes: 'Trabaja sóleo'),
@@ -915,6 +1057,7 @@ const programsCatalog = <ProgramModel>[
     emoji: '✊',
     equipment: 'Gym',
     colorIndex: 2,
+    imageUrl: 'https://images.unsplash.com/photo-1688521010840-a3e27aba7311?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w5MjkzNDR8MHwxfHNlYXJjaHwxfHxmb3JlYXJtJTIwZ3JpcCUyMHRyYWluaW5nfGVufDB8MHx8fDE3NzY2MDYzMDF8MA&ixlib=rb-4.1.0&q=80&w=1080',
     exercises: [
       ProgramExercise(order: 1, name: 'Curl de muñeca con barra', sets: 4, reps: 15, weightKg: 15, restSeconds: 45, measurementType: MeasurementType.weight, notes: 'Antebrazos sobre banco'),
       ProgramExercise(order: 2, name: 'Curl de muñeca inverso', sets: 3, reps: 15, weightKg: 10, restSeconds: 45, measurementType: MeasurementType.weight, notes: 'Palmas hacia abajo'),
@@ -935,6 +1078,7 @@ const programsCatalog = <ProgramModel>[
     emoji: '🛡️',
     equipment: 'Sin material',
     colorIndex: 1,
+    imageUrl: 'https://images.unsplash.com/photo-1758875569423-e9d43652b0a9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w5MjkzNDR8MHwxfHNlYXJjaHwxfHxiYWNrJTIwZXh0ZW5zaW9uJTIwZ3ltfGVufDB8MHx8fDE3NzY2MDYzMDJ8MA&ixlib=rb-4.1.0&q=80&w=1080',
     exercises: [
       ProgramExercise(order: 1, name: 'Hiperextensión', sets: 3, reps: 15, restSeconds: 45, measurementType: MeasurementType.reps, notes: 'Banco romano o GHD'),
       ProgramExercise(order: 2, name: 'Superman', sets: 3, reps: 15, restSeconds: 45, measurementType: MeasurementType.reps, notes: 'Brazos y piernas elevados'),
@@ -956,6 +1100,7 @@ const programsCatalog = <ProgramModel>[
     emoji: '🏠',
     equipment: 'Sin material',
     colorIndex: 5,
+    imageUrl: 'https://images.unsplash.com/photo-1714646442274-18620f280bd0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w5MjkzNDR8MHwxfHNlYXJjaHwxfHxob21lJTIwd29ya291dCUyMGJvZHklMjB3ZWlnaHR8ZW58MHwwfHx8MTc3NjYwNjMwM3ww&ixlib=rb-4.1.0&q=80&w=1080',
     exercises: [
       ProgramExercise(order: 1, name: 'Sentadilla', sets: 3, reps: 15, restSeconds: 30, measurementType: MeasurementType.reps),
       ProgramExercise(order: 2, name: 'Flexiones', sets: 3, reps: 12, restSeconds: 30, measurementType: MeasurementType.reps, gifUrl: 'https://fitcron.com/wp-content/uploads/2021/03/06621301-Push-up-m_Chest-FIX_720.gif'),
@@ -978,6 +1123,7 @@ const programsCatalog = <ProgramModel>[
     emoji: '⚡',
     equipment: 'Sin material',
     colorIndex: 4,
+    imageUrl: 'https://images.unsplash.com/photo-1434596922112-19c563067271?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w5MjkzNDR8MHwxfHNlYXJjaHwxfHxoaWl0JTIwd29ya291dHxlbnwwfDB8fHwxNzc2NjA2MzA1fDA&ixlib=rb-4.1.0&q=80&w=1080',
     exercises: [
       ProgramExercise(order: 1, name: 'Burpees', sets: 3, durationSeconds: 30, restSeconds: 45, measurementType: MeasurementType.time, gifUrl: 'https://fitcron.com/wp-content/uploads/2021/03/11601301-Burpee_Cardio_720.gif', notes: '30s trabajo / 15s descanso'),
       ProgramExercise(order: 2, name: 'Mountain climbers', sets: 3, durationSeconds: 30, restSeconds: 45, measurementType: MeasurementType.time, gifUrl: 'https://fitcron.com/wp-content/uploads/2021/03/06301301-Mountain-Climber_Cardio_720.gif'),
@@ -1003,6 +1149,7 @@ const programsCatalog = <ProgramModel>[
     emoji: '🦏',
     equipment: 'Gym',
     colorIndex: 1,
+    imageUrl: 'https://images.unsplash.com/photo-1758875568628-12fc3376f433?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w5MjkzNDR8MHwxfHNlYXJjaHwxfHxiYXJiZWxsJTIwc3F1YXQlMjBvdmVyaGVhZCUyMHByZXNzfGVufDB8MHx8fDE3NzY2MDYzMDZ8MA&ixlib=rb-4.1.0&q=80&w=1080',
     exercises: [
       // ── Fase Calentamiento ──
       ProgramExercise(order: 1, name: 'Correr', sets: 1, durationSeconds: 600, restSeconds: 0, measurementType: MeasurementType.time, gifUrl: 'https://fitcron.com/wp-content/uploads/2021/03/06841301-Run-equipment_Cardio_720.gif', notes: 'Cinta 10 min · Calentamiento'),
@@ -1036,6 +1183,7 @@ const programsCatalog = <ProgramModel>[
     equipment: 'Gym',
     colorIndex: 3,
     description: 'Desarrollar fuerza de tirón, densidad en la espalda, estabilidad escapular y activación del core.',
+    imageUrl: 'https://images.unsplash.com/photo-1706029831405-619b27e3260c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w5MjkzNDR8MHwxfHNlYXJjaHwxfHxkZWFkbGlmdCUyMGJhcmJlbGx8ZW58MHwwfHx8MTc3NjYwNjMwN3ww&ixlib=rb-4.1.0&q=80&w=1080',
     exercises: [
       // ── Calentamiento ──
       ProgramExercise(order: 1, name: 'Caminar rápido en cinta', sets: 1, durationSeconds: 300, restSeconds: 0, measurementType: MeasurementType.time, notes: 'Calentamiento · 5 min'),
@@ -1073,6 +1221,7 @@ const programsCatalog = <ProgramModel>[
     tags: ['Running', 'Cardio'],
     emoji: '🏃',
     colorIndex: 5,
+    imageUrl: 'https://images.unsplash.com/photo-1768611260700-1ab6fb9de891?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w5MjkzNDR8MHwxfHNlYXJjaHwxfHxiZWdpbm5lciUyMHJ1bm5pbmd8ZW58MHwwfHx8MTc3NjYwNjMwOHww&ixlib=rb-4.1.0&q=80&w=1080',
     exercises: [
       ProgramExercise(order: 1, name: 'Caminar rápido', sets: 1, durationSeconds: 300, restSeconds: 0, measurementType: MeasurementType.time, notes: 'Calentamiento 5 min'),
       ProgramExercise(order: 2, name: 'Trote suave', sets: 4, durationSeconds: 60, restSeconds: 45, measurementType: MeasurementType.time, notes: 'Sem 1: 1 min trote / 2 min andar'),
@@ -1091,6 +1240,7 @@ const programsCatalog = <ProgramModel>[
     tags: ['Running', 'Cardio'],
     emoji: '🏃',
     colorIndex: 0,
+    imageUrl: 'https://images.unsplash.com/photo-1762709753300-342ab94e8b05?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w5MjkzNDR8MHwxfHNlYXJjaHwxfHx0cmFpbCUyMHJ1bm5pbmclMjBhdGhsZXRlfGVufDB8MHx8fDE3NzY2MDYzMDl8MA&ixlib=rb-4.1.0&q=80&w=1080',
     exercises: [
       ProgramExercise(order: 1, name: 'Carrera continua', sets: 1, durationSeconds: 1800, restSeconds: 0, measurementType: MeasurementType.time, notes: 'Día 1: 30 min ritmo base'),
       ProgramExercise(order: 2, name: 'Series 400m', sets: 6, distanceMeters: 400, restSeconds: 45, measurementType: MeasurementType.distance, notes: 'Día 2: ritmo fuerte, descanso trotando'),
@@ -1109,6 +1259,7 @@ const programsCatalog = <ProgramModel>[
     tags: ['Calistenia'],
     emoji: '🤸',
     colorIndex: 1,
+    imageUrl: 'https://images.unsplash.com/photo-1746966708731-004e79308357?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w5MjkzNDR8MHwxfHNlYXJjaHwxfHxjYWxpc3RoZW5pY3MlMjBwYXJrfGVufDB8MHx8fDE3NzY2MDYzMTB8MA&ixlib=rb-4.1.0&q=80&w=1080',
     exercises: [
       ProgramExercise(order: 1, name: 'Dominadas asistidas', sets: 3, reps: 5, restSeconds: 45, measurementType: MeasurementType.reps, gifUrl: 'https://fitcron.com/wp-content/uploads/2021/04/06271301-Mixed-Grip-Chin-up_back_720.gif', notes: 'Banda elástica o negativas'),
       ProgramExercise(order: 2, name: 'Fondos en paralelas', sets: 3, reps: 8, restSeconds: 45, measurementType: MeasurementType.reps, gifUrl: 'https://fitcron.com/wp-content/uploads/2021/03/02511301-Chest-Dip_Chest_720.gif', notes: 'Rango completo'),
@@ -1132,6 +1283,7 @@ const programsCatalog = <ProgramModel>[
     equipment: 'Gym',
     colorIndex: 0,
     description: 'División clásica para hipertrofia: 3 días distintos repetidos 2 veces por semana.',
+    imageUrl: 'https://images.unsplash.com/photo-1758875568447-aa45a5d3b351?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w5MjkzNDR8MHwxfHNlYXJjaHwxfHxwdXNoJTIwcHVsbCUyMGxlZ3MlMjBneW18ZW58MHwwfHx8MTc3NjYwNjMxMXww&ixlib=rb-4.1.0&q=80&w=1080',
     exercises: [
       // ── Día PUSH (Pecho/Hombro/Tríceps) ──
       ProgramExercise(order: 1, name: 'Push · Press banca', sets: 4, reps: 8, weightKg: 70, restSeconds: 90, measurementType: MeasurementType.weight, gifUrl: 'https://fitcron.com/wp-content/uploads/2021/03/00251301-Barbell-Bench-Press_Chest-FIX_720.gif', notes: 'Día 1'),
@@ -1170,6 +1322,7 @@ const programsCatalog = <ProgramModel>[
     equipment: 'Gym',
     colorIndex: 2,
     description: 'Alterna 2 días tren superior y 2 días tren inferior para volumen y frecuencia.',
+    imageUrl: 'https://images.unsplash.com/photo-1653927956711-f2222a45e040?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w5MjkzNDR8MHwxfHNlYXJjaHwxfHxneW0lMjB3ZWlnaHQlMjB0cmFpbmluZ3xlbnwwfDB8fHwxNzc2NjA3MjEwfDA&ixlib=rb-4.1.0&q=80&w=1080',
     exercises: [
       // UPPER A
       ProgramExercise(order: 1, name: 'Upper · Press banca', sets: 4, reps: 8, weightKg: 70, restSeconds: 90, measurementType: MeasurementType.weight, gifUrl: 'https://fitcron.com/wp-content/uploads/2021/03/00251301-Barbell-Bench-Press_Chest-FIX_720.gif', notes: 'Día Upper'),
@@ -1203,6 +1356,7 @@ const programsCatalog = <ProgramModel>[
     equipment: 'Gym',
     colorIndex: 5,
     description: 'Programa de iniciación para construir base de fuerza y técnica.',
+    imageUrl: 'https://images.unsplash.com/photo-1758875569243-47fe02e1ba04?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w5MjkzNDR8MHwxfHNlYXJjaHwxfHxmdWxsJTIwYm9keSUyMHdvcmtvdXQlMjBneW18ZW58MHwwfHx8MTc3NjYwNjMxM3ww&ixlib=rb-4.1.0&q=80&w=1080',
     exercises: [
       ProgramExercise(order: 1, name: 'Sentadilla con barra', sets: 3, reps: 10, weightKg: 40, restSeconds: 90, measurementType: MeasurementType.weight, notes: 'Aprende técnica primero'),
       ProgramExercise(order: 2, name: 'Press banca', sets: 3, reps: 10, weightKg: 30, restSeconds: 90, measurementType: MeasurementType.weight),
@@ -1228,6 +1382,7 @@ const programsCatalog = <ProgramModel>[
     equipment: 'Gym',
     colorIndex: 3,
     description: 'Especialización para ganar masa pectoral. Combina con tu rutina semanal.',
+    imageUrl: 'https://images.unsplash.com/photo-1690731033723-ad718c6e585a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w5MjkzNDR8MHwxfHNlYXJjaHwxfHxiZW5jaCUyMHByZXNzfGVufDB8MHx8fDE3NzY2MDcyMTJ8MA&ixlib=rb-4.1.0&q=80&w=1080',
     exercises: [
       ProgramExercise(order: 1, name: 'Press banca plano', sets: 5, reps: 6, weightKg: 75, restSeconds: 120, measurementType: MeasurementType.weight, notes: 'Carga pesada, 5×6'),
       ProgramExercise(order: 2, name: 'Press inclinado barra', sets: 4, reps: 8, weightKg: 55, restSeconds: 90, measurementType: MeasurementType.weight, notes: 'Banco a 30°'),
@@ -1253,6 +1408,7 @@ const programsCatalog = <ProgramModel>[
     equipment: 'Gym',
     colorIndex: 1,
     description: 'Construye anchura y densidad en la espalda. Foco dorsal y trapecio medio.',
+    imageUrl: 'https://images.unsplash.com/photo-1534872850130-5355701fcc89?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w5MjkzNDR8MHwxfHNlYXJjaHwxfHxsYXQlMjBwdWxsZG93bnxlbnwwfDB8fHwxNzc2NjA3MjE0fDA&ixlib=rb-4.1.0&q=80&w=1080',
     exercises: [
       ProgramExercise(order: 1, name: 'Peso muerto convencional', sets: 5, reps: 5, weightKg: 100, restSeconds: 180, measurementType: MeasurementType.weight, notes: '5×5 carga máxima controlada'),
       ProgramExercise(order: 2, name: 'Dominadas lastradas', sets: 4, reps: 8, weightKg: 10, restSeconds: 120, measurementType: MeasurementType.weight, notes: 'Si no salen, asistidas'),
@@ -1278,6 +1434,7 @@ const programsCatalog = <ProgramModel>[
     equipment: 'Gym',
     colorIndex: 4,
     description: 'Especialización corta para ganar centímetros de brazo en 3 semanas.',
+    imageUrl: 'https://images.unsplash.com/photo-1598268030450-7a476f602bf6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w5MjkzNDR8MHwxfHNlYXJjaHwxfHxiaWNlcHMlMjB0cmljZXBzJTIwZ3ltJTIwYXJtc3xlbnwwfDB8fHwxNzc2NjA2MzE2fDA&ixlib=rb-4.1.0&q=80&w=1080',
     exercises: [
       ProgramExercise(order: 1, name: 'Curl 21s con barra', sets: 3, reps: 21, weightKg: 20, restSeconds: 75, measurementType: MeasurementType.weight, notes: '7 medio bajo + 7 medio alto + 7 completos'),
       ProgramExercise(order: 2, name: 'Press cerrado banca', sets: 4, reps: 8, weightKg: 50, restSeconds: 90, measurementType: MeasurementType.weight, notes: 'Codos pegados al cuerpo'),
@@ -1305,6 +1462,7 @@ const programsCatalog = <ProgramModel>[
     equipment: 'Gym',
     colorIndex: 3,
     description: 'Reto de 30 días para volumen y forma de glúteo. Combinar con dieta superávit.',
+    imageUrl: 'https://images.unsplash.com/photo-1660155002587-3b0efeeec64f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w5MjkzNDR8MHwxfHNlYXJjaHwxfHxnbHV0ZSUyMHdvcmtvdXQlMjB3b21hbiUyMGd5bXxlbnwwfDB8fHwxNzc2NjA2MzE3fDA&ixlib=rb-4.1.0&q=80&w=1080',
     exercises: [
       ProgramExercise(order: 1, name: 'Hip thrust con barra', sets: 5, reps: 10, weightKg: 80, restSeconds: 90, measurementType: MeasurementType.weight, notes: 'Movimiento principal'),
       ProgramExercise(order: 2, name: 'Sentadilla búlgara con mancuernas', sets: 4, reps: 10, weightKg: 16, restSeconds: 75, measurementType: MeasurementType.weight, notes: '10 por pierna'),
@@ -1331,6 +1489,7 @@ const programsCatalog = <ProgramModel>[
     equipment: 'Sin material',
     colorIndex: 4,
     description: 'Construye un core fuerte y estético. Trabaja recto, oblicuos y transverso.',
+    imageUrl: 'https://images.unsplash.com/photo-1767611129191-a949e14849a8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w5MjkzNDR8MHwxfHNlYXJjaHwxfHxjb3JlJTIwdHJhaW5pbmclMjBwbGFua3xlbnwwfDB8fHwxNzc2NjA2MzE4fDA&ixlib=rb-4.1.0&q=80&w=1080',
     exercises: [
       ProgramExercise(order: 1, name: 'Plancha frontal lastrada', sets: 4, durationSeconds: 60, restSeconds: 45, measurementType: MeasurementType.time, notes: 'Disco sobre espalda baja'),
       ProgramExercise(order: 2, name: 'Plancha lateral con peso', sets: 3, durationSeconds: 30, weightKg: 5, restSeconds: 45, measurementType: MeasurementType.weight, notes: '30s por lado'),
@@ -1356,6 +1515,7 @@ const programsCatalog = <ProgramModel>[
     equipment: 'Gym',
     colorIndex: 0,
     description: 'Programa Wendler 5/3/1: progresión lineal ondulada en los 4 grandes movimientos.',
+    imageUrl: 'https://images.unsplash.com/photo-1545612036-2872840642dc?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w5MjkzNDR8MHwxfHNlYXJjaHwxfHxwb3dlcmxpZnRpbmclMjBzcXVhdCUyMGJhcmJlbGx8ZW58MHwwfHx8MTc3NjYwNjMxOXww&ixlib=rb-4.1.0&q=80&w=1080',
     exercises: [
       ProgramExercise(order: 1, name: 'Press banca · 5/3/1', sets: 3, reps: 5, weightKg: 70, restSeconds: 180, measurementType: MeasurementType.weight, notes: 'S1: 5/5/5+ · S2: 3/3/3+ · S3: 5/3/1+'),
       ProgramExercise(order: 2, name: 'Accesorios push (BBB)', sets: 5, reps: 10, weightKg: 40, restSeconds: 90, measurementType: MeasurementType.weight, notes: '5×10 al 50%'),
@@ -1381,6 +1541,7 @@ const programsCatalog = <ProgramModel>[
     equipment: 'Sin material',
     colorIndex: 2,
     description: 'Rutina diaria corta para mantener movilidad articular y prevenir lesiones.',
+    imageUrl: 'https://images.unsplash.com/photo-1758599879927-f60878034fca?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w5MjkzNDR8MHwxfHNlYXJjaHwxfHxtb2JpbGl0eSUyMHN0cmV0Y2hpbmclMjBtYXR8ZW58MHwwfHx8MTc3NjYwNjMyMHww&ixlib=rb-4.1.0&q=80&w=1080',
     exercises: [
       ProgramExercise(order: 1, name: 'Cat-cow', sets: 1, reps: 10, restSeconds: 0, measurementType: MeasurementType.reps),
       ProgramExercise(order: 2, name: 'Círculos de cadera', sets: 1, reps: 10, restSeconds: 0, measurementType: MeasurementType.reps),
@@ -1402,6 +1563,7 @@ const programsCatalog = <ProgramModel>[
     tags: ['HIIT'],
     emoji: '⚡',
     colorIndex: 4,
+    imageUrl: 'https://images.unsplash.com/photo-1758875569517-559a631fb44d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w5MjkzNDR8MHwxfHNlYXJjaHwxfHxoaWl0JTIwdHJhaW5pbmclMjBrZXR0bGViZWxsfGVufDB8MHx8fDE3NzY2MDYzMjF8MA&ixlib=rb-4.1.0&q=80&w=1080',
     exercises: [
       ProgramExercise(order: 1, name: 'Burpees', sets: 4, durationSeconds: 40, restSeconds: 45, measurementType: MeasurementType.time, gifUrl: 'https://fitcron.com/wp-content/uploads/2021/03/11601301-Burpee_Cardio_720.gif'),
       ProgramExercise(order: 2, name: 'Sentadilla con salto', sets: 4, durationSeconds: 40, restSeconds: 45, measurementType: MeasurementType.time, gifUrl: 'https://fitcron.com/wp-content/uploads/2021/04/15521301-Dumbbell-Jumping-Squat_Plyometric_720.gif'),
@@ -1423,6 +1585,7 @@ const programsCatalog = <ProgramModel>[
     tags: ['Movilidad'],
     emoji: '🔥',
     colorIndex: 3,
+    imageUrl: 'https://images.unsplash.com/photo-1637651684506-07e16fcf7b06?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w5MjkzNDR8MHwxfHNlYXJjaHwxfHx1cHBlciUyMGJvZHklMjB3YXJtJTIwdXB8ZW58MHwwfHx8MTc3NjYwNjMyMnww&ixlib=rb-4.1.0&q=80&w=1080',
     exercises: [
       ProgramExercise(order: 1, name: 'Circunducción de hombros', sets: 2, reps: 10, restSeconds: 0, measurementType: MeasurementType.reps, notes: '10 adelante + 10 atrás'),
       ProgramExercise(order: 2, name: 'Rotación externa con banda', sets: 2, reps: 12, restSeconds: 45, measurementType: MeasurementType.reps),
@@ -1442,6 +1605,7 @@ const programsCatalog = <ProgramModel>[
     tags: ['Movilidad'],
     emoji: '🔥',
     colorIndex: 4,
+    imageUrl: 'https://images.unsplash.com/photo-1758521959095-ed05f99551c3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w5MjkzNDR8MHwxfHNlYXJjaHwxfHxsZWclMjB3YXJtJTIwdXAlMjBzdHJldGNoaW5nfGVufDB8MHx8fDE3NzY2MDYzMjR8MA&ixlib=rb-4.1.0&q=80&w=1080',
     exercises: [
       ProgramExercise(order: 1, name: 'Sentadilla profunda', sets: 2, reps: 10, restSeconds: 0, measurementType: MeasurementType.reps, notes: 'Sin peso, mantener talones'),
       ProgramExercise(order: 2, name: 'Zancada con rotación', sets: 2, reps: 8, restSeconds: 45, measurementType: MeasurementType.reps, notes: '8 por lado, girar torso'),
@@ -1461,6 +1625,7 @@ const programsCatalog = <ProgramModel>[
     tags: ['Running', 'Movilidad'],
     emoji: '🔥',
     colorIndex: 5,
+    imageUrl: 'https://images.unsplash.com/photo-1511031579861-4b57e01e19e5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w5MjkzNDR8MHwxfHNlYXJjaHwxfHxydW5uZXIlMjBzdHJldGNoaW5nJTIwd2FybXVwfGVufDB8MHx8fDE3NzY2MDYzMjV8MA&ixlib=rb-4.1.0&q=80&w=1080',
     exercises: [
       ProgramExercise(order: 1, name: 'Skipping', sets: 2, durationSeconds: 20, restSeconds: 45, measurementType: MeasurementType.time, notes: 'Rodillas altas, brazos activos'),
       ProgramExercise(order: 2, name: 'Talones al glúteo', sets: 2, durationSeconds: 20, restSeconds: 45, measurementType: MeasurementType.time),
@@ -1481,6 +1646,7 @@ const programsCatalog = <ProgramModel>[
     tags: ['Movilidad'],
     emoji: '🧘',
     colorIndex: 2,
+    imageUrl: 'https://images.unsplash.com/photo-1701826510609-b8d07deca0d4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w5MjkzNDR8MHwxfHNlYXJjaHwxfHxzaG91bGRlciUyMG1vYmlsaXR5JTIwc3RyZXRjaHxlbnwwfDB8fHwxNzc2NjA2MzMyfDA&ixlib=rb-4.1.0&q=80&w=1080',
     exercises: [
       ProgramExercise(order: 1, name: 'Estiramiento pectoral en pared', sets: 2, durationSeconds: 30, restSeconds: 45, measurementType: MeasurementType.time, notes: '30s por lado'),
       ProgramExercise(order: 2, name: 'Rotación interna/externa', sets: 2, reps: 10, restSeconds: 45, measurementType: MeasurementType.reps, notes: 'Con banda elástica'),
@@ -1499,6 +1665,7 @@ const programsCatalog = <ProgramModel>[
     tags: ['Movilidad'],
     emoji: '🧘',
     colorIndex: 5,
+    imageUrl: 'https://images.unsplash.com/photo-1701826510609-b8d07deca0d4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w5MjkzNDR8MHwxfHNlYXJjaHwxfHxoaXAlMjBtb2JpbGl0eSUyMHN0cmV0Y2h8ZW58MHwwfHx8MTc3NjYwNjMzM3ww&ixlib=rb-4.1.0&q=80&w=1080',
     exercises: [
       ProgramExercise(order: 1, name: '90/90', sets: 2, durationSeconds: 30, restSeconds: 45, measurementType: MeasurementType.time, notes: '30s por lado'),
       ProgramExercise(order: 2, name: 'Mariposa sentado', sets: 2, durationSeconds: 30, restSeconds: 45, measurementType: MeasurementType.time, notes: 'Presionar rodillas hacia el suelo'),
@@ -1517,6 +1684,7 @@ const programsCatalog = <ProgramModel>[
     tags: ['Estiramientos'],
     emoji: '🧘',
     colorIndex: 0,
+    imageUrl: 'https://images.unsplash.com/photo-1582448986163-acc80578e8ef?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w5MjkzNDR8MHwxfHNlYXJjaHwxfHxsZWclMjBzdHJldGNoJTIwY29vbCUyMGRvd258ZW58MHwwfHx8MTc3NjYwNjMzNHww&ixlib=rb-4.1.0&q=80&w=1080',
     exercises: [
       ProgramExercise(order: 1, name: 'Estiramiento isquiotibiales', sets: 2, durationSeconds: 30, restSeconds: 45, measurementType: MeasurementType.time, notes: 'De pie o sentado, 30s por pierna'),
       ProgramExercise(order: 2, name: 'Estiramiento cuádriceps', sets: 2, durationSeconds: 30, restSeconds: 45, measurementType: MeasurementType.time, notes: 'De pie, talón al glúteo'),
@@ -1535,6 +1703,7 @@ const programsCatalog = <ProgramModel>[
     tags: ['Estiramientos'],
     emoji: '🧘',
     colorIndex: 1,
+    imageUrl: 'https://images.unsplash.com/photo-1688818192446-7134b808c5f1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w5MjkzNDR8MHwxfHNlYXJjaHwxfHxiYWNrJTIwc3RyZXRjaCUyMHlvZ2F8ZW58MHwwfHx8MTc3NjYwNjMzNXww&ixlib=rb-4.1.0&q=80&w=1080',
     exercises: [
       ProgramExercise(order: 1, name: 'Estiramiento pectoral', sets: 2, durationSeconds: 25, restSeconds: 45, measurementType: MeasurementType.time, notes: 'Brazo en marco de puerta'),
       ProgramExercise(order: 2, name: 'Estiramiento dorsal', sets: 2, durationSeconds: 25, restSeconds: 45, measurementType: MeasurementType.time, notes: 'Colgarse de barra o estirar en pared'),
@@ -1553,6 +1722,7 @@ const programsCatalog = <ProgramModel>[
     tags: ['Movilidad'],
     emoji: '🔥',
     colorIndex: 0,
+    imageUrl: 'https://images.unsplash.com/photo-1632167764165-74a3d686e9f8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w5MjkzNDR8MHwxfHNlYXJjaHwxfHxkeW5hbWljJTIwd2FybSUyMHVwfGVufDB8MHx8fDE3NzY2MDYzMjZ8MA&ixlib=rb-4.1.0&q=80&w=1080',
     exercises: [
       ProgramExercise(order: 1, name: 'Saltos de tijera', sets: 1, durationSeconds: 60, restSeconds: 0, measurementType: MeasurementType.time, gifUrl: 'https://fitcron.com/wp-content/uploads/2021/03/30941301-Jumping-Jack-male_Cardio_720.gif'),
       ProgramExercise(order: 2, name: 'Cat-cow', sets: 2, reps: 10, restSeconds: 0, measurementType: MeasurementType.reps),
@@ -1573,6 +1743,7 @@ const programsCatalog = <ProgramModel>[
     tags: ['Movilidad', 'Brazos'],
     emoji: '🔥',
     colorIndex: 1,
+    imageUrl: 'https://images.unsplash.com/photo-1648638810948-f3bf2cccdde9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w5MjkzNDR8MHwxfHNlYXJjaHwxfHxhcm0lMjBtb2JpbGl0eXxlbnwwfDB8fHwxNzc2NjA3MjE3fDA&ixlib=rb-4.1.0&q=80&w=1080',
     exercises: [
       ProgramExercise(order: 1, name: 'Círculos de muñeca', sets: 2, reps: 15, restSeconds: 0, measurementType: MeasurementType.reps, notes: '15 por sentido'),
       ProgramExercise(order: 2, name: 'Estiramiento de antebrazo', sets: 2, durationSeconds: 20, restSeconds: 0, measurementType: MeasurementType.time, notes: '20s por brazo'),
@@ -1591,6 +1762,7 @@ const programsCatalog = <ProgramModel>[
     tags: ['Movilidad', 'Push'],
     emoji: '🔥',
     colorIndex: 0,
+    imageUrl: 'https://images.unsplash.com/photo-1632167764165-74a3d686e9f8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w5MjkzNDR8MHwxfHNlYXJjaHwxfHxzaG91bGRlciUyMG1vYmlsaXR5JTIwd2FybSUyMHVwfGVufDB8MHx8fDE3NzY2MDYzMjh8MA&ixlib=rb-4.1.0&q=80&w=1080',
     exercises: [
       ProgramExercise(order: 1, name: 'Bike o caminar 5 min', sets: 1, durationSeconds: 300, restSeconds: 0, measurementType: MeasurementType.time),
       ProgramExercise(order: 2, name: 'Dislocaciones con banda', sets: 2, reps: 12, restSeconds: 0, measurementType: MeasurementType.reps),
@@ -1609,6 +1781,7 @@ const programsCatalog = <ProgramModel>[
     tags: ['Movilidad', 'Pull'],
     emoji: '🔥',
     colorIndex: 2,
+    imageUrl: 'https://images.unsplash.com/photo-1632167764165-74a3d686e9f8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w5MjkzNDR8MHwxfHNlYXJjaHwxfHxiYWNrJTIwbW9iaWxpdHklMjB3YXJtJTIwdXB8ZW58MHwwfHx8MTc3NjYwNjMyOXww&ixlib=rb-4.1.0&q=80&w=1080',
     exercises: [
       ProgramExercise(order: 1, name: 'Remo en bicicleta o cinta', sets: 1, durationSeconds: 300, restSeconds: 0, measurementType: MeasurementType.time),
       ProgramExercise(order: 2, name: 'Dead hang', sets: 2, durationSeconds: 20, restSeconds: 30, measurementType: MeasurementType.time),
@@ -1627,6 +1800,7 @@ const programsCatalog = <ProgramModel>[
     tags: ['Movilidad'],
     emoji: '🔥',
     colorIndex: 3,
+    imageUrl: 'https://images.unsplash.com/photo-1589548508481-f755e653a5d3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w5MjkzNDR8MHwxfHNlYXJjaHwxfHxuZWNrJTIwc3RyZXRjaCUyMG1vYmlsaXR5fGVufDB8MHx8fDE3NzY2MDYzMzB8MA&ixlib=rb-4.1.0&q=80&w=1080',
     exercises: [
       ProgramExercise(order: 1, name: 'Inclinación lateral', sets: 2, reps: 10, restSeconds: 0, measurementType: MeasurementType.reps, notes: '10 por lado'),
       ProgramExercise(order: 2, name: 'Rotaciones lentas de cuello', sets: 2, reps: 8, restSeconds: 0, measurementType: MeasurementType.reps, notes: 'Rango cómodo'),
@@ -1647,6 +1821,7 @@ const programsCatalog = <ProgramModel>[
     tags: ['Estiramientos', 'Brazos'],
     emoji: '🧘',
     colorIndex: 4,
+    imageUrl: 'https://images.unsplash.com/photo-1733241690936-238037c28184?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w5MjkzNDR8MHwxfHNlYXJjaHwxfHxhcm0lMjBzdHJldGNoJTIweW9nYXxlbnwwfDB8fHwxNzc2NjA2MzM2fDA&ixlib=rb-4.1.0&q=80&w=1080',
     exercises: [
       ProgramExercise(order: 1, name: 'Estiramiento bíceps en pared', sets: 2, durationSeconds: 25, restSeconds: 0, measurementType: MeasurementType.time, notes: '25s por brazo'),
       ProgramExercise(order: 2, name: 'Estiramiento tríceps sobre cabeza', sets: 2, durationSeconds: 25, restSeconds: 0, measurementType: MeasurementType.time, notes: '25s por brazo'),
@@ -1665,6 +1840,7 @@ const programsCatalog = <ProgramModel>[
     tags: ['Estiramientos', 'Movilidad'],
     emoji: '🧘',
     colorIndex: 2,
+    imageUrl: 'https://images.unsplash.com/photo-1632167787466-20809c394ed4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w5MjkzNDR8MHwxfHNlYXJjaHwxfHxmdWxsJTIwYm9keSUyMHN0cmV0Y2glMjB5b2dhfGVufDB8MHx8fDE3NzY2MDYzMzd8MA&ixlib=rb-4.1.0&q=80&w=1080',
     exercises: [
       ProgramExercise(order: 1, name: 'Child pose', sets: 1, durationSeconds: 45, restSeconds: 0, measurementType: MeasurementType.time),
       ProgramExercise(order: 2, name: 'Perro boca abajo', sets: 1, durationSeconds: 45, restSeconds: 0, measurementType: MeasurementType.time),
@@ -1687,6 +1863,7 @@ const programsCatalog = <ProgramModel>[
     tags: ['Movilidad'],
     emoji: '🧘',
     colorIndex: 5,
+    imageUrl: 'https://images.unsplash.com/photo-1701826510656-8dbcec14a4b5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w5MjkzNDR8MHwxfHNlYXJjaHwxfHxhbmtsZSUyMG1vYmlsaXR5JTIwc3RyZXRjaHxlbnwwfDB8fHwxNzc2NjA2MzM4fDA&ixlib=rb-4.1.0&q=80&w=1080',
     exercises: [
       ProgramExercise(order: 1, name: 'Círculos de tobillo', sets: 2, reps: 15, restSeconds: 0, measurementType: MeasurementType.reps, notes: '15 por sentido y pie'),
       ProgramExercise(order: 2, name: 'Dorsiflexión contra pared', sets: 2, reps: 10, restSeconds: 0, measurementType: MeasurementType.reps, notes: '10 por pie, rodilla al frente'),
@@ -1706,6 +1883,7 @@ const programsCatalog = <ProgramModel>[
     tags: ['Estiramientos', 'Movilidad'],
     emoji: '🧘',
     colorIndex: 1,
+    imageUrl: 'https://images.unsplash.com/photo-1612732362547-14adf627f24e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w5MjkzNDR8MHwxfHNlYXJjaHwxfHx5b2dhJTIwcmVjb3ZlcnklMjBtYXR8ZW58MHwwfHx8MTc3NjYwNjMzOXww&ixlib=rb-4.1.0&q=80&w=1080',
     exercises: [
       ProgramExercise(order: 1, name: 'Saludo al sol A', sets: 3, reps: 1, restSeconds: 0, measurementType: MeasurementType.reps, notes: 'Flujo respiración'),
       ProgramExercise(order: 2, name: 'Guerrero II', sets: 1, durationSeconds: 45, restSeconds: 0, measurementType: MeasurementType.time, notes: '45s por lado'),
@@ -1727,6 +1905,7 @@ const programsCatalog = <ProgramModel>[
     tags: ['Movilidad', 'Estiramientos'],
     emoji: '🧘',
     colorIndex: 3,
+    imageUrl: 'https://images.unsplash.com/photo-1632167764165-74a3d686e9f8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w5MjkzNDR8MHwxfHNlYXJjaHwxfHxiYWNrJTIwaGlwJTIwc3RyZXRjaCUyMHlvZ2F8ZW58MHwwfHx8MTc3NjYwNjM0MHww&ixlib=rb-4.1.0&q=80&w=1080',
     exercises: [
       ProgramExercise(order: 1, name: 'Cat-cow', sets: 2, reps: 10, restSeconds: 0, measurementType: MeasurementType.reps, notes: 'Cuadrupedia, alternar flexión/extensión'),
       ProgramExercise(order: 2, name: 'Child pose', sets: 2, durationSeconds: 30, restSeconds: 0, measurementType: MeasurementType.time, notes: 'Brazos extendidos, frente al suelo'),
