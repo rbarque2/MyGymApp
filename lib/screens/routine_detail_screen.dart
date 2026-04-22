@@ -59,7 +59,7 @@ class RoutineDetailScreen extends StatelessWidget {
         routine.exercises.fold<int>(0, (sum, e) => sum + e.sets);
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: ZarpaColors.background,
       body: Column(
         children: [
           // Header
@@ -67,9 +67,9 @@ class RoutineDetailScreen extends StatelessWidget {
             bottom: false,
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 border: Border(
-                  bottom: BorderSide(color: ZarpaColors.surface2),
+                  bottom: BorderSide(color: ZarpaColors.border),
                 ),
               ),
               child: Row(
@@ -146,7 +146,7 @@ class RoutineDetailScreen extends StatelessWidget {
                           borderRadius: BorderRadius.circular(4),
                         ),
                         child: const Text(
-                          'FUERZA',
+                          'RUTINA',
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 10,
@@ -156,7 +156,8 @@ class RoutineDetailScreen extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 12),
-                      const Text('💪', style: TextStyle(fontSize: 48)),
+                      const Icon(Icons.fitness_center,
+                          size: 40, color: ZarpaColors.primary),
                       const SizedBox(height: 12),
                       Text(
                         routine.name,
@@ -241,11 +242,18 @@ class RoutineDetailScreen extends StatelessWidget {
       bottomSheet: routine.exercises.isNotEmpty
           ? Container(
               padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
-              decoration: const BoxDecoration(
-                color: Colors.white,
+              decoration: BoxDecoration(
+                color: ZarpaColors.surface,
                 border: Border(
-                  top: BorderSide(color: ZarpaColors.surface2),
+                  top: BorderSide(color: ZarpaColors.border),
                 ),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Color(0x0F0F172A),
+                    blurRadius: 12,
+                    offset: Offset(0, -4),
+                  ),
+                ],
               ),
               child: SizedBox(
                 width: double.infinity,

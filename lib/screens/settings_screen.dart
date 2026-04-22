@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../services/beep_service.dart';
 import '../services/settings_service.dart';
+import '../theme/zarpafit_theme.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({
@@ -57,11 +58,27 @@ class _SettingsScreenState extends State<SettingsScreen> {
         padding: const EdgeInsets.all(16),
         children: [
           // Sección: Temporizador de descanso
-          Text(
-            'Temporizador de descanso',
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
+          Row(
+            children: [
+              Container(
+                width: 4,
+                height: 18,
+                decoration: BoxDecoration(
+                  color: ZarpaColors.primary,
+                  borderRadius: BorderRadius.circular(2),
                 ),
+              ),
+              const SizedBox(width: 8),
+              Text(
+                'TEMPORIZADOR DE DESCANSO',
+                style: const TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                  color: ZarpaColors.foreground,
+                  letterSpacing: 2,
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: 16),
 
@@ -134,11 +151,27 @@ class _SettingsScreenState extends State<SettingsScreen> {
           const SizedBox(height: 16),
 
           // Sección: Sonido
-          Text(
-            'Sonido',
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
+          Row(
+            children: [
+              Container(
+                width: 4,
+                height: 18,
+                decoration: BoxDecoration(
+                  color: ZarpaColors.primary,
+                  borderRadius: BorderRadius.circular(2),
                 ),
+              ),
+              const SizedBox(width: 8),
+              Text(
+                'SONIDO',
+                style: const TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                  color: ZarpaColors.foreground,
+                  letterSpacing: 2,
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: 16),
 

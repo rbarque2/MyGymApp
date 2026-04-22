@@ -13,14 +13,14 @@ import 'routine_detail_screen.dart';
 import 'routine_editor_screen.dart';
 import 'workout_screen.dart';
 
-/// Gradientes para tarjetas de rutina.
+/// Gradientes para tarjetas de rutina — paleta vibrante.
 const _routineGradients = <List<Color>>[
-  [Color(0xFF6EC6FF), Color(0xFF2196F3)], // azul claro
-  [Color(0xFFCE93D8), Color(0xFF9C27B0)], // lavanda
-  [Color(0xFF80CBC4), Color(0xFF009688)], // menta
-  [Color(0xFFFFCC80), Color(0xFFFF9800)], // melocotón
-  [Color(0xFFEF9A9A), Color(0xFFE53935)], // coral
-  [Color(0xFFA5D6A7), Color(0xFF43A047)], // verde
+  [Color(0xFFFB923C), Color(0xFFF97316)], // naranja
+  [Color(0xFF34D399), Color(0xFF10B981)], // esmeralda
+  [Color(0xFF60A5FA), Color(0xFF3B82F6)], // azul
+  [Color(0xFFFBBF24), Color(0xFFF59E0B)], // ámbar
+  [Color(0xFFF87171), Color(0xFFEF4444)], // rojo
+  [Color(0xFFA78BFA), Color(0xFF8B5CF6)], // violeta
 ];
 
 class RoutinesScreen extends StatefulWidget {
@@ -142,7 +142,7 @@ class _RoutinesScreenState extends State<RoutinesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: ZarpaColors.background,
       body: SafeArea(
         child: Column(
           children: [
@@ -155,14 +155,16 @@ class _RoutinesScreenState extends State<RoutinesScreen> {
                     child: Text(
                       'ENTRENA',
                       style: TextStyle(
-                        fontSize: 22,
+                        fontSize: 24,
                         fontWeight: FontWeight.w800,
+                        color: ZarpaColors.foreground,
                         letterSpacing: -0.5,
                       ),
                     ),
                   ),
                   IconButton(
-                    icon: const Icon(Icons.fitness_center, size: 20),
+                    icon: const Icon(Icons.fitness_center, size: 20,
+                        color: ZarpaColors.muted),
                     tooltip: 'Gestionar ejercicios',
                     onPressed: () => Navigator.of(context).push(
                       MaterialPageRoute(
@@ -184,7 +186,7 @@ class _RoutinesScreenState extends State<RoutinesScreen> {
               child: Container(
                 decoration: BoxDecoration(
                   color: ZarpaColors.surface,
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(14),
                   border: Border.all(color: ZarpaColors.border),
                 ),
                 padding: const EdgeInsets.all(4),
@@ -235,7 +237,7 @@ class _RoutinesScreenState extends State<RoutinesScreen> {
           padding: const EdgeInsets.symmetric(vertical: 10),
           decoration: BoxDecoration(
             color: selected ? ZarpaColors.primary : Colors.transparent,
-            borderRadius: BorderRadius.circular(9),
+            borderRadius: BorderRadius.circular(10),
           ),
           child: Center(
             child: Text(
@@ -344,9 +346,11 @@ class _RoutinesScreenState extends State<RoutinesScreen> {
           child: TextField(
             controller: _searchCtrl,
             onChanged: (v) => setState(() => _searchQuery = v.toLowerCase()),
+            style: const TextStyle(color: ZarpaColors.foreground),
             decoration: InputDecoration(
               hintText: 'Buscar ejercicio...',
-              prefixIcon: const Icon(Icons.search),
+              hintStyle: const TextStyle(color: ZarpaColors.mutedLight),
+              prefixIcon: const Icon(Icons.search, color: ZarpaColors.muted),
               suffixIcon: _searchQuery.isNotEmpty
                   ? IconButton(
                       icon: const Icon(Icons.clear, size: 18),
@@ -534,14 +538,14 @@ class _RoutineCard extends StatelessWidget {
           ),
           child: Stack(
             children: [
-              // Emoji grande de fondo
+              // Icono grande de fondo
               Positioned(
                 right: -10,
                 bottom: -10,
                 child: Opacity(
-                  opacity: 0.15,
-                  child: const Text('💪',
-                      style: TextStyle(fontSize: 100)),
+                  opacity: 0.12,
+                  child: Icon(Icons.fitness_center,
+                      size: 100, color: Colors.white),
                 ),
               ),
 
@@ -551,11 +555,11 @@ class _RoutineCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Header: emoji + menu
+                    // Header: icon + menu
                     Row(
                       children: [
-                        const Text('💪',
-                            style: TextStyle(fontSize: 28)),
+                        Icon(Icons.fitness_center,
+                            size: 24, color: Colors.white),
                         const Spacer(),
                         // Menú contextual
                         PopupMenuButton<String>(
@@ -711,7 +715,6 @@ class _ExerciseCard extends StatelessWidget {
         padding: const EdgeInsets.all(14),
         child: Row(
           children: [
-            // Icon / photo
             ClipRRect(
               borderRadius: BorderRadius.circular(10),
               child: exercise.photoUrl != null
@@ -735,6 +738,7 @@ class _ExerciseCard extends StatelessWidget {
                     style: const TextStyle(
                       fontWeight: FontWeight.w700,
                       fontSize: 15,
+                      color: ZarpaColors.foreground,
                     ),
                   ),
                   const SizedBox(height: 2),
@@ -756,7 +760,7 @@ class _ExerciseCard extends StatelessWidget {
                                     horizontal: 8, vertical: 2),
                                 decoration: BoxDecoration(
                                   color:
-                                      ZarpaColors.primary.withOpacity(0.1),
+                                      ZarpaColors.primary.withOpacity(0.12),
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 child: Text(

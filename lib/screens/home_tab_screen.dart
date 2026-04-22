@@ -122,7 +122,7 @@ class _HomeTabScreenState extends State<HomeTabScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: ZarpaColors.background,
       body: SafeArea(
         child: StreamBuilder<List<RoutineModel>>(
           stream: widget.routinesRepository.watchRoutines(widget.ownerUid),
@@ -145,37 +145,46 @@ class _HomeTabScreenState extends State<HomeTabScreen> {
                       children: [
                         Text(
                           _greeting,
-                          style: const TextStyle(
-                            fontSize: 14,
-                            color: ZarpaColors.muted,
-                            letterSpacing: 1,
-                            fontWeight: FontWeight.w600,
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: ZarpaColors.primary,
+                            letterSpacing: 2,
+                            fontWeight: FontWeight.w700,
                           ),
                         ),
-                        const SizedBox(height: 2),
+                        const SizedBox(height: 4),
                         Text(
                           widget.userName.split(' ').first,
                           style: const TextStyle(
-                            fontSize: 28,
+                            fontSize: 32,
                             fontWeight: FontWeight.w800,
                             color: ZarpaColors.foreground,
-                            letterSpacing: -0.5,
+                            letterSpacing: -1,
                           ),
                         ),
                       ],
                     ),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
-                      child: Image.asset(
-                        'assets/zarpafit_logo.png',
-                        width: 48,
-                        height: 48,
-                        fit: BoxFit.cover,
+                    Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(14),
+                        border: Border.all(
+                          color: ZarpaColors.primary.withOpacity(0.3),
+                          width: 2,
+                        ),
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: Image.asset(
+                          'assets/zarpafit_logo.png',
+                          width: 48,
+                          height: 48,
+                          fit: BoxFit.cover,
+                        ),
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 28),
 
                 // === STATS ROW ===
                 Row(
@@ -185,29 +194,30 @@ class _HomeTabScreenState extends State<HomeTabScreen> {
                       value: '$streak',
                       label: 'RACHA',
                       iconColor: ZarpaColors.primary,
+                      highlight: true,
                     ),
-                    const SizedBox(width: 12),
+                    const SizedBox(width: 10),
                     _StatMiniCard(
                       icon: Icons.fitness_center,
                       value: '${_recentWorkouts.length}',
                       label: 'SESIONES',
-                      iconColor: ZarpaColors.foreground,
+                      iconColor: ZarpaColors.cta,
                     ),
-                    const SizedBox(width: 12),
+                    const SizedBox(width: 10),
                     _StatMiniCard(
                       icon: Icons.timer_outlined,
                       value: '$totalMin',
                       label: 'MINUTOS',
-                      iconColor: ZarpaColors.mutedLight,
+                      iconColor: ZarpaColors.primaryLight,
                     ),
                   ],
                 ),
-                const SizedBox(height: 28),
+                const SizedBox(height: 32),
 
                 // === FEATURED WORKOUT ===
                 if (routines.isNotEmpty) ...[
                   _SectionTitle(label: 'ENTRENAMIENTO DEL DÍA'),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 14),
                   _FeaturedRoutineCard(
                     routine: routines.first,
                     onTap: () => Navigator.of(context).push(
@@ -233,15 +243,15 @@ class _HomeTabScreenState extends State<HomeTabScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 28),
+                  const SizedBox(height: 32),
                 ],
 
                 // === QUICK ROUTINES ===
                 if (routines.length > 1) ...[
                   _SectionTitle(label: 'RUTINAS RÁPIDAS'),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 14),
                   SizedBox(
-                    height: 120,
+                    height: 130,
                     child: ListView.separated(
                       scrollDirection: Axis.horizontal,
                       itemCount: routines.length.clamp(0, 6),
@@ -269,13 +279,13 @@ class _HomeTabScreenState extends State<HomeTabScreen> {
                       },
                     ),
                   ),
-                  const SizedBox(height: 28),
+                  const SizedBox(height: 32),
                 ],
 
                 // === RECENT SESSIONS ===
                 if (_recentWorkouts.isNotEmpty) ...[
                   _SectionTitle(label: 'ÚLTIMAS SESIONES'),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 14),
                   ...List.generate(_recentWorkouts.length, (i) {
                     final w = _recentWorkouts[i];
                     final date = w.startedAt?.toDate();
@@ -289,15 +299,18 @@ class _HomeTabScreenState extends State<HomeTabScreen> {
                       isLast: i == _recentWorkouts.length - 1,
                     );
                   }),
-                  const SizedBox(height: 28),
+                  const SizedBox(height: 32),
                 ],
 
                 // === SLOGAN ROTATIVO ===
                 Container(
-                  padding: const EdgeInsets.symmetric(vertical: 20),
-                  decoration: const BoxDecoration(
+                  padding: const EdgeInsets.symmetric(vertical: 24),
+                  decoration: BoxDecoration(
                     border: Border(
-                      top: BorderSide(color: ZarpaColors.primary, width: 1),
+                      top: BorderSide(
+                        color: ZarpaColors.primary.withOpacity(0.3),
+                        width: 1,
+                      ),
                     ),
                   ),
                   child: AnimatedOpacity(
@@ -307,11 +320,12 @@ class _HomeTabScreenState extends State<HomeTabScreen> {
                     child: Text(
                       _slogans[_sloganIndex],
                       textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: ZarpaColors.muted,
+                      style: TextStyle(
+                        fontSize: 15,
+                        color: ZarpaColors.primary.withOpacity(0.6),
                         fontStyle: FontStyle.italic,
-                        letterSpacing: 0.5,
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: 1,
                       ),
                     ),
                   ),
@@ -333,14 +347,27 @@ class _SectionTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(
-      label,
-      style: const TextStyle(
-        fontSize: 11,
-        fontWeight: FontWeight.w700,
-        color: ZarpaColors.muted,
-        letterSpacing: 2,
-      ),
+    return Row(
+      children: [
+        Container(
+          width: 4,
+          height: 18,
+          decoration: BoxDecoration(
+            color: ZarpaColors.primary,
+            borderRadius: BorderRadius.circular(2),
+          ),
+        ),
+        const SizedBox(width: 8),
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w700,
+            color: ZarpaColors.foreground,
+            letterSpacing: 2,
+          ),
+        ),
+      ],
     );
   }
 }
@@ -351,11 +378,13 @@ class _StatMiniCard extends StatelessWidget {
     required this.value,
     required this.label,
     required this.iconColor,
+    this.highlight = false,
   });
   final IconData icon;
   final String value;
   final String label;
   final Color iconColor;
+  final bool highlight;
 
   @override
   Widget build(BuildContext context) {
@@ -363,19 +392,31 @@ class _StatMiniCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: ZarpaColors.surface,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: ZarpaColors.border),
+          color: highlight
+              ? ZarpaColors.primary.withOpacity(0.08)
+              : ZarpaColors.surface,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(
+            color: highlight ? ZarpaColors.primary.withOpacity(0.3) : ZarpaColors.border,
+          ),
+          boxShadow: const [
+            BoxShadow(
+              color: Color(0x0A0F172A),
+              blurRadius: 8,
+              offset: Offset(0, 2),
+            ),
+          ],
         ),
         child: Column(
           children: [
             Icon(icon, size: 20, color: iconColor),
-            const SizedBox(height: 4),
+            const SizedBox(height: 6),
             Text(
               value,
               style: const TextStyle(
-                fontSize: 22,
+                fontSize: 24,
                 fontWeight: FontWeight.w800,
+                color: ZarpaColors.foreground,
                 letterSpacing: -0.5,
               ),
             ),
@@ -385,7 +426,7 @@ class _StatMiniCard extends StatelessWidget {
                 fontSize: 10,
                 fontWeight: FontWeight.w600,
                 color: ZarpaColors.muted,
-                letterSpacing: 0.5,
+                letterSpacing: 1,
               ),
             ),
           ],
@@ -416,10 +457,19 @@ class _FeaturedRoutineCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: ZarpaColors.surface,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: ZarpaColors.border),
-          // Blue left accent
+          gradient: const LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Color(0xFFF97316), Color(0xFFEA580C)],
+          ),
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: ZarpaColors.primary.withOpacity(0.3),
+              blurRadius: 20,
+              offset: const Offset(0, 8),
+            ),
+          ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -429,11 +479,11 @@ class _FeaturedRoutineCard extends StatelessWidget {
               padding:
                   const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
               decoration: BoxDecoration(
-                color: ZarpaColors.primary,
-                borderRadius: BorderRadius.circular(4),
+                color: Colors.white.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(6),
               ),
               child: const Text(
-                'FUERZA',
+                'RUTINA',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 10,
@@ -442,63 +492,66 @@ class _FeaturedRoutineCard extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(height: 12),
-            Text(
-              '💪',
-              style: const TextStyle(fontSize: 36),
+            const SizedBox(height: 14),
+            Icon(
+              Icons.fitness_center,
+              size: 36,
+              color: Colors.white.withOpacity(0.9),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 10),
             Text(
               routine.name,
               style: const TextStyle(
-                fontSize: 24,
+                fontSize: 26,
                 fontWeight: FontWeight.w800,
-                color: ZarpaColors.foreground,
+                color: Colors.white,
                 letterSpacing: -0.5,
+                height: 1.1,
               ),
             ),
             if (routine.description != null) ...[
-              const SizedBox(height: 4),
+              const SizedBox(height: 6),
               Text(
                 routine.description!,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 14,
-                  color: ZarpaColors.muted,
+                  color: Colors.white.withOpacity(0.85),
                   height: 1.4,
                 ),
               ),
             ],
-            const SizedBox(height: 12),
+            const SizedBox(height: 14),
             Row(
               children: [
-                const Icon(Icons.fitness_center,
-                    size: 14, color: ZarpaColors.mutedLight),
+                Icon(Icons.fitness_center,
+                    size: 14, color: Colors.white.withOpacity(0.7)),
                 const SizedBox(width: 4),
                 Text(
                   '$exCount ejercicios',
-                  style: const TextStyle(
-                      fontSize: 12, color: ZarpaColors.muted),
+                  style: TextStyle(
+                      fontSize: 12, color: Colors.white.withOpacity(0.85)),
                 ),
                 const SizedBox(width: 16),
-                const Icon(Icons.repeat,
-                    size: 14, color: ZarpaColors.mutedLight),
+                Icon(Icons.repeat,
+                    size: 14, color: Colors.white.withOpacity(0.7)),
                 const SizedBox(width: 4),
                 Text(
                   '$totalSets series',
-                  style: const TextStyle(
-                      fontSize: 12, color: ZarpaColors.muted),
+                  style: TextStyle(
+                      fontSize: 12, color: Colors.white.withOpacity(0.85)),
                 ),
               ],
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 18),
             SizedBox(
               width: double.infinity,
               child: FilledButton(
                 style: FilledButton.styleFrom(
-                  backgroundColor: ZarpaColors.primary,
+                  backgroundColor: Colors.white,
+                  foregroundColor: ZarpaColors.primary,
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(12),
                   ),
                 ),
                 onPressed: routine.exercises.isEmpty ? null : onStart,
@@ -509,13 +562,12 @@ class _FeaturedRoutineCard extends StatelessWidget {
                       'COMENZAR',
                       style: TextStyle(
                         fontSize: 15,
-                        fontWeight: FontWeight.w700,
+                        fontWeight: FontWeight.w800,
                         letterSpacing: 1.5,
-                        color: Colors.white,
                       ),
                     ),
                     SizedBox(width: 8),
-                    Icon(Icons.arrow_forward, size: 18, color: Colors.white),
+                    Icon(Icons.arrow_forward, size: 18),
                   ],
                 ),
               ),
@@ -537,18 +589,26 @@ class _QuickRoutineCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: 140,
+        width: 150,
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: ZarpaColors.surface,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(16),
           border: Border.all(color: ZarpaColors.border),
+          boxShadow: const [
+            BoxShadow(
+              color: Color(0x0A0F172A),
+              blurRadius: 8,
+              offset: Offset(0, 2),
+            ),
+          ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('💪', style: TextStyle(fontSize: 28)),
-            const SizedBox(height: 8),
+            Icon(Icons.fitness_center,
+                size: 24, color: ZarpaColors.primary),
+            const SizedBox(height: 10),
             Text(
               routine.name,
               style: const TextStyle(
@@ -560,11 +620,19 @@ class _QuickRoutineCard extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
             ),
             const Spacer(),
-            Text(
-              '${routine.exercises.length} ej.',
-              style: const TextStyle(
-                fontSize: 11,
-                color: ZarpaColors.muted,
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+              decoration: BoxDecoration(
+                color: ZarpaColors.primary.withOpacity(0.15),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                '${routine.exercises.length} ej.',
+                style: const TextStyle(
+                  fontSize: 11,
+                  color: ZarpaColors.primary,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
           ],
@@ -589,22 +657,33 @@ class _RecentSessionRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 12),
+      padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
+      margin: EdgeInsets.only(bottom: isLast ? 0 : 8),
       decoration: BoxDecoration(
-        border: isLast
-            ? null
-            : const Border(
-                bottom: BorderSide(color: ZarpaColors.surface2, width: 1),
-              ),
+        color: ZarpaColors.surface,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: ZarpaColors.border),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x0A0F172A),
+            blurRadius: 8,
+            offset: Offset(0, 2),
+          ),
+        ],
       ),
       child: Row(
         children: [
           Container(
-            width: 8,
-            height: 8,
+            width: 36,
+            height: 36,
             decoration: BoxDecoration(
+              color: ZarpaColors.primary.withOpacity(0.12),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: const Icon(
+              Icons.play_arrow_rounded,
+              size: 18,
               color: ZarpaColors.primary,
-              borderRadius: BorderRadius.circular(4),
             ),
           ),
           const SizedBox(width: 12),
@@ -620,6 +699,7 @@ class _RecentSessionRow extends StatelessWidget {
                     color: ZarpaColors.foreground,
                   ),
                 ),
+                const SizedBox(height: 2),
                 Text(
                   date,
                   style: const TextStyle(
@@ -630,14 +710,24 @@ class _RecentSessionRow extends StatelessWidget {
               ],
             ),
           ),
-          Text(
-            duration,
-            style: const TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
-              color: ZarpaColors.foreground,
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+            decoration: BoxDecoration(
+              color: ZarpaColors.cta.withOpacity(0.12),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Text(
+              duration,
+              style: const TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+                color: ZarpaColors.cta,
+              ),
             ),
           ),
+          const SizedBox(width: 8),
+          const Icon(Icons.chevron_right,
+              size: 18, color: ZarpaColors.mutedLight),
         ],
       ),
     );

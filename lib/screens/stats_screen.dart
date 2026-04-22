@@ -116,7 +116,7 @@ class _StatsScreenState extends State<StatsScreen> {
   Widget build(BuildContext context) {
     if (_loading) {
       return const Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: ZarpaColors.background,
         body: Center(child: CircularProgressIndicator()),
       );
     }
@@ -131,7 +131,7 @@ class _StatsScreenState extends State<StatsScreen> {
     final dayLabels = _getDayLabels();
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: ZarpaColors.background,
       body: SafeArea(
         child: RefreshIndicator(
           onRefresh: _load,
@@ -151,26 +151,35 @@ class _StatsScreenState extends State<StatsScreen> {
 
               if (workouts.isEmpty) ...[
                 const SizedBox(height: 60),
-                const Center(
+                Center(
                   child: Column(
                     children: [
-                      Text('📊', style: TextStyle(fontSize: 64)),
-                      SizedBox(height: 12),
-                      Text(
+                      const Icon(Icons.bar_chart_rounded,
+                          size: 72, color: ZarpaColors.mutedLight),
+                      const SizedBox(height: 16),
+                      const Text(
                         'Entrena para ver tu progreso',
                         style: TextStyle(
-                          fontSize: 14,
-                          color: ZarpaColors.muted,
-                          fontWeight: FontWeight.w600,
+                          fontSize: 16,
+                          color: ZarpaColors.foreground,
+                          fontWeight: FontWeight.w700,
                         ),
                       ),
-                      SizedBox(height: 4),
-                      Text(
+                      const SizedBox(height: 6),
+                      const Text(
                         'Aquí verás tus estadísticas',
                         style: TextStyle(
-                          fontSize: 12,
-                          color: ZarpaColors.mutedLight,
+                          fontSize: 13,
+                          color: ZarpaColors.muted,
                         ),
+                      ),
+                      const SizedBox(height: 24),
+                      FilledButton.icon(
+                        onPressed: () {
+                          // Navigate to routines tab via parent
+                        },
+                        icon: const Icon(Icons.play_arrow, size: 18),
+                        label: const Text('Empezar a entrenar'),
                       ),
                     ],
                   ),

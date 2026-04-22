@@ -74,7 +74,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
                   ),
                   items: ExerciseCategory.values
                       .map((c) => DropdownMenuItem(
-                          value: c, child: Text('${c.icon} ${c.label}')))
+                          value: c, child: Text(c.label)))
                       .toList(),
                   onChanged: (v) {
                     if (v != null) setDialogState(() => selectedCategory = v);
@@ -283,7 +283,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
                   ),
                   items: ExerciseCategory.values
                       .map((c) => DropdownMenuItem(
-                          value: c, child: Text('${c.icon} ${c.label}')))
+                          value: c, child: Text(c.label)))
                       .toList(),
                   onChanged: (v) {
                     if (v != null) setDialogState(() => selectedCategory = v);
@@ -759,7 +759,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
                       fit: BoxFit.cover,
                       errorBuilder: (_, __, ___) => Container(
                         height: 100,
-                        color: Colors.grey[200],
+                        color: ZarpaColors.surface,
                         child: const Center(
                           child: Text('No se pudo cargar',
                               style: TextStyle(color: Colors.red)),
@@ -892,12 +892,12 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
     final topPadding = MediaQuery.of(context).padding.top;
 
     return Scaffold(
-      backgroundColor: ZarpaColors.surface,
+      backgroundColor: ZarpaColors.background,
       body: Column(
         children: [
           // Header con SafeArea
           Container(
-            color: Colors.white,
+            color: ZarpaColors.surface,
             padding: EdgeInsets.only(top: topPadding),
             child: Column(
               children: [
@@ -1076,8 +1076,9 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
                       margin: const EdgeInsets.only(bottom: 10),
                       elevation: 0,
                       shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16)),
-                      color: Colors.white,
+                          borderRadius: BorderRadius.circular(16),
+                          side: const BorderSide(color: ZarpaColors.border)),
+                      color: ZarpaColors.surface,
                       child: InkWell(
                         borderRadius: BorderRadius.circular(16),
                         onTap: () => _showEditDialog(ex),
@@ -1117,7 +1118,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
                                     ),
                                     const SizedBox(height: 4),
                                     Text(
-                                      '${ex.category.icon} ${ex.category.label} · ${ex.muscleGroup.label}'
+                                      '${ex.category.label} · ${ex.muscleGroup.label}'
                                           '${ex.description != null ? ' · ${ex.description}' : ''}',
                                       style: const TextStyle(
                                         color: ZarpaColors.muted,

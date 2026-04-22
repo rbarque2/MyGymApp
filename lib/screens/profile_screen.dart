@@ -127,7 +127,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     if (_loading) {
       return const Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: ZarpaColors.background,
         body: Center(child: CircularProgressIndicator()),
       );
     }
@@ -149,43 +149,43 @@ class _ProfileScreenState extends State<ProfileScreen> {
       _Achievement(
         'Primera Zarpa',
         'Primer entrenamiento',
-        '🐾',
+        Icons.pets,
         totalSessions >= 1,
       ),
       _Achievement(
         'Guerrero Urbano',
         '10 sesiones',
-        '⚔️',
+        Icons.shield,
         totalSessions >= 10,
       ),
       _Achievement(
         'Racha de Fuego',
         '7 días seguidos',
-        '🔥',
+        Icons.local_fire_department,
         bestStreak >= 7,
       ),
       _Achievement(
         'Élite del Asfalto',
         '30 sesiones',
-        '⚡',
+        Icons.bolt,
         totalSessions >= 30,
       ),
       _Achievement(
         'Leyenda Nocturna',
         '75 sesiones',
-        '🏆',
+        Icons.emoji_events,
         totalSessions >= 75,
       ),
       _Achievement(
         'Instinto Puro',
         '5 entrenamientos HIIT',
-        '💥',
-        false, // Can't track HIIT separately yet
+        Icons.flash_on,
+        false,
       ),
     ];
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: ZarpaColors.background,
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
@@ -441,9 +441,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
 class _Achievement {
   final String title;
   final String description;
-  final String emoji;
+  final IconData icon;
   final bool unlocked;
-  const _Achievement(this.title, this.description, this.emoji, this.unlocked);
+  const _Achievement(this.title, this.description, this.icon, this.unlocked);
 }
 
 class _ProfileStatCard extends StatelessWidget {
@@ -520,12 +520,14 @@ class _AchievementCard extends StatelessWidget {
           ),
           child: Column(
             children: [
-              Text(
-                achievement.unlocked ? achievement.emoji : '🔒',
-                style: TextStyle(
-                  fontSize: 28,
-                  color: achievement.unlocked ? null : ZarpaColors.mutedLight,
-                ),
+              Icon(
+                achievement.unlocked
+                    ? achievement.icon
+                    : Icons.lock_outline,
+                size: 28,
+                color: achievement.unlocked
+                    ? ZarpaColors.primary
+                    : ZarpaColors.mutedLight,
               ),
               const SizedBox(height: 4),
               Text(

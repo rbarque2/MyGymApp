@@ -61,7 +61,7 @@ class _WorkoutCompletionScreenState extends State<WorkoutCompletionScreen>
     final calories = (widget.durationMinutes * 7.5).round(); // estimate
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: ZarpaColors.background,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -82,7 +82,8 @@ class _WorkoutCompletionScreenState extends State<WorkoutCompletionScreen>
                         Border.all(color: ZarpaColors.primary, width: 3),
                   ),
                   child: const Center(
-                    child: Text('🏆', style: TextStyle(fontSize: 56)),
+                    child: Icon(Icons.emoji_events,
+                        size: 56, color: ZarpaColors.primary),
                   ),
                 ),
               ),

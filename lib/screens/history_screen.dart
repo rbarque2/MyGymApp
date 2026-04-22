@@ -17,7 +17,7 @@ class HistoryScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: ZarpaColors.surface,
+      backgroundColor: ZarpaColors.background,
       body: StreamBuilder<List<WorkoutSessionModel>>(
         stream: workoutsRepository.watchWorkouts(ownerUid),
         builder: (context, snapshot) {
@@ -54,8 +54,9 @@ class HistoryScreen extends StatelessWidget {
                 margin: const EdgeInsets.only(bottom: 10),
                 elevation: 0,
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16)),
-                color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    side: const BorderSide(color: ZarpaColors.border)),
+                color: ZarpaColors.surface,
                 child: ExpansionTile(
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16)),

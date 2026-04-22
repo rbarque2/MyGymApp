@@ -10,14 +10,14 @@ import '../services/settings_service.dart';
 import '../theme/zarpafit_theme.dart';
 import 'workout_screen.dart';
 
-/// Paleta de gradientes para tarjetas de programa.
+/// Paleta de gradientes para tarjetas de programa — vibrante.
 const _cardGradients = <List<Color>>[
-  [Color(0xFF6EC6FF), Color(0xFF2196F3)], // 0 azul claro
-  [Color(0xFFCE93D8), Color(0xFF9C27B0)], // 1 lavanda
-  [Color(0xFF80CBC4), Color(0xFF009688)], // 2 menta
-  [Color(0xFFFFCC80), Color(0xFFFF9800)], // 3 melocotón
-  [Color(0xFFEF9A9A), Color(0xFFE53935)], // 4 coral
-  [Color(0xFFA5D6A7), Color(0xFF43A047)], // 5 verde
+  [Color(0xFFFB923C), Color(0xFFF97316)], // naranja
+  [Color(0xFF34D399), Color(0xFF10B981)], // esmeralda
+  [Color(0xFF60A5FA), Color(0xFF3B82F6)], // azul
+  [Color(0xFFFBBF24), Color(0xFFF59E0B)], // ámbar
+  [Color(0xFFF87171), Color(0xFFEF4444)], // rojo
+  [Color(0xFFA78BFA), Color(0xFF8B5CF6)], // violeta
 ];
 
 /// Pantalla de catálogo de programas predefinidos.
@@ -47,6 +47,19 @@ class _ProgramsSectionState extends State<ProgramsSection> {
   List<ProgramModel> _programs = [];
   bool _loading = true;
   bool _importing = false;
+
+  static IconData _categoryIcon(ProgramCategory cat) {
+    switch (cat) {
+      case ProgramCategory.rapidos:
+        return Icons.bolt;
+      case ProgramCategory.programas:
+        return Icons.assignment;
+      case ProgramCategory.calentamientos:
+        return Icons.local_fire_department;
+      case ProgramCategory.estiramientos:
+        return Icons.self_improvement;
+    }
+  }
 
   static const _filterTags = [
     'Fuerza',
@@ -223,6 +236,7 @@ class _ProgramsSectionState extends State<ProgramsSection> {
                 child: TextField(
                   controller: _searchCtrl,
                   onChanged: (v) => setState(() => _searchQuery = v.toLowerCase()),
+                  style: const TextStyle(color: ZarpaColors.foreground, fontSize: 14),
                   decoration: InputDecoration(
                     hintText: 'Buscar programas...',
                     hintStyle: const TextStyle(
@@ -257,7 +271,6 @@ class _ProgramsSectionState extends State<ProgramsSection> {
                     ),
                     isDense: true,
                   ),
-                  style: const TextStyle(fontSize: 14),
                 ),
               ),
               const SizedBox(width: 8),
@@ -388,7 +401,8 @@ class _ProgramsSectionState extends State<ProgramsSection> {
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Row(
             children: [
-              Text(cat.icon, style: const TextStyle(fontSize: 18)),
+              Icon(_categoryIcon(cat),
+                  size: 18, color: ZarpaColors.primary),
               const SizedBox(width: 6),
               Text(
                 cat.label,
@@ -510,11 +524,9 @@ class _ProgramCard extends StatelessWidget {
                 right: -10,
                 bottom: -10,
                 child: Opacity(
-                  opacity: 0.15,
-                  child: Text(
-                    program.emoji,
-                    style: const TextStyle(fontSize: 100),
-                  ),
+                  opacity: 0.12,
+                  child: Icon(Icons.fitness_center,
+                      size: 100, color: Colors.white),
                 ),
               ),
 
@@ -524,11 +536,11 @@ class _ProgramCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Emoji + nivel
+                  // Icon + nivel
                   Row(
                     children: [
-                      Text(program.emoji,
-                          style: const TextStyle(fontSize: 28)),
+                      Icon(Icons.fitness_center,
+                          size: 24, color: Colors.white),
                       const Spacer(),
                       Container(
                         padding: const EdgeInsets.symmetric(
@@ -616,7 +628,7 @@ class _ProgramCard extends StatelessWidget {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.white,
+      backgroundColor: ZarpaColors.background,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -659,8 +671,8 @@ class _ProgramCard extends StatelessWidget {
                     const SizedBox(height: 16),
                     Row(
                       children: [
-                        Text(program.emoji,
-                            style: const TextStyle(fontSize: 40)),
+                        Icon(Icons.fitness_center,
+                            size: 36, color: Colors.white),
                         const SizedBox(width: 12),
                         Expanded(
                           child: Column(

@@ -333,7 +333,7 @@ class _WorkoutScreenState extends State<WorkoutScreen>
         _sets.isEmpty ? 0.0 : _completedCount / _sets.length;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: ZarpaColors.background,
       body: SafeArea(
         child: Column(
           children: [
@@ -355,7 +355,7 @@ class _WorkoutScreenState extends State<WorkoutScreen>
                   if (_showingRest)
                     Positioned.fill(
                       child: Container(
-                        color: Colors.white,
+                        color: ZarpaColors.background,
                         child: _buildRestView(),
                       ),
                     ),
@@ -517,13 +517,15 @@ class _WorkoutScreenState extends State<WorkoutScreen>
                       height: 130,
                       width: 130,
                       fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => Text(_categoryIcon(ex),
-                          style: const TextStyle(fontSize: 56)),
+                      errorBuilder: (_, __, ___) => Icon(
+                          _categoryIconData(ex),
+                          size: 56,
+                          color: ZarpaColors.primary),
                     ),
                   )
                 else
-                  Text(_categoryIcon(ex),
-                      style: const TextStyle(fontSize: 56)),
+                  Icon(_categoryIconData(ex),
+                      size: 56, color: ZarpaColors.primary),
                 const SizedBox(height: 12),
 
                 // Exercise name
@@ -1039,9 +1041,9 @@ class _WorkoutScreenState extends State<WorkoutScreen>
     required VoidCallback? onCheckTap,
   }) {
     final bg = isCompleted
-        ? const Color(0xFFDFFFDB) // verde claro estilo Hevy
+        ? ZarpaColors.success.withOpacity(0.15)
         : isCurrent
-            ? ZarpaColors.primary.withOpacity(0.08)
+            ? ZarpaColors.primary.withOpacity(0.12)
             : ZarpaColors.surface;
     final border = isCurrent && !isCompleted
         ? ZarpaColors.primary
@@ -1066,7 +1068,7 @@ class _WorkoutScreenState extends State<WorkoutScreen>
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: isCompleted
-                    ? const Color(0xFF2E7D32)
+                    ? ZarpaColors.success
                     : ZarpaColors.surface2,
               ),
               child: Text(
@@ -1087,7 +1089,7 @@ class _WorkoutScreenState extends State<WorkoutScreen>
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
                   color: isCompleted
-                      ? const Color(0xFF1B5E20)
+                      ? ZarpaColors.success
                       : ZarpaColors.foreground,
                 ),
               ),
@@ -1101,12 +1103,12 @@ class _WorkoutScreenState extends State<WorkoutScreen>
                 height: 36,
                 decoration: BoxDecoration(
                   color: isCompleted
-                      ? const Color(0xFF2E7D32)
+                      ? ZarpaColors.success
                       : Colors.transparent,
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(
                     color: isCompleted
-                        ? const Color(0xFF2E7D32)
+                        ? ZarpaColors.success
                         : ZarpaColors.border,
                     width: 1.5,
                   ),
@@ -1174,17 +1176,16 @@ class _WorkoutScreenState extends State<WorkoutScreen>
     return idx;
   }
 
-  String _categoryIcon(RoutineExercise ex) {
-    // Try to match the exercise's measurement type to a category icon
+  IconData _categoryIconData(RoutineExercise ex) {
     switch (ex.measurementType) {
       case MeasurementType.time:
-        return '⏱️';
+        return Icons.timer_outlined;
       case MeasurementType.distance:
-        return '🏃';
+        return Icons.directions_run;
       case MeasurementType.reps:
-        return '💪';
+        return Icons.fitness_center;
       case MeasurementType.weight:
-        return '🏋️';
+        return Icons.fitness_center;
     }
   }
 
@@ -1301,7 +1302,8 @@ class _WorkoutScreenState extends State<WorkoutScreen>
             ),
             child: Row(
               children: [
-                const Text('💪', style: TextStyle(fontSize: 24)),
+                const Icon(Icons.fitness_center,
+                    size: 24, color: ZarpaColors.primary),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Column(

@@ -109,7 +109,7 @@ class _LoginScreenState extends State<LoginScreen>
               Text(
                 'Instinto en movimiento',
                 style: TextStyle(
-                  color: ZarpaColors.mutedLight,
+                  color: Colors.white.withOpacity(0.6),
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
                   letterSpacing: 1,
@@ -155,7 +155,7 @@ class _LoginScreenState extends State<LoginScreen>
                           width: 18,
                           height: 18,
                           child: CircularProgressIndicator(
-                              strokeWidth: 2, color: Colors.white),
+                              strokeWidth: 2, color: ZarpaColors.primary),
                         )
                       : const Icon(Icons.login),
                   label: const Text('ENTRAR CON GOOGLE'),
