@@ -30,6 +30,14 @@ App para gestionar entrenamientos de gimnasio. Organiza tus ejercicios, crea rut
 
 > Registro de actualizaciones. Cada día con cambios se publica como una versión nueva.
 
+### 2026-06-10
+
+- **Empty state en Home**: cuando el usuario no tiene rutinas, se muestra una tarjeta con ícono, texto motivacional y botón "Crear mi primera rutina" que lleva directamente a la pestaña Entrena.
+- **Cálculo de racha corregido**: Home ahora carga hasta 30 sesiones para calcular la racha de días correctamente (antes solo cargaba 3 y podía mostrar racha falsa).
+- **Fechas legibles en sesiones recientes**: formato cambiado de `5/6/2026` a `5 jun` usando helper interno (sin dependencia de intl).
+- **Filas de sesión reciente son tappables**: las filas con chevron derecho ahora responden al toque con ripple de InkWell. El chevron ya no miente.
+- **Peek en carrusel de rutinas rápidas**: ShaderMask con degradado en el borde derecho del carrusel horizontal indica que hay más cards fuera de pantalla.
+
 ### 2026-04-19
 
 - **Timer de descanso en segundo plano**: el temporizador ahora usa un timestamp de fin como fuente de verdad; al cambiar de app y volver, el tiempo restante es el correcto.

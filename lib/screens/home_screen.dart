@@ -46,6 +46,7 @@ class _HomeScreenState extends State<HomeScreen> {
         exercisesRepository: widget.exercisesRepository,
         workoutsRepository: widget.workoutsRepository,
         settingsService: widget.settingsService,
+        onGoToRoutines: () => setState(() => _currentIndex = 1),
       ),
       RoutinesScreen(
         ownerUid: _user.uid,

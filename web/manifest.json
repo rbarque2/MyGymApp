@@ -1,12 +1,16 @@
 {
-    "name": "ZarpaFit",
+    "name": "ZarpaFit — Entrenamientos de gimnasio",
     "short_name": "ZarpaFit",
+    "id": "/",
     "start_url": ".",
+    "scope": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#F8FAFC",
+    "theme_color": "#F97316",
+    "description": "App para gestionar tus entrenamientos de gimnasio",
     "orientation": "portrait-primary",
+    "lang": "es",
+    "categories": ["health", "fitness", "sports"],
     "prefer_related_applications": false,
     "icons": [
         {

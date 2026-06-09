@@ -21,6 +21,7 @@ class HomeTabScreen extends StatefulWidget {
     required this.exercisesRepository,
     required this.workoutsRepository,
     required this.settingsService,
+    this.onGoToRoutines,
   });
 
   final String ownerUid;
@@ -29,6 +30,7 @@ class HomeTabScreen extends StatefulWidget {
   final ExercisesRepository exercisesRepository;
   final WorkoutsRepository workoutsRepository;
   final SettingsService settingsService;
+  final VoidCallback? onGoToRoutines;
 
   @override
   State<HomeTabScreen> createState() => _HomeTabScreenState();
@@ -84,11 +86,20 @@ class _HomeTabScreenState extends State<HomeTabScreen> {
   }
 
   Future<void> _loadRecent() async {
+    // Load up to 30 sessions so streak calculation is accurate;
+    // only the first 3 are shown in the UI.
     final data = await widget.workoutsRepository.getRecentWorkouts(
       widget.ownerUid,
-      limit: 3,
     );
     if (mounted) setState(() => _recentWorkouts = data);
+  }
+
+  static String _formatDate(DateTime date) {
+    const months = [
+      'ene', 'feb', 'mar', 'abr', 'may', 'jun',
+      'jul', 'ago', 'sep', 'oct', 'nov', 'dic'
+    ];
+    return '${date.day} ${months[date.month - 1]}';
   }
 
   int _calculateStreak(List<WorkoutSessionModel> workouts) {
@@ -214,6 +225,15 @@ class _HomeTabScreenState extends State<HomeTabScreen> {
                 ),
                 const SizedBox(height: 32),
 
+                // === EMPTY STATE ===
+                if (routines.isEmpty) ...[
+                  const SizedBox(height: 24),
+                  _EmptyHomeState(
+                    onCreateRoutine: widget.onGoToRoutines ?? () {},
+                  ),
+                  const SizedBox(height: 32),
+                ],
+
                 // === FEATURED WORKOUT ===
                 if (routines.isNotEmpty) ...[
                   _SectionTitle(label: 'ENTRENAMIENTO DEL DÍA'),
@@ -250,33 +270,47 @@ class _HomeTabScreenState extends State<HomeTabScreen> {
                 if (routines.length > 1) ...[
                   _SectionTitle(label: 'RUTINAS RÁPIDAS'),
                   const SizedBox(height: 14),
-                  SizedBox(
-                    height: 130,
-                    child: ListView.separated(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: routines.length.clamp(0, 6),
-                      separatorBuilder: (_, __) => const SizedBox(width: 12),
-                      itemBuilder: (context, i) {
-                        final r = routines[i];
-                        return _QuickRoutineCard(
-                          routine: r,
-                          onTap: () => Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (_) => RoutineDetailScreen(
-                                ownerUid: widget.ownerUid,
-                                routine: r,
-                                routinesRepository:
-                                    widget.routinesRepository,
-                                exercisesRepository:
-                                    widget.exercisesRepository,
-                                workoutsRepository:
-                                    widget.workoutsRepository,
-                                settingsService: widget.settingsService,
+                  ShaderMask(
+                    shaderCallback: (bounds) => LinearGradient(
+                      begin: Alignment.centerLeft,
+                      end: Alignment.centerRight,
+                      colors: [
+                        ZarpaColors.background,
+                        ZarpaColors.background,
+                        ZarpaColors.background.withOpacity(0),
+                      ],
+                      stops: const [0.0, 0.85, 1.0],
+                    ).createShader(bounds),
+                    blendMode: BlendMode.dstIn,
+                    child: SizedBox(
+                      height: 130,
+                      child: ListView.separated(
+                        scrollDirection: Axis.horizontal,
+                        padding: const EdgeInsets.only(right: 32),
+                        itemCount: routines.length.clamp(0, 6),
+                        separatorBuilder: (ctx, i) => const SizedBox(width: 12),
+                        itemBuilder: (context, i) {
+                          final r = routines[i];
+                          return _QuickRoutineCard(
+                            routine: r,
+                            onTap: () => Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (_) => RoutineDetailScreen(
+                                  ownerUid: widget.ownerUid,
+                                  routine: r,
+                                  routinesRepository:
+                                      widget.routinesRepository,
+                                  exercisesRepository:
+                                      widget.exercisesRepository,
+                                  workoutsRepository:
+                                      widget.workoutsRepository,
+                                  settingsService: widget.settingsService,
+                                ),
                               ),
                             ),
-                          ),
-                        );
-                      },
+                          );
+                        },
+                      ),
                     ),
                   ),
                   const SizedBox(height: 32),
@@ -286,17 +320,15 @@ class _HomeTabScreenState extends State<HomeTabScreen> {
                 if (_recentWorkouts.isNotEmpty) ...[
                   _SectionTitle(label: 'ÚLTIMAS SESIONES'),
                   const SizedBox(height: 14),
-                  ...List.generate(_recentWorkouts.length, (i) {
+                  ...List.generate(_recentWorkouts.take(3).length, (i) {
                     final w = _recentWorkouts[i];
                     final date = w.startedAt?.toDate();
-                    final dateStr = date != null
-                        ? '${date.day}/${date.month}/${date.year}'
-                        : '';
+                    final dateStr = date != null ? _formatDate(date) : '';
                     return _RecentSessionRow(
                       name: w.routineName,
                       date: dateStr,
                       duration: '${w.durationMinutes ?? 0} min',
-                      isLast: i == _recentWorkouts.length - 1,
+                      isLast: i == (_recentWorkouts.take(3).length - 1),
                     );
                   }),
                   const SizedBox(height: 32),
@@ -657,7 +689,6 @@ class _RecentSessionRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
       margin: EdgeInsets.only(bottom: isLast ? 0 : 8),
       decoration: BoxDecoration(
         color: ZarpaColors.surface,
@@ -671,63 +702,137 @@ class _RecentSessionRow extends StatelessWidget {
           ),
         ],
       ),
-      child: Row(
-        children: [
-          Container(
-            width: 36,
-            height: 36,
-            decoration: BoxDecoration(
-              color: ZarpaColors.primary.withOpacity(0.12),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: const Icon(
-              Icons.play_arrow_rounded,
-              size: 18,
-              color: ZarpaColors.primary,
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(12),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(12),
+          onTap: () {},
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
+            child: Row(
               children: [
-                Text(
-                  name,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: ZarpaColors.foreground,
+                Container(
+                  width: 36,
+                  height: 36,
+                  decoration: BoxDecoration(
+                    color: ZarpaColors.primary.withOpacity(0.12),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: const Icon(
+                    Icons.play_arrow_rounded,
+                    size: 18,
+                    color: ZarpaColors.primary,
                   ),
                 ),
-                const SizedBox(height: 2),
-                Text(
-                  date,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: ZarpaColors.muted,
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        name,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: ZarpaColors.foreground,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        date,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: ZarpaColors.muted,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: ZarpaColors.cta.withOpacity(0.12),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    duration,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                      color: ZarpaColors.cta,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                const Icon(Icons.chevron_right,
+                    size: 18, color: ZarpaColors.mutedLight),
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _EmptyHomeState extends StatelessWidget {
+  const _EmptyHomeState({required this.onCreateRoutine});
+  final VoidCallback onCreateRoutine;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(28),
+      decoration: BoxDecoration(
+        color: ZarpaColors.surface,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: ZarpaColors.border),
+      ),
+      child: Column(
+        children: [
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+            width: 64,
+            height: 64,
             decoration: BoxDecoration(
-              color: ZarpaColors.cta.withOpacity(0.12),
-              borderRadius: BorderRadius.circular(8),
+              color: ZarpaColors.primary.withOpacity(0.10),
+              shape: BoxShape.circle,
             ),
-            child: Text(
-              duration,
-              style: const TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w700,
-                color: ZarpaColors.cta,
-              ),
+            child: const Icon(
+              Icons.fitness_center,
+              size: 32,
+              color: ZarpaColors.primary,
             ),
           ),
-          const SizedBox(width: 8),
-          const Icon(Icons.chevron_right,
-              size: 18, color: ZarpaColors.mutedLight),
+          const SizedBox(height: 16),
+          const Text(
+            'Despierta la zarpa',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w800,
+              color: ZarpaColors.foreground,
+              letterSpacing: -0.5,
+            ),
+          ),
+          const SizedBox(height: 8),
+          const Text(
+            'Crea tu primera rutina y empieza a entrenar.',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 14,
+              color: ZarpaColors.muted,
+              height: 1.4,
+            ),
+          ),
+          const SizedBox(height: 20),
+          SizedBox(
+            width: double.infinity,
+            child: FilledButton.icon(
+              onPressed: onCreateRoutine,
+              icon: const Icon(Icons.add, size: 18),
+              label: const Text('CREAR MI PRIMERA RUTINA'),
+            ),
+          ),
         ],
       ),
     );
