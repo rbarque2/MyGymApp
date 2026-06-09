@@ -18,7 +18,8 @@
 
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="A new Flutter project.">
+  <meta name="description" content="ZarpaFit — App para gestionar entrenamientos de gimnasio.">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="google-signin-client_id" content="98838895021-8ofpvk9tn27vn72v1prd1mni4m6vnqv7.apps.googleusercontent.com">
   <!-- iOS meta tags & icons -->
   <meta name="mobile-web-app-capable" content="yes">
@@ -31,8 +32,136 @@
 
   <title>ZarpaFit</title>
   <link rel="manifest" href="manifest.json">
+
+  <style>
+    #zf-boot {
+      position: fixed;
+      inset: 0;
+      z-index: 2147483647;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 18px;
+      background: #F8FAFC;
+      color: #0F172A;
+      font-family: 'Inter', -apple-system, 'Segoe UI', Roboto, sans-serif;
+      text-align: center;
+      padding: 24px;
+      transition: opacity 250ms ease-out;
+    }
+    #zf-boot.zf-hidden { opacity: 0; pointer-events: none; }
+    #zf-boot .zf-spinner {
+      width: 44px;
+      height: 44px;
+      border: 4px solid #FDE8D7;
+      border-top-color: #F97316;
+      border-radius: 50%;
+      animation: zf-spin 0.9s linear infinite;
+    }
+    @keyframes zf-spin { to { transform: rotate(360deg); } }
+    #zf-boot .zf-title { font-size: 22px; font-weight: 800; letter-spacing: 3px; }
+    #zf-boot .zf-msg { font-size: 14px; color: #64748B; max-width: 320px; line-height: 1.5; }
+    #zf-boot .zf-error-detail {
+      font-size: 11px;
+      color: #94A3B8;
+      max-width: 320px;
+      word-break: break-word;
+      max-height: 90px;
+      overflow: auto;
+    }
+    #zf-boot button {
+      border: 0;
+      border-radius: 12px;
+      background: #F97316;
+      color: #fff;
+      font-weight: 700;
+      font-size: 15px;
+      letter-spacing: 1px;
+      padding: 14px 28px;
+      cursor: pointer;
+      font-family: inherit;
+    }
+  </style>
 </head>
 <body>
+  <!-- Pantalla de arranque: evita el "blanco total" si la app tarda o falla al iniciar. -->
+  <div id="zf-boot">
+    <div class="zf-spinner"></div>
+    <div class="zf-title">ZARPAFIT</div>
+    <div class="zf-msg">Cargando…</div>
+  </div>
+
+  <script>
+    (function () {
+      var boot = document.getElementById('zf-boot');
+      var booted = false;
+      var lastError = null;
+
+      function hideBoot() {
+        if (booted) return;
+        booted = true;
+        boot.classList.add('zf-hidden');
+        setTimeout(function () { boot.remove(); }, 400);
+      }
+
+      // Flutter dispara este evento cuando pinta el primer frame.
+      window.addEventListener('flutter-first-frame', hideBoot);
+
+      // Guarda el último error de arranque para mostrarlo si la app no llega a pintar.
+      window.addEventListener('error', function (e) {
+        lastError = (e.message || '') + (e.filename ? ' (' + e.filename + ')' : '');
+      });
+      window.addEventListener('unhandledrejection', function (e) {
+        var r = e.reason;
+        lastError = (r && (r.message || r.toString())) || 'Unhandled rejection';
+      });
+
+      function resetAndReload() {
+        var tasks = [];
+        if (navigator.serviceWorker && navigator.serviceWorker.getRegistrations) {
+          tasks.push(navigator.serviceWorker.getRegistrations().then(function (regs) {
+            return Promise.all(regs.map(function (r) { return r.unregister(); }));
+          }));
+        }
+        if (window.caches && caches.keys) {
+          tasks.push(caches.keys().then(function (keys) {
+            return Promise.all(keys.map(function (k) { return caches.delete(k); }));
+          }));
+        }
+        Promise.all(tasks)
+          .catch(function () {})
+          .then(function () { location.reload(); });
+      }
+
+      function showBootError() {
+        if (booted) return;
+        boot.innerHTML = '';
+        var title = document.createElement('div');
+        title.className = 'zf-title';
+        title.textContent = 'ZARPAFIT';
+        var msg = document.createElement('div');
+        msg.className = 'zf-msg';
+        msg.textContent = 'La app no se ha podido iniciar. Suele deberse a una versión antigua guardada en caché o a que la red bloquea recursos (www.gstatic.com). Pulsa Reintentar para limpiar la caché y volver a cargar.';
+        var btn = document.createElement('button');
+        btn.textContent = 'REINTENTAR';
+        btn.addEventListener('click', resetAndReload);
+        boot.appendChild(title);
+        boot.appendChild(msg);
+        boot.appendChild(btn);
+        if (lastError) {
+          var detail = document.createElement('div');
+          detail.className = 'zf-error-detail';
+          detail.textContent = lastError;
+          boot.appendChild(detail);
+        }
+      }
+
+      // Si en 20s no se ha pintado el primer frame, muestra el error con opción de reintento.
+      setTimeout(showBootError, 20000);
+    })();
+  </script>
+
   <script src="flutter_bootstrap.js" async></script>
 </body>
 </html>
