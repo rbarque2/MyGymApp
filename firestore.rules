@@ -1,0 +1,55 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    // El documento existente pertenece al usuario autenticado.
+    function isOwner() {
+      return signedIn() && resource.data.ownerUid == request.auth.uid;
+    }
+
+    // El documento nuevo se crea a nombre del usuario autenticado.
+    function createsAsOwner() {
+      return signedIn() && request.resource.data.ownerUid == request.auth.uid;
+    }
+
+    // No se permite transferir un documento a otro usuario.
+    function keepsOwner() {
+      return request.resource.data.ownerUid == resource.data.ownerUid;
+    }
+
+    // Datos por usuario: filtrados siempre por ownerUid en la app.
+    match /routines/{routineId} {
+      allow read, delete: if isOwner();
+      allow create: if createsAsOwner();
+      allow update: if isOwner() && keepsOwner();
+    }
+
+    match /exercises/{exerciseId} {
+      allow read, delete: if isOwner();
+      allow create: if createsAsOwner();
+      allow update: if isOwner() && keepsOwner();
+    }
+
+    match /workouts/{workoutId} {
+      allow read, delete: if isOwner();
+      allow create: if createsAsOwner();
+      allow update: if isOwner() && keepsOwner();
+    }
+
+    // Catálogo de programas: lectura para cualquier usuario autenticado.
+    // La escritura también, porque la importación desde CSV se hace desde la app.
+    match /programs/{programId} {
+      allow read, write: if signedIn();
+    }
+
+    // Todo lo demás, denegado.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
