@@ -10,6 +10,8 @@ App para gestionar entrenamientos de gimnasio. Organiza tus ejercicios, crea rut
 - **Temporizador de descanso** — Timer integrado entre series con duración configurable
 - **Historial** — Consulta todas tus sesiones pasadas con detalles de volumen y duración
 - **Estadísticas y progreso** — Gráficas de evolución de volumen y duración por sesión
+- **Dark mode** — Tema claro y oscuro con selector (sistema/claro/oscuro)
+- **Notificaciones** — Aviso de fin de descanso en segundo plano y recordatorio diario de entreno
 - **Autenticación con Google** — Login seguro y sincronización entre dispositivos
 
 ## Tech Stack
@@ -32,6 +34,11 @@ App para gestionar entrenamientos de gimnasio. Organiza tus ejercicios, crea rut
 
 ### 2026-06-10
 
+- **Dark mode completo**: nueva paleta oscura (gray-900/800 con el naranja/verde de marca) y selector Sistema / Claro / Oscuro en Configuración → Apariencia, con persistencia y respuesta en vivo al tema del sistema. Internamente `ZarpaColors` pasó de constantes a getters sobre una paleta intercambiable (`tool/deconst.py` limpió los ~106 `const` huérfanos).
+- **Tipografía de marca real**: Barlow (cuerpo) y Barlow Condensed (titulares, AppBar, hero) bundleadas en `assets/fonts` y declaradas en pubspec. Antes el tema pedía 'Inter' sin incluirla y toda la app caía en Roboto.
+- **Hero con foto en Home**: la tarjeta "Entrenamiento del día" ahora muestra foto de portada (foto propia de la rutina → foto del primer ejercicio → set curado de Unsplash por hash del nombre) con velo oscuro para legibilidad y fallback al gradiente naranja si no hay red.
+- **Notificaciones locales**: aviso de "Descanso terminado" cuando la app está en segundo plano con el timer corriendo (se programa al pasar a background y se cancela al volver), y recordatorio diario de entrenamiento configurable en Configuración → Recordatorio. Permisos Android 13+/iOS gestionados; sin soporte web (no-op).
+- **Campo `photoUrl` en rutinas**: las rutinas propias aceptan foto de portada (Firestore, opcional y retrocompatible).
 - **Empty state en Home**: cuando el usuario no tiene rutinas, se muestra una tarjeta con ícono, texto motivacional y botón "Crear mi primera rutina" que lleva directamente a la pestaña Entrena.
 - **Cálculo de racha corregido**: Home ahora carga hasta 30 sesiones para calcular la racha de días correctamente (antes solo cargaba 3 y podía mostrar racha falsa).
 - **Fechas legibles en sesiones recientes**: formato cambiado de `5/6/2026` a `5 jun` usando helper interno (sin dependencia de intl).

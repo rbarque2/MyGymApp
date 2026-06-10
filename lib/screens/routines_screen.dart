@@ -151,7 +151,7 @@ class _RoutinesScreenState extends State<RoutinesScreen> {
               padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
               child: Row(
                 children: [
-                  const Expanded(
+                  Expanded(
                     child: Text(
                       'ENTRENA',
                       style: TextStyle(
@@ -163,7 +163,7 @@ class _RoutinesScreenState extends State<RoutinesScreen> {
                     ),
                   ),
                   IconButton(
-                    icon: const Icon(Icons.fitness_center, size: 20,
+                    icon: Icon(Icons.fitness_center, size: 20,
                         color: ZarpaColors.muted),
                     tooltip: 'Gestionar ejercicios',
                     onPressed: () => Navigator.of(context).push(
@@ -288,7 +288,7 @@ class _RoutinesScreenState extends State<RoutinesScreen> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text(
+                Text(
                   'Sin rutinas todavía',
                   style: TextStyle(
                     fontSize: 14,
@@ -297,7 +297,7 @@ class _RoutinesScreenState extends State<RoutinesScreen> {
                   ),
                 ),
                 const SizedBox(height: 4),
-                const Text(
+                Text(
                   'Activa tu lado salvaje',
                   style: TextStyle(
                     fontSize: 12,
@@ -346,11 +346,11 @@ class _RoutinesScreenState extends State<RoutinesScreen> {
           child: TextField(
             controller: _searchCtrl,
             onChanged: (v) => setState(() => _searchQuery = v.toLowerCase()),
-            style: const TextStyle(color: ZarpaColors.foreground),
+            style: TextStyle(color: ZarpaColors.foreground),
             decoration: InputDecoration(
               hintText: 'Buscar ejercicio...',
-              hintStyle: const TextStyle(color: ZarpaColors.mutedLight),
-              prefixIcon: const Icon(Icons.search, color: ZarpaColors.muted),
+              hintStyle: TextStyle(color: ZarpaColors.mutedLight),
+              prefixIcon: Icon(Icons.search, color: ZarpaColors.muted),
               suffixIcon: _searchQuery.isNotEmpty
                   ? IconButton(
                       icon: const Icon(Icons.clear, size: 18),
@@ -458,14 +458,14 @@ class _RoutinesScreenState extends State<RoutinesScreen> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(Icons.search_off,
+                      Icon(Icons.search_off,
                           size: 48, color: ZarpaColors.mutedLight),
                       const SizedBox(height: 8),
                       Text(
                         _searchQuery.isNotEmpty || _tagFilter != null
                             ? 'Sin resultados'
                             : 'No hay ejercicios',
-                        style: const TextStyle(
+                        style: TextStyle(
                             color: ZarpaColors.muted, fontSize: 14),
                       ),
                     ],
@@ -735,7 +735,7 @@ class _ExerciseCard extends StatelessWidget {
                 children: [
                   Text(
                     exercise.name,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontWeight: FontWeight.w700,
                       fontSize: 15,
                       color: ZarpaColors.foreground,
@@ -744,7 +744,7 @@ class _ExerciseCard extends StatelessWidget {
                   const SizedBox(height: 2),
                   Text(
                     exercise.muscleGroup.label,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 12,
                       color: ZarpaColors.muted,
                     ),

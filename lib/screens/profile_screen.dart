@@ -126,7 +126,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     if (_loading) {
-      return const Scaffold(
+      return Scaffold(
         backgroundColor: ZarpaColors.background,
         body: Center(child: CircularProgressIndicator()),
       );
@@ -305,7 +305,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     totalSessions >= 75
                         ? 'Nivel máximo alcanzado'
                         : '$totalSessions / $nextThreshold sesiones para el siguiente nivel',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 11,
                       color: ZarpaColors.muted,
                     ),
@@ -316,7 +316,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             const SizedBox(height: 20),
 
             // Stats Grid
-            const Text(
+            Text(
               'ESTADÍSTICAS',
               style: TextStyle(
                 fontSize: 11,
@@ -356,7 +356,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             const SizedBox(height: 28),
 
             // Achievements
-            const Text(
+            Text(
               'LOGROS',
               style: TextStyle(
                 fontSize: 11,
@@ -393,7 +393,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             // Brand footer
             Container(
               padding: const EdgeInsets.symmetric(vertical: 24),
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 border: Border(
                   top: BorderSide(color: ZarpaColors.surface2),
                 ),
@@ -419,7 +419,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                   ),
                   const SizedBox(height: 4),
-                  const Text(
+                  Text(
                     'Instinto en movimiento',
                     style: TextStyle(
                       fontSize: 12,
@@ -482,7 +482,7 @@ class _ProfileStatCard extends StatelessWidget {
             ),
             Text(
               label,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 10,
                 fontWeight: FontWeight.w600,
                 color: ZarpaColors.muted,
@@ -541,7 +541,7 @@ class _AchievementCard extends StatelessWidget {
               Text(
                 achievement.description,
                 textAlign: TextAlign.center,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 9,
                   color: ZarpaColors.muted,
                   height: 1.3,

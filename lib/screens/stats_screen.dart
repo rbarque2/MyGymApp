@@ -115,7 +115,7 @@ class _StatsScreenState extends State<StatsScreen> {
   @override
   Widget build(BuildContext context) {
     if (_loading) {
-      return const Scaffold(
+      return Scaffold(
         backgroundColor: ZarpaColors.background,
         body: Center(child: CircularProgressIndicator()),
       );
@@ -154,10 +154,10 @@ class _StatsScreenState extends State<StatsScreen> {
                 Center(
                   child: Column(
                     children: [
-                      const Icon(Icons.bar_chart_rounded,
+                      Icon(Icons.bar_chart_rounded,
                           size: 72, color: ZarpaColors.mutedLight),
                       const SizedBox(height: 16),
-                      const Text(
+                      Text(
                         'Entrena para ver tu progreso',
                         style: TextStyle(
                           fontSize: 16,
@@ -166,7 +166,7 @@ class _StatsScreenState extends State<StatsScreen> {
                         ),
                       ),
                       const SizedBox(height: 6),
-                      const Text(
+                      Text(
                         'Aquí verás tus estadísticas',
                         style: TextStyle(
                           fontSize: 13,
@@ -236,7 +236,7 @@ class _StatsScreenState extends State<StatsScreen> {
                 const SizedBox(height: 20),
 
                 // Section: weekly chart
-                const Text(
+                Text(
                   'ESTA SEMANA',
                   style: TextStyle(
                     fontSize: 11,
@@ -323,7 +323,7 @@ class _StatsScreenState extends State<StatsScreen> {
                 const SizedBox(height: 24),
 
                 // Monthly stats
-                const Text(
+                Text(
                   'ESTE MES',
                   style: TextStyle(
                     fontSize: 11,
@@ -358,7 +358,7 @@ class _StatsScreenState extends State<StatsScreen> {
                 const SizedBox(height: 24),
 
                 // Total stats
-                const Text(
+                Text(
                   'TOTAL',
                   style: TextStyle(
                     fontSize: 11,
@@ -372,7 +372,7 @@ class _StatsScreenState extends State<StatsScreen> {
                 const SizedBox(height: 24),
 
                 // Recent history
-                const Text(
+                Text(
                   'HISTORIAL RECIENTE',
                   style: TextStyle(
                     fontSize: 11,
@@ -424,7 +424,7 @@ class _StatsScreenState extends State<StatsScreen> {
                                 ),
                                 Text(
                                   '$dateStr · ${w.durationMinutes ?? 0} min · $completedSets/${w.sets.length} series',
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 11,
                                     color: ZarpaColors.muted,
                                   ),
@@ -432,7 +432,7 @@ class _StatsScreenState extends State<StatsScreen> {
                               ],
                             ),
                           ),
-                          const Icon(Icons.chevron_right,
+                          Icon(Icons.chevron_right,
                               size: 18, color: ZarpaColors.mutedLight),
                         ],
                       ),
@@ -508,7 +508,7 @@ class _MonthStat extends StatelessWidget {
             ),
             Text(
               label,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 10,
                 fontWeight: FontWeight.w600,
                 color: ZarpaColors.muted,
@@ -542,7 +542,7 @@ class _TotalStatRow extends StatelessWidget {
         children: [
           Text(
             label,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 13,
               color: ZarpaColors.muted,
               fontWeight: FontWeight.w500,

@@ -236,13 +236,13 @@ class _ProgramsSectionState extends State<ProgramsSection> {
                 child: TextField(
                   controller: _searchCtrl,
                   onChanged: (v) => setState(() => _searchQuery = v.toLowerCase()),
-                  style: const TextStyle(color: ZarpaColors.foreground, fontSize: 14),
+                  style: TextStyle(color: ZarpaColors.foreground, fontSize: 14),
                   decoration: InputDecoration(
                     hintText: 'Buscar programas...',
-                    hintStyle: const TextStyle(
+                    hintStyle: TextStyle(
                         color: ZarpaColors.mutedLight, fontSize: 14),
                     prefixIcon:
-                        const Icon(Icons.search, size: 20, color: ZarpaColors.muted),
+                        Icon(Icons.search, size: 20, color: ZarpaColors.muted),
                     suffixIcon: _searchQuery.isNotEmpty
                         ? IconButton(
                             icon: const Icon(Icons.close, size: 18),
@@ -258,11 +258,11 @@ class _ProgramsSectionState extends State<ProgramsSection> {
                         const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: ZarpaColors.border),
+                      borderSide: BorderSide(color: ZarpaColors.border),
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: ZarpaColors.border),
+                      borderSide: BorderSide(color: ZarpaColors.border),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -351,7 +351,7 @@ class _ProgramsSectionState extends State<ProgramsSection> {
       return Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          children: const [
+          children: [
             Icon(Icons.search_off, size: 48, color: ZarpaColors.mutedLight),
             SizedBox(height: 8),
             Text('Sin resultados',
@@ -415,7 +415,7 @@ class _ProgramsSectionState extends State<ProgramsSection> {
               const Spacer(),
               Text(
                 '${items.length} entrenos',
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 12,
                   color: ZarpaColors.mutedLight,
                 ),
@@ -779,7 +779,7 @@ class _ProgramCard extends StatelessWidget {
                     if (program.exercises.isNotEmpty) ...[
                       Row(
                         children: [
-                          const Icon(Icons.fitness_center, size: 18, color: ZarpaColors.foreground),
+                          Icon(Icons.fitness_center, size: 18, color: ZarpaColors.foreground),
                           const SizedBox(width: 6),
                           Text(
                             '${program.exercises.length} ejercicios',
@@ -805,7 +805,7 @@ class _ProgramCard extends StatelessWidget {
                           borderRadius: BorderRadius.circular(14),
                           border: Border.all(color: ZarpaColors.border),
                         ),
-                        child: const Column(
+                        child: Column(
                           children: [
                             Icon(Icons.construction,
                                 size: 36, color: ZarpaColors.mutedLight),
@@ -1009,7 +1009,7 @@ class _ExerciseTile extends StatelessWidget {
                 const SizedBox(height: 2),
                 Text(
                   exercise.summary,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 12,
                     color: ZarpaColors.muted,
                   ),
@@ -1039,9 +1039,9 @@ class _ExerciseTile extends StatelessWidget {
               borderRadius: BorderRadius.circular(6),
               child: exercise.photoUrl!.startsWith('assets/')
                   ? Image.asset(exercise.photoUrl!, width: 36, height: 36, fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => const Icon(Icons.image, size: 20, color: ZarpaColors.mutedLight))
+                      errorBuilder: (_, __, ___) => Icon(Icons.image, size: 20, color: ZarpaColors.mutedLight))
                   : Image.network(exercise.photoUrl!, width: 36, height: 36, fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => const Icon(Icons.image, size: 20, color: ZarpaColors.mutedLight)),
+                      errorBuilder: (_, __, ___) => Icon(Icons.image, size: 20, color: ZarpaColors.mutedLight)),
             ),
           ],
         ],

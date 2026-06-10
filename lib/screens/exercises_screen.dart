@@ -111,7 +111,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
                   },
                 ),
                 const SizedBox(height: 12),
-                const Text('Etiquetas',
+                Text('Etiquetas',
                     style: TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
@@ -320,7 +320,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
                   },
                 ),
                 const SizedBox(height: 12),
-                const Text('Etiquetas',
+                Text('Etiquetas',
                     style: TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
@@ -442,7 +442,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
         borderRadius: BorderRadius.circular(14),
         border: Border.all(color: ZarpaColors.border),
       ),
-      child: const Column(
+      child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(Icons.add_a_photo, size: 32, color: ZarpaColors.muted),
@@ -911,11 +911,11 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
                           controller: _searchCtrl,
                           decoration: InputDecoration(
                             hintText: 'Buscar ejercicio...',
-                            hintStyle: const TextStyle(
+                            hintStyle: TextStyle(
                               color: ZarpaColors.mutedLight,
                               fontSize: 14,
                             ),
-                            prefixIcon: const Icon(Icons.search,
+                            prefixIcon: Icon(Icons.search,
                                 size: 20, color: ZarpaColors.muted),
                             suffixIcon: _searchQuery.isNotEmpty
                                 ? IconButton(
@@ -1077,7 +1077,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
                       elevation: 0,
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16),
-                          side: const BorderSide(color: ZarpaColors.border)),
+                          side: BorderSide(color: ZarpaColors.border)),
                       color: ZarpaColors.surface,
                       child: InkWell(
                         borderRadius: BorderRadius.circular(16),
@@ -1120,7 +1120,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
                                     Text(
                                       '${ex.category.label} · ${ex.muscleGroup.label}'
                                           '${ex.description != null ? ' · ${ex.description}' : ''}',
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         color: ZarpaColors.muted,
                                         fontSize: 13,
                                       ),
@@ -1135,7 +1135,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
                                       ),
                                       child: Text(
                                         ex.measurementType.label,
-                                        style: const TextStyle(
+                                        style: TextStyle(
                                           fontSize: 10,
                                           color: ZarpaColors.muted,
                                           fontWeight: FontWeight.w600,
@@ -1222,7 +1222,7 @@ class _ExercisePlaceholder extends StatelessWidget {
       child: Center(
         child: Text(
           label[0],
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 22,
             fontWeight: FontWeight.bold,
             color: ZarpaColors.muted,

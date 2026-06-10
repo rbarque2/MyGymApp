@@ -70,7 +70,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       body: IndexedStack(index: _currentIndex, children: screens),
       bottomNavigationBar: Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           border: Border(top: BorderSide(color: ZarpaColors.border, width: 1)),
         ),
         child: NavigationBar(
