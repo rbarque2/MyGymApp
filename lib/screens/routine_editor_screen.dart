@@ -328,7 +328,7 @@ class _RoutineEditorScreenState extends State<RoutineEditorScreen> {
                   const SizedBox(height: 16),
 
                   // --- Etiquetas ---
-                  const Text(
+                  Text(
                     'Etiquetas',
                     style: TextStyle(
                       fontSize: 13,

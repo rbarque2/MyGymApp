@@ -9,6 +9,7 @@ import '../repositories/workouts_repository.dart';
 import '../services/settings_service.dart';
 import '../repositories/exercises_repository.dart';
 import '../theme/zarpafit_theme.dart';
+import '../widgets/routine_cover.dart';
 import 'routine_detail_screen.dart';
 import 'workout_screen.dart';
 
@@ -166,7 +167,7 @@ class _HomeTabScreenState extends State<HomeTabScreen> {
                         const SizedBox(height: 4),
                         Text(
                           widget.userName.split(' ').first,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 32,
                             fontWeight: FontWeight.w800,
                             color: ZarpaColors.foreground,
@@ -236,8 +237,6 @@ class _HomeTabScreenState extends State<HomeTabScreen> {
 
                 // === FEATURED WORKOUT ===
                 if (routines.isNotEmpty) ...[
-                  _SectionTitle(label: 'ENTRENAMIENTO DEL DÍA'),
-                  const SizedBox(height: 14),
                   _FeaturedRoutineCard(
                     routine: routines.first,
                     onTap: () => Navigator.of(context).push(
@@ -392,7 +391,7 @@ class _SectionTitle extends StatelessWidget {
         const SizedBox(width: 8),
         Text(
           label,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 13,
             fontWeight: FontWeight.w700,
             color: ZarpaColors.foreground,
@@ -445,7 +444,7 @@ class _StatMiniCard extends StatelessWidget {
             const SizedBox(height: 6),
             Text(
               value,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.w800,
                 color: ZarpaColors.foreground,
@@ -454,7 +453,7 @@ class _StatMiniCard extends StatelessWidget {
             ),
             Text(
               label,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 10,
                 fontWeight: FontWeight.w600,
                 color: ZarpaColors.muted,
@@ -487,13 +486,7 @@ class _FeaturedRoutineCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Color(0xFFF97316), Color(0xFFEA580C)],
-          ),
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
@@ -503,108 +496,153 @@ class _FeaturedRoutineCard extends StatelessWidget {
             ),
           ],
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Category badge
-            Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.2),
-                borderRadius: BorderRadius.circular(6),
-              ),
-              child: const Text(
-                'RUTINA',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 10,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: 1.5,
-                ),
-              ),
-            ),
-            const SizedBox(height: 14),
-            Icon(
-              Icons.fitness_center,
-              size: 36,
-              color: Colors.white.withOpacity(0.9),
-            ),
-            const SizedBox(height: 10),
-            Text(
-              routine.name,
-              style: const TextStyle(
-                fontSize: 26,
-                fontWeight: FontWeight.w800,
-                color: Colors.white,
-                letterSpacing: -0.5,
-                height: 1.1,
-              ),
-            ),
-            if (routine.description != null) ...[
-              const SizedBox(height: 6),
-              Text(
-                routine.description!,
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.white.withOpacity(0.85),
-                  height: 1.4,
-                ),
-              ),
-            ],
-            const SizedBox(height: 14),
-            Row(
-              children: [
-                Icon(Icons.fitness_center,
-                    size: 14, color: Colors.white.withOpacity(0.7)),
-                const SizedBox(width: 4),
-                Text(
-                  '$exCount ejercicios',
-                  style: TextStyle(
-                      fontSize: 12, color: Colors.white.withOpacity(0.85)),
-                ),
-                const SizedBox(width: 16),
-                Icon(Icons.repeat,
-                    size: 14, color: Colors.white.withOpacity(0.7)),
-                const SizedBox(width: 4),
-                Text(
-                  '$totalSets series',
-                  style: TextStyle(
-                      fontSize: 12, color: Colors.white.withOpacity(0.85)),
-                ),
-              ],
-            ),
-            const SizedBox(height: 18),
-            SizedBox(
-              width: double.infinity,
-              child: FilledButton(
-                style: FilledButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  foregroundColor: ZarpaColors.primary,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(20),
+          child: Stack(
+            children: [
+              // Base: gradiente de marca (visible mientras carga la foto
+              // o si falla la red).
+              const Positioned.fill(
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [Color(0xFFF97316), Color(0xFFEA580C)],
+                    ),
                   ),
                 ),
-                onPressed: routine.exercises.isEmpty ? null : onStart,
-                child: const Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+              ),
+              // Foto de portada de la rutina.
+              Positioned.fill(
+                child: Image.network(
+                  routineCoverUrl(routine),
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+                ),
+              ),
+              // Velo oscuro para legibilidad del texto sobre la foto.
+              Positioned.fill(
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.black.withOpacity(0.30),
+                        Colors.black.withOpacity(0.72),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'COMENZAR',
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: 1.5,
+                    // Category badge
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: ZarpaColors.primary,
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: const Text(
+                        'ENTRENAMIENTO DEL DÍA',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 10,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 1.5,
+                        ),
                       ),
                     ),
-                    SizedBox(width: 8),
-                    Icon(Icons.arrow_forward, size: 18),
+                    const SizedBox(height: 56),
+                    Text(
+                      routine.name,
+                      style: const TextStyle(
+                        fontFamily: ZarpaFonts.display,
+                        fontSize: 32,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white,
+                        letterSpacing: 0.3,
+                        height: 1.05,
+                      ),
+                    ),
+                    if (routine.description != null) ...[
+                      const SizedBox(height: 6),
+                      Text(
+                        routine.description!,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.white.withOpacity(0.9),
+                          height: 1.4,
+                        ),
+                      ),
+                    ],
+                    const SizedBox(height: 14),
+                    Row(
+                      children: [
+                        Icon(Icons.fitness_center,
+                            size: 14, color: Colors.white.withOpacity(0.8)),
+                        const SizedBox(width: 4),
+                        Text(
+                          '$exCount ejercicios',
+                          style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.white.withOpacity(0.9)),
+                        ),
+                        const SizedBox(width: 16),
+                        Icon(Icons.repeat,
+                            size: 14, color: Colors.white.withOpacity(0.8)),
+                        const SizedBox(width: 4),
+                        Text(
+                          '$totalSets series',
+                          style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.white.withOpacity(0.9)),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 18),
+                    SizedBox(
+                      width: double.infinity,
+                      child: FilledButton(
+                        style: FilledButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          foregroundColor: ZarpaColors.primary,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        onPressed: routine.exercises.isEmpty ? null : onStart,
+                        child: const Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              'COMENZAR',
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w800,
+                                letterSpacing: 1.5,
+                              ),
+                            ),
+                            SizedBox(width: 8),
+                            Icon(Icons.arrow_forward, size: 18),
+                          ],
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -643,7 +681,7 @@ class _QuickRoutineCard extends StatelessWidget {
             const SizedBox(height: 10),
             Text(
               routine.name,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w700,
                 color: ZarpaColors.foreground,
@@ -732,7 +770,7 @@ class _RecentSessionRow extends StatelessWidget {
                     children: [
                       Text(
                         name,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
                           color: ZarpaColors.foreground,
@@ -741,7 +779,7 @@ class _RecentSessionRow extends StatelessWidget {
                       const SizedBox(height: 2),
                       Text(
                         date,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 12,
                           color: ZarpaColors.muted,
                         ),
@@ -765,7 +803,7 @@ class _RecentSessionRow extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 8),
-                const Icon(Icons.chevron_right,
+                Icon(Icons.chevron_right,
                     size: 18, color: ZarpaColors.mutedLight),
               ],
             ),
@@ -805,7 +843,7 @@ class _EmptyHomeState extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          const Text(
+          Text(
             'Despierta la zarpa',
             style: TextStyle(
               fontSize: 20,
@@ -815,7 +853,7 @@ class _EmptyHomeState extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 8),
-          const Text(
+          Text(
             'Crea tu primera rutina y empieza a entrenar.',
             textAlign: TextAlign.center,
             style: TextStyle(

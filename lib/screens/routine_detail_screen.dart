@@ -86,7 +86,7 @@ class RoutineDetailScreen extends StatelessWidget {
                       child: const Icon(Icons.chevron_left, size: 24),
                     ),
                   ),
-                  const Expanded(
+                  Expanded(
                     child: Center(
                       child: Text(
                         'RUTINA',
@@ -127,7 +127,7 @@ class RoutineDetailScreen extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: ZarpaColors.surface,
                     borderRadius: BorderRadius.circular(16),
-                    border: const Border(
+                    border: Border(
                       left: BorderSide(color: ZarpaColors.primary, width: 4),
                       top: BorderSide(color: ZarpaColors.border),
                       right: BorderSide(color: ZarpaColors.border),
@@ -171,7 +171,7 @@ class RoutineDetailScreen extends StatelessWidget {
                         const SizedBox(height: 6),
                         Text(
                           routine.description!,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 14,
                             color: ZarpaColors.muted,
                             height: 1.5,
@@ -200,7 +200,7 @@ class RoutineDetailScreen extends StatelessWidget {
                 const SizedBox(height: 28),
 
                 // Section title
-                const Text(
+                Text(
                   'EJERCICIOS',
                   style: TextStyle(
                     fontSize: 11,
@@ -213,7 +213,7 @@ class RoutineDetailScreen extends StatelessWidget {
 
                 // Exercise list
                 if (routine.exercises.isEmpty)
-                  const Padding(
+                  Padding(
                     padding: EdgeInsets.symmetric(vertical: 40),
                     child: Center(
                       child: Text(
@@ -310,7 +310,7 @@ class _MetaChip extends StatelessWidget {
           const SizedBox(width: 6),
           Text(
             label,
-            style: const TextStyle(fontSize: 12, color: ZarpaColors.muted),
+            style: TextStyle(fontSize: 12, color: ZarpaColors.muted),
           ),
         ],
       ),
@@ -350,7 +350,7 @@ class _ExerciseRow extends StatelessWidget {
             child: Center(
               child: Text(
                 (index + 1).toString().padLeft(2, '0'),
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w700,
                   color: ZarpaColors.muted,

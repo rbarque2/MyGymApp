@@ -55,7 +55,7 @@ class HistoryScreen extends StatelessWidget {
                 elevation: 0,
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
-                    side: const BorderSide(color: ZarpaColors.border)),
+                    side: BorderSide(color: ZarpaColors.border)),
                 color: ZarpaColors.surface,
                 child: ExpansionTile(
                   shape: RoundedRectangleBorder(

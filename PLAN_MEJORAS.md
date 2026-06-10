@@ -32,17 +32,14 @@ Cambios de alto impacto que se pueden hacer ya sin nuevas dependencias mayores.
 - **Esfuerzo**: 1 día.
 - **Impacto**: +30–50% activación.
 
-### 1.2 · Dark mode completo
+### 1.2 · Dark mode completo — ✅ HECHO (2026-06-10)
 - **Qué**: añadir `zarpaFitThemeDark()` en [zarpafit_theme.dart](lib/theme/zarpafit_theme.dart). Toggle en Settings + auto según sistema.
 - **Persistencia**: ampliar `SettingsService` con `themeMode` (light/dark/system).
-- **Esfuerzo**: medio día.
-- **Impacto**: tabla stakes 2026.
+- Implementado junto con tipografía Barlow/Barlow Condensed, hero con foto en Home y notificaciones locales (ver changelog en README).
 
-### 1.3 · Nueva paleta primary
-- **Qué**: cambiar `ZarpaColors.primary` de `#0000FF` puro a `#1B4EFF` (azul eléctrico con más profundidad). Crear gradiente de marca `[#1B4EFF, #6E3CFF]` para CTAs hero.
-- **Archivos**: [zarpafit_theme.dart:10](lib/theme/zarpafit_theme.dart#L10).
-- **Esfuerzo**: 30 min.
-- **Impacto**: percepción premium inmediata.
+### 1.3 · Nueva paleta primary — ⛔ SUPERSEDIDO
+- La app ya migró a la paleta Light & Vibrant naranja (`#F97316`) + verde CTA (`#22C55E`); el azul `#1B4EFF` queda descartado.
+- **Pendiente relacionado**: los assets de logo (`assets/zarpafit_logo.png`, `assets/zarpafit-icon.png`) siguen siendo azules y deben rebrandearse al naranja.
 
 ### 1.4 · Empty states con CTA
 - **Qué**: en Home, Rutinas, Stats — cuando no hay datos mostrar ilustración + CTA accionable, no solo texto.

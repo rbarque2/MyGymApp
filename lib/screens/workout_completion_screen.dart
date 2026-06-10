@@ -107,7 +107,7 @@ class _WorkoutCompletionScreenState extends State<WorkoutCompletionScreen>
                     Text(
                       widget.routineName,
                       textAlign: TextAlign.center,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
                         color: ZarpaColors.muted,
@@ -242,7 +242,7 @@ class _CompletionStat extends StatelessWidget {
             ),
             Text(
               label,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 10,
                 fontWeight: FontWeight.w600,
                 color: ZarpaColors.muted,

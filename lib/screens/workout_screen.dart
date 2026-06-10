@@ -10,6 +10,7 @@ import '../models/routine_model.dart';
 import '../models/workout_session_model.dart';
 import '../repositories/workouts_repository.dart';
 import '../services/beep_service.dart';
+import '../services/notification_service.dart';
 import '../services/settings_service.dart';
 import '../services/timer_service.dart';
 import '../theme/zarpafit_theme.dart';
@@ -311,14 +312,25 @@ class _WorkoutScreenState extends State<WorkoutScreen>
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
-      // Al volver del background, recomputar el tiempo real restante.
+      // Al volver del background, recomputar el tiempo real restante y
+      // cancelar el aviso programado: el beep en-app vuelve a encargarse.
+      NotificationService.instance.cancelRestEnd();
       _timer.refresh();
       if (mounted) setState(() {});
+    } else if (state == AppLifecycleState.paused) {
+      // App en segundo plano con descanso en marcha: avisar cuando acabe,
+      // aunque la pantalla esté bloqueada.
+      if (_timer.isRunning && _timer.remainingSeconds > 0) {
+        NotificationService.instance.scheduleRestEnd(
+          Duration(seconds: _timer.remainingSeconds, milliseconds: 500),
+        );
+      }
     }
   }
 
   @override
   void dispose() {
+    NotificationService.instance.cancelRestEnd();
     WidgetsBinding.instance.removeObserver(this);
     _timer.removeListener(_onTimerTick);
     _timer.dispose();
@@ -371,7 +383,7 @@ class _WorkoutScreenState extends State<WorkoutScreen>
   Widget _buildHeader(double progress) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         border: Border(
           bottom: BorderSide(color: ZarpaColors.surface2),
         ),
@@ -399,7 +411,7 @@ class _WorkoutScreenState extends State<WorkoutScreen>
                   children: [
                     Text(
                       widget.routine.name.toUpperCase(),
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w700,
                         letterSpacing: 1.5,
@@ -409,7 +421,7 @@ class _WorkoutScreenState extends State<WorkoutScreen>
                     const SizedBox(height: 4),
                     Text(
                       '${_completedCount}/${_sets.length} series',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 11,
                         color: ZarpaColors.mutedLight,
                       ),
@@ -427,7 +439,7 @@ class _WorkoutScreenState extends State<WorkoutScreen>
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.timer_outlined,
+                    Icon(Icons.timer_outlined,
                         size: 14, color: ZarpaColors.muted),
                     const SizedBox(width: 4),
                     Text(
@@ -544,7 +556,7 @@ class _WorkoutScreenState extends State<WorkoutScreen>
                 const SizedBox(height: 6),
                 Text(
                   'Serie ${displaySet + 1} de $totalSets',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 12,
                     color: ZarpaColors.muted,
                     fontWeight: FontWeight.w600,
@@ -565,18 +577,18 @@ class _WorkoutScreenState extends State<WorkoutScreen>
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       if (exerciseIndex > 0)
-                        const Icon(Icons.chevron_left,
+                        Icon(Icons.chevron_left,
                             size: 16, color: ZarpaColors.mutedLight),
                       Text(
                         '${exerciseIndex + 1} / ${_exercises.length}',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 11,
                           color: ZarpaColors.mutedLight,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
                       if (exerciseIndex < _exercises.length - 1)
-                        const Icon(Icons.chevron_right,
+                        Icon(Icons.chevron_right,
                             size: 16, color: ZarpaColors.mutedLight),
                     ],
                   ),
@@ -662,7 +674,7 @@ class _WorkoutScreenState extends State<WorkoutScreen>
             const SizedBox(width: 6),
             Text(
               label,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w700,
                 color: ZarpaColors.foreground,
@@ -702,7 +714,7 @@ class _WorkoutScreenState extends State<WorkoutScreen>
       case MeasurementType.reps:
         mainPicker = Column(
           children: [
-            const Text('REPS',
+            Text('REPS',
                 style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.w700,
@@ -727,7 +739,7 @@ class _WorkoutScreenState extends State<WorkoutScreen>
                     100,
                     (i) => Center(
                           child: Text('${i + 1}',
-                              style: const TextStyle(
+                              style: TextStyle(
                                   fontSize: 28,
                                   fontWeight: FontWeight.w800,
                                   color: ZarpaColors.foreground)),
@@ -743,7 +755,7 @@ class _WorkoutScreenState extends State<WorkoutScreen>
           children: [
             Column(
               children: [
-                const Text('MIN',
+                Text('MIN',
                     style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.w700,
@@ -771,7 +783,7 @@ class _WorkoutScreenState extends State<WorkoutScreen>
                         61,
                         (i) => Center(
                               child: Text('$i',
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                       fontSize: 28,
                                       fontWeight: FontWeight.w800,
                                       color: ZarpaColors.foreground)),
@@ -780,7 +792,7 @@ class _WorkoutScreenState extends State<WorkoutScreen>
                 ),
               ],
             ),
-            const Padding(
+            Padding(
               padding: EdgeInsets.only(top: 20),
               child: Text(':',
                   style: TextStyle(
@@ -790,7 +802,7 @@ class _WorkoutScreenState extends State<WorkoutScreen>
             ),
             Column(
               children: [
-                const Text('SEG',
+                Text('SEG',
                     style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.w700,
@@ -818,7 +830,7 @@ class _WorkoutScreenState extends State<WorkoutScreen>
                         60,
                         (i) => Center(
                               child: Text(i.toString().padLeft(2, '0'),
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                       fontSize: 28,
                                       fontWeight: FontWeight.w800,
                                       color: ZarpaColors.foreground)),
@@ -832,7 +844,7 @@ class _WorkoutScreenState extends State<WorkoutScreen>
       case MeasurementType.distance:
         mainPicker = Column(
           children: [
-            const Text('METROS',
+            Text('METROS',
                 style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.w700,
@@ -861,7 +873,7 @@ class _WorkoutScreenState extends State<WorkoutScreen>
                       m >= 1000 ? '${(m / 1000).toStringAsFixed(1)}k' : '$m';
                   return Center(
                     child: Text(label,
-                        style: const TextStyle(
+                        style: TextStyle(
                             fontSize: 28,
                             fontWeight: FontWeight.w800,
                             color: ZarpaColors.foreground)),
@@ -876,7 +888,7 @@ class _WorkoutScreenState extends State<WorkoutScreen>
     // ── Weight picker (si está activo) ──
     Widget weightPicker = Column(
       children: [
-        const Text('KG',
+        Text('KG',
             style: TextStyle(
                 fontSize: 11,
                 fontWeight: FontWeight.w700,
@@ -904,7 +916,7 @@ class _WorkoutScreenState extends State<WorkoutScreen>
                           (i * 2.5) == (i * 2.5).roundToDouble()
                               ? '${(i * 2.5).toInt()}'
                               : (i * 2.5).toStringAsFixed(1),
-                          style: const TextStyle(
+                          style: TextStyle(
                               fontSize: 28,
                               fontWeight: FontWeight.w800,
                               color: ZarpaColors.foreground)),
@@ -994,7 +1006,7 @@ class _WorkoutScreenState extends State<WorkoutScreen>
           Padding(
             padding: const EdgeInsets.only(bottom: 8, left: 4, right: 4),
             child: Row(
-              children: const [
+              children: [
                 Text(
                   'SERIES',
                   style: TextStyle(
@@ -1229,7 +1241,7 @@ class _WorkoutScreenState extends State<WorkoutScreen>
         ),
         const SizedBox(height: 20),
 
-        const Text(
+        Text(
           'DESCANSO',
           style: TextStyle(
             fontSize: 12,
@@ -1262,7 +1274,7 @@ class _WorkoutScreenState extends State<WorkoutScreen>
         const SizedBox(height: 8),
         Text(
           '${_timer.remainingSeconds}s restantes',
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 14,
             color: ZarpaColors.muted,
           ),
@@ -1309,7 +1321,7 @@ class _WorkoutScreenState extends State<WorkoutScreen>
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         'SIGUIENTE',
                         style: TextStyle(
                           fontSize: 10,
@@ -1350,13 +1362,13 @@ class _WorkoutScreenState extends State<WorkoutScreen>
             child: OutlinedButton(
               style: OutlinedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 16),
-                side: const BorderSide(color: ZarpaColors.border),
+                side: BorderSide(color: ZarpaColors.border),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(14),
                 ),
               ),
               onPressed: _skipRest,
-              child: const Text(
+              child: Text(
                 'SALTAR DESCANSO',
                 style: TextStyle(
                   fontSize: 14,
