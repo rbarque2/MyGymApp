@@ -34,6 +34,7 @@ App para gestionar entrenamientos de gimnasio. Organiza tus ejercicios, crea rut
 
 ### 2026-06-10
 
+- **Logo rebrandeado a naranja**: `assets/zarpafit_logo.png` y `assets/zarpafit-icon.png` pasan del azul antiguo al naranja de marca `#F97316` (generados con `tool/rebrand_logo.py`), además de reducir su peso de 6,1 MB a 1,9 MB.
 - **Dark mode completo**: nueva paleta oscura (gray-900/800 con el naranja/verde de marca) y selector Sistema / Claro / Oscuro en Configuración → Apariencia, con persistencia y respuesta en vivo al tema del sistema. Internamente `ZarpaColors` pasó de constantes a getters sobre una paleta intercambiable (`tool/deconst.py` limpió los ~106 `const` huérfanos).
 - **Tipografía de marca real**: Barlow (cuerpo) y Barlow Condensed (titulares, AppBar, hero) bundleadas en `assets/fonts` y declaradas en pubspec. Antes el tema pedía 'Inter' sin incluirla y toda la app caía en Roboto.
 - **Hero con foto en Home**: la tarjeta "Entrenamiento del día" ahora muestra foto de portada (foto propia de la rutina → foto del primer ejercicio → set curado de Unsplash por hash del nombre) con velo oscuro para legibilidad y fallback al gradiente naranja si no hay red.
