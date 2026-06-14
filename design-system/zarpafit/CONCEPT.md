@@ -49,6 +49,8 @@ unidos por un ADN común. Decidido con el usuario el 2026-06-12.
 - ✅ Fase 4 (2026-06-12): login como póster de bienvenida (palabra rotativa +
   CTA duro), perfil en Asfalto (stats gigantes + logros en grid duro), detalle
   de rutina con header póster (SliverAppBar + foto) y lista de ejercicios dura.
-- ⏳ Pendiente menor: editor de rutina, ajustes, listas de ejercicios/programas
-  e historial aún con estilo Material antiguo (pantallas utilitarias, baja
-  prioridad). Empty states del sistema.
+- ✅ Fase 5 (2026-06-12): historial en Asfalto (filas duras, día grande naranja
+  + mes mono, desplegable mono) y headers de ajustes al estilo del sistema.
+- ⏳ Pendiente menor: editor de rutina y listas de ejercicios/programas/rutinas
+  aún con estilo Material antiguo (pantallas de gestión, baja prioridad).
+  Empty states del sistema.
