@@ -11,9 +11,11 @@ import 'models/workout_session_model.dart';
 import 'repositories/exercises_repository.dart';
 import 'repositories/routines_repository.dart';
 import 'repositories/workouts_repository.dart';
+import 'screens/history_screen.dart';
 import 'screens/home_tab_screen.dart';
 import 'screens/login_screen.dart';
 import 'screens/routine_detail_screen.dart';
+import 'screens/settings_screen.dart';
 import 'screens/stats_screen.dart';
 import 'screens/workout_completion_screen.dart';
 import 'services/auth_service.dart';
@@ -122,6 +124,10 @@ class _FakeWorkoutsRepository extends WorkoutsRepository {
       session(4, 'Core y movilidad', 25),
     ];
   }
+
+  @override
+  Stream<List<WorkoutSessionModel>> watchWorkouts(String ownerUid) =>
+      Stream.fromFuture(getRecentWorkouts(ownerUid));
 }
 
 Future<void> main() async {
@@ -206,6 +212,17 @@ class _PreviewLauncher extends StatelessWidget {
                   workoutsRepository: _FakeWorkoutsRepository(),
                   settingsService: SettingsService(),
                 ),
+              ),
+              btn(
+                'HISTORIAL',
+                HistoryScreen(
+                  ownerUid: 'preview',
+                  workoutsRepository: _FakeWorkoutsRepository(),
+                ),
+              ),
+              btn(
+                'AJUSTES',
+                SettingsScreen(settingsService: SettingsService()),
               ),
             ],
           ),

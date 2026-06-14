@@ -64,21 +64,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget _sectionHeader(String label) {
     return Row(
       children: [
-        Container(
-          width: 4,
-          height: 18,
-          decoration: BoxDecoration(
-            color: ZarpaColors.primary,
-            borderRadius: BorderRadius.circular(2),
-          ),
-        ),
+        Container(width: 18, height: 2, color: ZarpaColors.primary),
         const SizedBox(width: 8),
         Text(
           label,
           style: TextStyle(
-            fontSize: 13,
-            fontWeight: FontWeight.w700,
-            color: ZarpaColors.foreground,
+            fontFamily: ZarpaFonts.mono,
+            fontSize: 11,
+            fontWeight: FontWeight.w500,
+            color: ZarpaColors.muted,
             letterSpacing: 2,
           ),
         ),
