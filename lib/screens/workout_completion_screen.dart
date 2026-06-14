@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../theme/zarpafit_theme.dart';
 
@@ -26,27 +27,21 @@ class WorkoutCompletionScreen extends StatefulWidget {
 class _WorkoutCompletionScreenState extends State<WorkoutCompletionScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
-  late Animation<double> _scaleAnimation;
   late Animation<double> _fadeAnimation;
+  late Animation<Offset> _slideAnimation;
 
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 800),
+      duration: const Duration(milliseconds: 700),
     );
-
-    _scaleAnimation = Tween<double>(begin: 0.3, end: 1.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.elasticOut),
-    );
-    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: const Interval(0.3, 1.0, curve: Curves.easeOut),
-      ),
-    );
-
+    _fadeAnimation = CurvedAnimation(parent: _controller, curve: Curves.easeOut);
+    _slideAnimation = Tween<Offset>(
+      begin: const Offset(0, 0.12),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic));
     _controller.forward();
   }
 
@@ -58,200 +53,262 @@ class _WorkoutCompletionScreenState extends State<WorkoutCompletionScreen>
 
   @override
   Widget build(BuildContext context) {
-    final calories = (widget.durationMinutes * 7.5).round(); // estimate
+    final calories = (widget.durationMinutes * 7.5).round();
 
-    return Scaffold(
-      backgroundColor: ZarpaColors.background,
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: Column(
-            children: [
-              const Spacer(flex: 2),
-
-              // Trophy animation
-              ScaleTransition(
-                scale: _scaleAnimation,
-                child: Container(
-                  width: 120,
-                  height: 120,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: ZarpaColors.primary.withOpacity(0.1),
-                    border:
-                        Border.all(color: ZarpaColors.primary, width: 3),
-                  ),
-                  child: const Center(
-                    child: Icon(Icons.emoji_events,
-                        size: 56, color: ZarpaColors.primary),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 24),
-
-              // COMPLETADO
-              FadeTransition(
-                opacity: _fadeAnimation,
+    // Póster de cierre: cabina oscura siempre, en ambos temas.
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle.light,
+      child: Scaffold(
+        backgroundColor: ZarpaInk.black,
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(24, 20, 24, 24),
+            child: FadeTransition(
+              opacity: _fadeAnimation,
+              child: SlideTransition(
+                position: _slideAnimation,
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'COMPLETADO',
-                      style: TextStyle(
-                        fontSize: 28,
-                        fontWeight: FontWeight.w900,
-                        color: ZarpaColors.primary,
-                        letterSpacing: 3,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      widget.routineName,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                        color: ZarpaColors.muted,
-                      ),
-                    ),
-                    const SizedBox(height: 32),
-
-                    // Stats grid
                     Row(
-                      children: [
-                        _CompletionStat(
-                          icon: Icons.timer,
-                          value: '${widget.durationMinutes}',
-                          label: 'MINUTOS',
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: const [
+                        Text(
+                          'ZARPAFIT',
+                          style: TextStyle(
+                            fontFamily: ZarpaFonts.mono,
+                            fontSize: 11,
+                            color: ZarpaInk.steel,
+                            letterSpacing: 2,
+                          ),
                         ),
-                        const SizedBox(width: 12),
-                        _CompletionStat(
-                          icon: Icons.fitness_center,
-                          value: '${widget.exerciseCount}',
-                          label: 'EJERCICIOS',
-                        ),
-                        const SizedBox(width: 12),
-                        _CompletionStat(
-                          icon: Icons.local_fire_department,
-                          value: '$calories',
-                          label: 'KCAL',
+                        Text(
+                          'SESIÓN COMPLETADA',
+                          style: TextStyle(
+                            fontFamily: ZarpaFonts.mono,
+                            fontSize: 11,
+                            color: ZarpaColors.primary,
+                            letterSpacing: 1.5,
+                          ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 16),
 
-                    // Sets completed
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: ZarpaColors.surface,
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: ZarpaColors.border),
+                    const Spacer(flex: 2),
+
+                    // Protagonista: duración gigante.
+                    Text(
+                      'HAS ENTRENADO',
+                      style: TextStyle(
+                        fontFamily: ZarpaFonts.mono,
+                        fontSize: 12,
+                        color: ZarpaInk.steel,
+                        letterSpacing: 2,
                       ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(Icons.check_circle,
-                              size: 20, color: ZarpaColors.success),
-                          const SizedBox(width: 8),
-                          Text(
-                            '${widget.completedSets}/${widget.totalSets} series completadas',
-                            style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      textBaseline: TextBaseline.alphabetic,
+                      crossAxisAlignment: CrossAxisAlignment.baseline,
+                      children: [
+                        Text(
+                          '${widget.durationMinutes}',
+                          style: const TextStyle(
+                            fontFamily: ZarpaFonts.display,
+                            fontSize: 140,
+                            fontWeight: FontWeight.w700,
+                            color: ZarpaInk.paper,
+                            height: 0.85,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        const Padding(
+                          padding: EdgeInsets.only(bottom: 18),
+                          child: Text(
+                            'MIN',
+                            style: TextStyle(
+                              fontFamily: ZarpaFonts.display,
+                              fontSize: 40,
+                              fontWeight: FontWeight.w700,
+                              color: ZarpaColors.primary,
                             ),
                           ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      widget.routineName.toUpperCase(),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontFamily: ZarpaFonts.display,
+                        fontSize: 26,
+                        fontWeight: FontWeight.w700,
+                        color: ZarpaInk.paper,
+                        height: 1.0,
+                      ),
+                    ),
+
+                    const Spacer(flex: 1),
+
+                    // Retícula de cifras.
+                    IntrinsicHeight(
+                      child: Row(
+                        children: [
+                          _StatCell(
+                            value:
+                                '${widget.completedSets}/${widget.totalSets}',
+                            label: 'SERIES',
+                          ),
+                          const _CellDivider(),
+                          _StatCell(
+                            value: '${widget.exerciseCount}',
+                            label: 'EJERCICIOS',
+                          ),
+                          const _CellDivider(),
+                          _StatCell(value: '$calories', label: 'KCAL'),
                         ],
                       ),
+                    ),
+
+                    const Spacer(flex: 2),
+
+                    Row(
+                      children: [
+                        Expanded(
+                          child: OutlinedButton(
+                            style: OutlinedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              side: const BorderSide(color: Color(0xFF333333)),
+                              shape: const RoundedRectangleBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(2)),
+                              ),
+                            ),
+                            onPressed: () => _shareSummary(calories),
+                            child: const Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.ios_share,
+                                    size: 18, color: ZarpaInk.paper),
+                                SizedBox(width: 8),
+                                Text(
+                                  'COMPARTIR',
+                                  style: TextStyle(
+                                    fontFamily: ZarpaFonts.display,
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w700,
+                                    letterSpacing: 1.5,
+                                    color: ZarpaInk.paper,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: FilledButton(
+                            style: FilledButton.styleFrom(
+                              backgroundColor: ZarpaColors.primary,
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              shape: const RoundedRectangleBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(2)),
+                              ),
+                            ),
+                            onPressed: () =>
+                                Navigator.of(context).popUntil((r) => r.isFirst),
+                            child: const Text(
+                              'TERMINAR',
+                              style: TextStyle(
+                                fontFamily: ZarpaFonts.display,
+                                fontSize: 15,
+                                fontWeight: FontWeight.w700,
+                                letterSpacing: 1.5,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
               ),
-
-              const Spacer(flex: 3),
-
-              // Button
-              SizedBox(
-                width: double.infinity,
-                child: FilledButton(
-                  style: FilledButton.styleFrom(
-                    backgroundColor: ZarpaColors.primary,
-                    padding: const EdgeInsets.symmetric(vertical: 18),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                  ),
-                  onPressed: () =>
-                      Navigator.of(context).popUntil((r) => r.isFirst),
-                  child: const Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.home, size: 20, color: Colors.white),
-                      SizedBox(width: 10),
-                      Text(
-                        'VOLVER AL INICIO',
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w700,
-                          letterSpacing: 1.5,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: 32),
-            ],
+            ),
           ),
         ),
       ),
     );
   }
+
+  void _shareSummary(int calories) {
+    final text =
+        'He entrenado ${widget.durationMinutes} min · ${widget.routineName} · '
+        '${widget.completedSets}/${widget.totalSets} series · $calories kcal 🐾 ZarpaFit';
+    Clipboard.setData(ClipboardData(text: text));
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Resumen copiado al portapapeles')),
+    );
+  }
 }
 
-class _CompletionStat extends StatelessWidget {
-  const _CompletionStat({
-    required this.icon,
-    required this.value,
-    required this.label,
-  });
-  final IconData icon;
+class _StatCell extends StatelessWidget {
+  const _StatCell({required this.value, required this.label});
   final String value;
   final String label;
 
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: ZarpaColors.surface,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: ZarpaColors.border),
-        ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 4),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(icon, size: 20, color: ZarpaColors.primary),
-            const SizedBox(height: 6),
-            Text(
-              value,
-              style: const TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.w800,
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.centerLeft,
+              child: Text(
+                value,
+                style: const TextStyle(
+                  fontFamily: ZarpaFonts.display,
+                  fontSize: 40,
+                  fontWeight: FontWeight.w700,
+                  color: ZarpaInk.paper,
+                  height: 0.95,
+                ),
               ),
             ),
+            const SizedBox(height: 4),
             Text(
               label,
-              style: TextStyle(
+              style: const TextStyle(
+                fontFamily: ZarpaFonts.mono,
                 fontSize: 10,
-                fontWeight: FontWeight.w600,
-                color: ZarpaColors.muted,
-                letterSpacing: 1,
+                color: ZarpaInk.steel,
+                letterSpacing: 1.5,
               ),
             ),
           ],
         ),
       ),
+    );
+  }
+}
+
+class _CellDivider extends StatelessWidget {
+  const _CellDivider();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 1,
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      color: const Color(0xFF2A2A2A),
     );
   }
 }

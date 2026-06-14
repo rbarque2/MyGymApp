@@ -117,7 +117,7 @@ class _StatsScreenState extends State<StatsScreen> {
     if (_loading) {
       return Scaffold(
         backgroundColor: ZarpaColors.background,
-        body: Center(child: CircularProgressIndicator()),
+        body: const Center(child: CircularProgressIndicator()),
       );
     }
 
@@ -127,8 +127,8 @@ class _StatsScreenState extends State<StatsScreen> {
     final monthly = _monthlyStats();
     final maxWeekly =
         weekly.reduce((a, b) => a > b ? a : b).toDouble().clamp(1, 100);
-
     final dayLabels = _getDayLabels();
+    final weekTotal = weekly.fold<int>(0, (s, v) => s + v);
 
     return Scaffold(
       backgroundColor: ZarpaColors.background,
@@ -136,18 +136,20 @@ class _StatsScreenState extends State<StatsScreen> {
         child: RefreshIndicator(
           onRefresh: _load,
           child: ListView(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+            padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
             children: [
               // Header
-              const Text(
+              Text(
                 'PROGRESO',
                 style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: -0.5,
+                  fontFamily: ZarpaFonts.display,
+                  fontSize: 44,
+                  fontWeight: FontWeight.w700,
+                  color: ZarpaColors.foreground,
+                  height: 0.95,
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 24),
 
               if (workouts.isEmpty) ...[
                 const SizedBox(height: 60),
@@ -158,9 +160,10 @@ class _StatsScreenState extends State<StatsScreen> {
                           size: 72, color: ZarpaColors.mutedLight),
                       const SizedBox(height: 16),
                       Text(
-                        'Entrena para ver tu progreso',
+                        'ENTRENA PARA VER TU PROGRESO',
                         style: TextStyle(
-                          fontSize: 16,
+                          fontFamily: ZarpaFonts.display,
+                          fontSize: 20,
                           color: ZarpaColors.foreground,
                           fontWeight: FontWeight.w700,
                         ),
@@ -168,274 +171,163 @@ class _StatsScreenState extends State<StatsScreen> {
                       const SizedBox(height: 6),
                       Text(
                         'Aquí verás tus estadísticas',
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: ZarpaColors.muted,
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-                      FilledButton.icon(
-                        onPressed: () {
-                          // Navigate to routines tab via parent
-                        },
-                        icon: const Icon(Icons.play_arrow, size: 18),
-                        label: const Text('Empezar a entrenar'),
+                        style: TextStyle(fontSize: 13, color: ZarpaColors.muted),
                       ),
                     ],
                   ),
                 ),
               ] else ...[
-                // Streak badge
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: ZarpaColors.primary,
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 48,
-                        height: 48,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.white.withOpacity(0.2),
-                        ),
-                        child: const Icon(
-                          Icons.local_fire_department,
-                          color: Colors.white,
-                          size: 24,
-                        ),
-                      ),
-                      const SizedBox(width: 14),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            '$streak ${streak == 1 ? 'día' : 'días'} de racha',
-                            style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w800,
-                              color: Colors.white,
-                            ),
-                          ),
-                          Text(
-                            streak > 0
-                                ? '¡Sigue así, no pares!'
-                                : 'Entrena hoy para empezar',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.white.withOpacity(0.7),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 20),
+                // Racha como protagonista Asfalto.
+                _StreakHero(streak: streak),
+                const SizedBox(height: 28),
 
-                // Section: weekly chart
-                Text(
-                  'ESTA SEMANA',
-                  style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w700,
-                    color: ZarpaColors.muted,
-                    letterSpacing: 2,
-                  ),
+                // Esta semana
+                const _SectionTitle(label: 'ESTA SEMANA'),
+                const SizedBox(height: 14),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.baseline,
+                  textBaseline: TextBaseline.alphabetic,
+                  children: [
+                    Text(
+                      '$weekTotal',
+                      style: TextStyle(
+                        fontFamily: ZarpaFonts.display,
+                        fontSize: 56,
+                        fontWeight: FontWeight.w700,
+                        color: ZarpaColors.foreground,
+                        height: 0.9,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: Text(
+                        weekTotal == 1 ? 'SESIÓN' : 'SESIONES',
+                        style: TextStyle(
+                          fontFamily: ZarpaFonts.mono,
+                          fontSize: 12,
+                          color: ZarpaColors.muted,
+                          letterSpacing: 1.5,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 12),
-                Container(
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: ZarpaColors.surface,
-                    borderRadius: BorderRadius.circular(14),
-                    border: Border.all(color: ZarpaColors.border),
-                  ),
-                  child: SizedBox(
-                    height: 160,
-                    child: BarChart(
-                      BarChartData(
-                        alignment: BarChartAlignment.spaceAround,
-                        maxY: maxWeekly + 1,
-                        barTouchData: BarTouchData(enabled: false),
-                        gridData: const FlGridData(show: false),
-                        borderData: FlBorderData(show: false),
-                        titlesData: FlTitlesData(
-                          show: true,
-                          leftTitles: const AxisTitles(
-                            sideTitles: SideTitles(showTitles: false),
-                          ),
-                          topTitles: const AxisTitles(
-                            sideTitles: SideTitles(showTitles: false),
-                          ),
-                          rightTitles: const AxisTitles(
-                            sideTitles: SideTitles(showTitles: false),
-                          ),
-                          bottomTitles: AxisTitles(
-                            sideTitles: SideTitles(
-                              showTitles: true,
-                              getTitlesWidget: (value, _) {
-                                final idx = value.toInt();
-                                if (idx < 0 || idx >= dayLabels.length) {
-                                  return const SizedBox();
-                                }
-                                final isToday = idx == 6;
-                                return Text(
+                SizedBox(
+                  height: 150,
+                  child: BarChart(
+                    BarChartData(
+                      alignment: BarChartAlignment.spaceAround,
+                      maxY: maxWeekly + 1,
+                      barTouchData: BarTouchData(enabled: false),
+                      gridData: const FlGridData(show: false),
+                      borderData: FlBorderData(show: false),
+                      titlesData: FlTitlesData(
+                        show: true,
+                        leftTitles: const AxisTitles(
+                          sideTitles: SideTitles(showTitles: false),
+                        ),
+                        topTitles: const AxisTitles(
+                          sideTitles: SideTitles(showTitles: false),
+                        ),
+                        rightTitles: const AxisTitles(
+                          sideTitles: SideTitles(showTitles: false),
+                        ),
+                        bottomTitles: AxisTitles(
+                          sideTitles: SideTitles(
+                            showTitles: true,
+                            getTitlesWidget: (value, _) {
+                              final idx = value.toInt();
+                              if (idx < 0 || idx >= dayLabels.length) {
+                                return const SizedBox();
+                              }
+                              final isToday = idx == 6;
+                              return Padding(
+                                padding: const EdgeInsets.only(top: 6),
+                                child: Text(
                                   dayLabels[idx],
                                   style: TextStyle(
+                                    fontFamily: ZarpaFonts.mono,
                                     fontSize: 11,
-                                    fontWeight: isToday
-                                        ? FontWeight.w700
-                                        : FontWeight.w500,
                                     color: isToday
                                         ? ZarpaColors.primary
                                         : ZarpaColors.muted,
                                   ),
-                                );
-                              },
-                            ),
+                                ),
+                              );
+                            },
                           ),
                         ),
-                        barGroups: List.generate(7, (i) {
-                          final isToday = i == 6;
-                          return BarChartGroupData(
-                            x: i,
-                            barRods: [
-                              BarChartRodData(
-                                toY: weekly[i].toDouble(),
-                                color: isToday
-                                    ? ZarpaColors.primary
-                                    : ZarpaColors.primary.withOpacity(0.3),
-                                width: 28,
-                                borderRadius: const BorderRadius.vertical(
-                                  top: Radius.circular(6),
-                                ),
-                              ),
-                            ],
-                          );
-                        }),
                       ),
+                      barGroups: List.generate(7, (i) {
+                        final isToday = i == 6;
+                        return BarChartGroupData(
+                          x: i,
+                          barRods: [
+                            BarChartRodData(
+                              toY: weekly[i].toDouble(),
+                              color: isToday
+                                  ? ZarpaColors.primary
+                                  : ZarpaColors.primary.withOpacity(0.28),
+                              width: 30,
+                              borderRadius: BorderRadius.zero,
+                            ),
+                          ],
+                        );
+                      }),
                     ),
                   ),
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 28),
 
-                // Monthly stats
-                Text(
-                  'ESTE MES',
-                  style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w700,
-                    color: ZarpaColors.muted,
-                    letterSpacing: 2,
+                // Este mes — bloques duros con números gigantes.
+                const _SectionTitle(label: 'ESTE MES'),
+                const SizedBox(height: 14),
+                IntrinsicHeight(
+                  child: Row(
+                    children: [
+                      _BigStatCell(
+                        value: '${monthly['sessions']}',
+                        label: 'SESIONES',
+                      ),
+                      _GridDivider(),
+                      _BigStatCell(
+                        value: '${monthly['minutes']}',
+                        label: 'MINUTOS',
+                      ),
+                      _GridDivider(),
+                      _BigStatCell(
+                        value:
+                            '${(monthly['volume'] as double).toStringAsFixed(0)}',
+                        label: 'KG VOL.',
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 12),
-                Row(
-                  children: [
-                    _MonthStat(
-                      value: '${monthly['sessions']}',
-                      label: 'SESIONES',
-                      icon: Icons.fitness_center,
-                    ),
-                    const SizedBox(width: 10),
-                    _MonthStat(
-                      value: '${monthly['minutes']}',
-                      label: 'MINUTOS',
-                      icon: Icons.timer,
-                    ),
-                    const SizedBox(width: 10),
-                    _MonthStat(
-                      value:
-                          '${(monthly['volume'] as double).toStringAsFixed(0)}',
-                      label: 'KG VOL.',
-                      icon: Icons.monitor_weight_outlined,
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 28),
 
-                // Total stats
-                Text(
-                  'TOTAL',
-                  style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w700,
-                    color: ZarpaColors.muted,
-                    letterSpacing: 2,
-                  ),
-                ),
-                const SizedBox(height: 12),
+                // Total
+                const _SectionTitle(label: 'TOTAL'),
+                const SizedBox(height: 6),
                 ..._buildTotalStats(workouts),
-                const SizedBox(height: 24),
+                const SizedBox(height: 28),
 
-                // Recent history
-                Text(
-                  'HISTORIAL RECIENTE',
-                  style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w700,
-                    color: ZarpaColors.muted,
-                    letterSpacing: 2,
-                  ),
-                ),
-                const SizedBox(height: 12),
+                // Historial reciente — filas duras, fecha mono.
+                const _SectionTitle(label: 'HISTORIAL RECIENTE'),
+                const SizedBox(height: 6),
                 ...List.generate(
                   workouts.length.clamp(0, 10),
                   (i) {
                     final w = workouts[i];
                     final date = w.startedAt?.toDate();
-                    final dateStr = date != null
-                        ? '${date.day}/${date.month}/${date.year}'
-                        : '';
+                    final dateStr = date != null ? _shortDate(date) : '';
                     final completedSets =
                         w.sets.where((s) => s.completed).length;
-                    return Container(
-                      margin: const EdgeInsets.only(bottom: 8),
-                      padding: const EdgeInsets.all(14),
-                      decoration: BoxDecoration(
-                        color: ZarpaColors.surface,
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: ZarpaColors.border),
-                      ),
-                      child: Row(
-                        children: [
-                          Container(
-                            width: 8,
-                            height: 8,
-                            decoration: const BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: ZarpaColors.primary,
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  w.routineName,
-                                  style: const TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
-                                Text(
-                                  '$dateStr · ${w.durationMinutes ?? 0} min · $completedSets/${w.sets.length} series',
-                                  style: TextStyle(
-                                    fontSize: 11,
-                                    color: ZarpaColors.muted,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Icon(Icons.chevron_right,
-                              size: 18, color: ZarpaColors.mutedLight),
-                        ],
-                      ),
+                    return _HistoryRow(
+                      name: w.routineName,
+                      meta:
+                          '$dateStr · ${w.durationMinutes ?? 0} MIN · $completedSets/${w.sets.length} SERIES',
                     );
                   },
                 ),
@@ -445,6 +337,14 @@ class _StatsScreenState extends State<StatsScreen> {
         ),
       ),
     );
+  }
+
+  static String _shortDate(DateTime date) {
+    const months = [
+      'ENE', 'FEB', 'MAR', 'ABR', 'MAY', 'JUN',
+      'JUL', 'AGO', 'SEP', 'OCT', 'NOV', 'DIC'
+    ];
+    return '${date.day} ${months[date.month - 1]}';
   }
 
   List<String> _getDayLabels() {
@@ -475,49 +375,144 @@ class _StatsScreenState extends State<StatsScreen> {
   }
 }
 
-class _MonthStat extends StatelessWidget {
-  const _MonthStat({
-    required this.value,
-    required this.label,
-    required this.icon,
-  });
+class _SectionTitle extends StatelessWidget {
+  const _SectionTitle({required this.label});
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Container(width: 18, height: 2, color: ZarpaColors.primary),
+        const SizedBox(width: 8),
+        Text(
+          label,
+          style: TextStyle(
+            fontFamily: ZarpaFonts.mono,
+            fontSize: 11,
+            letterSpacing: 2,
+            color: ZarpaColors.muted,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// Racha como número gigante con borde superior naranja (Asfalto).
+class _StreakHero extends StatelessWidget {
+  const _StreakHero({required this.streak});
+  final int streak;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.only(top: 16),
+      decoration: const BoxDecoration(
+        border: Border(top: BorderSide(color: ZarpaColors.primary, width: 3)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            '$streak',
+            style: const TextStyle(
+              fontFamily: ZarpaFonts.display,
+              fontSize: 100,
+              fontWeight: FontWeight.w700,
+              color: ZarpaColors.primary,
+              height: 0.8,
+            ),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.only(top: 6),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    streak == 1 ? 'DÍA DE RACHA' : 'DÍAS DE RACHA',
+                    style: TextStyle(
+                      fontFamily: ZarpaFonts.display,
+                      fontSize: 22,
+                      fontWeight: FontWeight.w700,
+                      color: ZarpaColors.foreground,
+                      height: 1.0,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    streak > 0
+                        ? 'SIGUE ASÍ. NO PARES.'
+                        : 'ENTRENA HOY PARA EMPEZAR',
+                    style: TextStyle(
+                      fontFamily: ZarpaFonts.mono,
+                      fontSize: 11,
+                      color: ZarpaColors.muted,
+                      letterSpacing: 1,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Celda de cifra grande con retícula (Asfalto). Va dentro de IntrinsicHeight.
+class _BigStatCell extends StatelessWidget {
+  const _BigStatCell({required this.value, required this.label});
   final String value;
   final String label;
-  final IconData icon;
 
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: ZarpaColors.surface,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: ZarpaColors.border),
-        ),
-        child: Column(
-          children: [
-            Icon(icon, size: 18, color: ZarpaColors.primary),
-            const SizedBox(height: 6),
-            Text(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.centerLeft,
+            child: Text(
               value,
-              style: const TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.w800,
-              ),
-            ),
-            Text(
-              label,
               style: TextStyle(
-                fontSize: 10,
-                fontWeight: FontWeight.w600,
-                color: ZarpaColors.muted,
-                letterSpacing: 1,
+                fontFamily: ZarpaFonts.display,
+                fontSize: 40,
+                fontWeight: FontWeight.w700,
+                color: ZarpaColors.foreground,
+                height: 0.95,
               ),
             ),
-          ],
-        ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style: TextStyle(
+              fontFamily: ZarpaFonts.mono,
+              fontSize: 10,
+              color: ZarpaColors.muted,
+              letterSpacing: 1.5,
+            ),
+          ),
+        ],
       ),
+    );
+  }
+}
+
+class _GridDivider extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 1,
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      color: ZarpaColors.border,
     );
   }
 }
@@ -530,31 +525,80 @@ class _TotalStatRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 6),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      padding: const EdgeInsets.symmetric(vertical: 14),
       decoration: BoxDecoration(
-        color: ZarpaColors.surface,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: ZarpaColors.border),
+        border: Border(bottom: BorderSide(color: ZarpaColors.border)),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
-            label,
+            label.toUpperCase(),
             style: TextStyle(
-              fontSize: 13,
+              fontFamily: ZarpaFonts.mono,
+              fontSize: 12,
               color: ZarpaColors.muted,
-              fontWeight: FontWeight.w500,
+              letterSpacing: 1,
             ),
           ),
           Text(
             value,
-            style: const TextStyle(
-              fontSize: 15,
+            style: TextStyle(
+              fontFamily: ZarpaFonts.display,
+              fontSize: 22,
               fontWeight: FontWeight.w700,
+              color: ZarpaColors.foreground,
             ),
           ),
+        ],
+      ),
+    );
+  }
+}
+
+class _HistoryRow extends StatelessWidget {
+  const _HistoryRow({required this.name, required this.meta});
+  final String name;
+  final String meta;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 14),
+      decoration: BoxDecoration(
+        border: Border(bottom: BorderSide(color: ZarpaColors.border)),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  name.toUpperCase(),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontFamily: ZarpaFonts.display,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                    color: ZarpaColors.foreground,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  meta,
+                  style: TextStyle(
+                    fontFamily: ZarpaFonts.mono,
+                    fontSize: 10,
+                    color: ZarpaColors.muted,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Icon(Icons.chevron_right, size: 18, color: ZarpaColors.mutedLight),
         ],
       ),
     );

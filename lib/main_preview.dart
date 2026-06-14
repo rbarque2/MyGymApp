@@ -12,6 +12,8 @@ import 'repositories/exercises_repository.dart';
 import 'repositories/routines_repository.dart';
 import 'repositories/workouts_repository.dart';
 import 'screens/home_tab_screen.dart';
+import 'screens/stats_screen.dart';
+import 'screens/workout_completion_screen.dart';
 import 'services/settings_service.dart';
 import 'theme/zarpafit_theme.dart';
 
@@ -88,13 +90,24 @@ class _FakeWorkoutsRepository extends WorkoutsRepository {
     int limit = 30,
   }) async {
     final now = DateTime.now();
+    List<WorkoutSet> fakeSets() => List.generate(
+          18,
+          (i) => WorkoutSet(
+            exerciseId: 'e$i',
+            exerciseName: 'Ejercicio ${i + 1}',
+            setNumber: i + 1,
+            reps: 10,
+            weightKg: 40,
+            completed: true,
+          ),
+        );
     WorkoutSessionModel session(int daysAgo, String name, int minutes) =>
         WorkoutSessionModel(
           id: 'w$daysAgo',
           ownerUid: 'preview',
           routineId: 'r1',
           routineName: name,
-          sets: const [],
+          sets: fakeSets(),
           startedAt: Timestamp.fromDate(now.subtract(Duration(days: daysAgo))),
           durationMinutes: minutes,
         );
@@ -120,14 +133,69 @@ Future<void> main() async {
       theme: zarpaFitTheme(),
       darkTheme: zarpaFitThemeDark(),
       themeMode: ThemeMode.dark,
-      home: HomeTabScreen(
-        ownerUid: 'preview',
-        userName: 'Rafa Barquero',
-        routinesRepository: _FakeRoutinesRepository(),
-        exercisesRepository: ExercisesRepository(),
-        workoutsRepository: _FakeWorkoutsRepository(),
-        settingsService: SettingsService(),
-      ),
+      home: const _PreviewLauncher(),
     ),
   );
+}
+
+/// Menú para revisar las pantallas del rediseño sin login.
+class _PreviewLauncher extends StatelessWidget {
+  const _PreviewLauncher();
+
+  @override
+  Widget build(BuildContext context) {
+    Widget btn(String label, Widget screen) => Padding(
+          padding: const EdgeInsets.only(bottom: 12),
+          child: SizedBox(
+            width: double.infinity,
+            child: FilledButton(
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => screen),
+              ),
+              child: Text(label),
+            ),
+          ),
+        );
+
+    return Scaffold(
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              btn(
+                'HOME PÓSTER',
+                HomeTabScreen(
+                  ownerUid: 'preview',
+                  userName: 'Rafa Barquero',
+                  routinesRepository: _FakeRoutinesRepository(),
+                  exercisesRepository: ExercisesRepository(),
+                  workoutsRepository: _FakeWorkoutsRepository(),
+                  settingsService: SettingsService(),
+                ),
+              ),
+              btn(
+                'STATS ASFALTO',
+                StatsScreen(
+                  ownerUid: 'preview',
+                  workoutsRepository: _FakeWorkoutsRepository(),
+                ),
+              ),
+              btn(
+                'CIERRE PÓSTER',
+                const WorkoutCompletionScreen(
+                  routineName: 'Empuje · Día 3',
+                  completedSets: 19,
+                  totalSets: 21,
+                  durationMinutes: 47,
+                  exerciseCount: 6,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }
