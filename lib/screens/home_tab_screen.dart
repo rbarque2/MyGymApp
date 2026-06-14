@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../models/routine_model.dart';
 import '../models/workout_session_model.dart';
@@ -39,16 +40,16 @@ class HomeTabScreen extends StatefulWidget {
 
 class _HomeTabScreenState extends State<HomeTabScreen> {
   List<WorkoutSessionModel> _recentWorkouts = [];
-  int _sloganIndex = 0;
-  double _sloganOpacity = 1.0;
-  Timer? _sloganTimer;
+  int _wordIndex = 0;
+  Timer? _wordTimer;
 
-  static const _slogans = [
-    'Instinto en movimiento',
-    'Fuerza de asfalto',
-    'Sin ruido. Sin excusas.',
-    'Despierta la zarpa interior',
-    'Cada serie cuenta',
+  /// Palabras-póster del sistema Instinto. Rotan como claim de marca.
+  static const _displayWords = [
+    'INSTINTO',
+    'ZARPA',
+    'ASFALTO',
+    'FUERZA',
+    'RITMO',
   ];
 
   String get _greeting {
@@ -63,27 +64,16 @@ class _HomeTabScreenState extends State<HomeTabScreen> {
   void initState() {
     super.initState();
     _loadRecent();
-    _startSloganRotation();
+    _wordTimer = Timer.periodic(const Duration(seconds: 4), (_) {
+      if (!mounted) return;
+      setState(() => _wordIndex = (_wordIndex + 1) % _displayWords.length);
+    });
   }
 
   @override
   void dispose() {
-    _sloganTimer?.cancel();
+    _wordTimer?.cancel();
     super.dispose();
-  }
-
-  void _startSloganRotation() {
-    _sloganTimer = Timer.periodic(const Duration(seconds: 4), (_) {
-      if (!mounted) return;
-      setState(() => _sloganOpacity = 0.0);
-      Future.delayed(const Duration(milliseconds: 300), () {
-        if (!mounted) return;
-        setState(() {
-          _sloganIndex = (_sloganIndex + 1) % _slogans.length;
-          _sloganOpacity = 1.0;
-        });
-      });
-    });
   }
 
   Future<void> _loadRecent() async {
@@ -101,6 +91,16 @@ class _HomeTabScreenState extends State<HomeTabScreen> {
       'jul', 'ago', 'sep', 'oct', 'nov', 'dic'
     ];
     return '${date.day} ${months[date.month - 1]}';
+  }
+
+  static String _posterDate() {
+    const days = ['LUN', 'MAR', 'MIÉ', 'JUE', 'VIE', 'SÁB', 'DOM'];
+    const months = [
+      'ENE', 'FEB', 'MAR', 'ABR', 'MAY', 'JUN',
+      'JUL', 'AGO', 'SEP', 'OCT', 'NOV', 'DIC'
+    ];
+    final now = DateTime.now();
+    return '${days[now.weekday - 1]} ${now.day} ${months[now.month - 1]}';
   }
 
   int _calculateStreak(List<WorkoutSessionModel> workouts) {
@@ -131,246 +131,442 @@ class _HomeTabScreenState extends State<HomeTabScreen> {
     return streak;
   }
 
+  void _openDetail(RoutineModel routine) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => RoutineDetailScreen(
+          ownerUid: widget.ownerUid,
+          routine: routine,
+          routinesRepository: widget.routinesRepository,
+          exercisesRepository: widget.exercisesRepository,
+          workoutsRepository: widget.workoutsRepository,
+          settingsService: widget.settingsService,
+        ),
+      ),
+    );
+  }
+
+  void _startWorkout(RoutineModel routine) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => WorkoutScreen(
+          ownerUid: widget.ownerUid,
+          routine: routine,
+          workoutsRepository: widget.workoutsRepository,
+          settingsService: widget.settingsService,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: ZarpaColors.background,
-      body: SafeArea(
-        child: StreamBuilder<List<RoutineModel>>(
-          stream: widget.routinesRepository.watchRoutines(widget.ownerUid),
-          builder: (context, routineSnap) {
-            final routines = routineSnap.data ?? [];
-            final streak = _calculateStreak(_recentWorkouts);
-            final totalMin = _recentWorkouts.fold<int>(
-                0, (sum, w) => sum + (w.durationMinutes ?? 0));
+      body: StreamBuilder<List<RoutineModel>>(
+        stream: widget.routinesRepository.watchRoutines(widget.ownerUid),
+        builder: (context, routineSnap) {
+          final routines = routineSnap.data ?? [];
+          final streak = _calculateStreak(_recentWorkouts);
+          final totalMin = _recentWorkouts.fold<int>(
+              0, (sum, w) => sum + (w.durationMinutes ?? 0));
 
-            return ListView(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-              children: [
-                // === HEADER ===
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          _greeting,
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: ZarpaColors.primary,
-                            letterSpacing: 2,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          widget.userName.split(' ').first,
-                          style: TextStyle(
-                            fontSize: 32,
-                            fontWeight: FontWeight.w800,
-                            color: ZarpaColors.foreground,
-                            letterSpacing: -1,
-                          ),
-                        ),
-                      ],
+          if (routines.isEmpty) {
+            return SafeArea(
+              child: ListView(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                children: [
+                  Text(
+                    _greeting,
+                    style: TextStyle(
+                      fontFamily: ZarpaFonts.mono,
+                      fontSize: 11,
+                      color: ZarpaColors.primary,
+                      letterSpacing: 2,
+                      fontWeight: FontWeight.w500,
                     ),
-                    Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(14),
-                        border: Border.all(
-                          color: ZarpaColors.primary.withOpacity(0.3),
-                          width: 2,
-                        ),
-                      ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
-                        child: Image.asset(
-                          'assets/zarpafit_logo.png',
-                          width: 48,
-                          height: 48,
-                          fit: BoxFit.cover,
-                        ),
-                      ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    widget.userName.split(' ').first.toUpperCase(),
+                    style: TextStyle(
+                      fontFamily: ZarpaFonts.display,
+                      fontSize: 44,
+                      fontWeight: FontWeight.w700,
+                      color: ZarpaColors.foreground,
+                      height: 0.95,
                     ),
-                  ],
-                ),
-                const SizedBox(height: 28),
-
-                // === STATS ROW ===
-                Row(
-                  children: [
-                    _StatMiniCard(
-                      icon: Icons.local_fire_department,
-                      value: '$streak',
-                      label: 'RACHA',
-                      iconColor: ZarpaColors.primary,
-                      highlight: true,
-                    ),
-                    const SizedBox(width: 10),
-                    _StatMiniCard(
-                      icon: Icons.fitness_center,
-                      value: '${_recentWorkouts.length}',
-                      label: 'SESIONES',
-                      iconColor: ZarpaColors.cta,
-                    ),
-                    const SizedBox(width: 10),
-                    _StatMiniCard(
-                      icon: Icons.timer_outlined,
-                      value: '$totalMin',
-                      label: 'MINUTOS',
-                      iconColor: ZarpaColors.primaryLight,
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 32),
-
-                // === EMPTY STATE ===
-                if (routines.isEmpty) ...[
+                  ),
                   const SizedBox(height: 24),
+                  _AsphaltStats(
+                    streak: streak,
+                    sessions: _recentWorkouts.length,
+                    minutes: totalMin,
+                  ),
+                  const SizedBox(height: 32),
                   _EmptyHomeState(
                     onCreateRoutine: widget.onGoToRoutines ?? () {},
                   ),
-                  const SizedBox(height: 32),
                 ],
-
-                // === FEATURED WORKOUT ===
-                if (routines.isNotEmpty) ...[
-                  _FeaturedRoutineCard(
-                    routine: routines.first,
-                    onTap: () => Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) => RoutineDetailScreen(
-                          ownerUid: widget.ownerUid,
-                          routine: routines.first,
-                          routinesRepository: widget.routinesRepository,
-                          exercisesRepository: widget.exercisesRepository,
-                          workoutsRepository: widget.workoutsRepository,
-                          settingsService: widget.settingsService,
-                        ),
-                      ),
-                    ),
-                    onStart: () => Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) => WorkoutScreen(
-                          ownerUid: widget.ownerUid,
-                          routine: routines.first,
-                          workoutsRepository: widget.workoutsRepository,
-                          settingsService: widget.settingsService,
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 32),
-                ],
-
-                // === QUICK ROUTINES ===
-                if (routines.length > 1) ...[
-                  _SectionTitle(label: 'RUTINAS RÁPIDAS'),
-                  const SizedBox(height: 14),
-                  ShaderMask(
-                    shaderCallback: (bounds) => LinearGradient(
-                      begin: Alignment.centerLeft,
-                      end: Alignment.centerRight,
-                      colors: [
-                        ZarpaColors.background,
-                        ZarpaColors.background,
-                        ZarpaColors.background.withOpacity(0),
-                      ],
-                      stops: const [0.0, 0.85, 1.0],
-                    ).createShader(bounds),
-                    blendMode: BlendMode.dstIn,
-                    child: SizedBox(
-                      height: 130,
-                      child: ListView.separated(
-                        scrollDirection: Axis.horizontal,
-                        padding: const EdgeInsets.only(right: 32),
-                        itemCount: routines.length.clamp(0, 6),
-                        separatorBuilder: (ctx, i) => const SizedBox(width: 12),
-                        itemBuilder: (context, i) {
-                          final r = routines[i];
-                          return _QuickRoutineCard(
-                            routine: r,
-                            onTap: () => Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (_) => RoutineDetailScreen(
-                                  ownerUid: widget.ownerUid,
-                                  routine: r,
-                                  routinesRepository:
-                                      widget.routinesRepository,
-                                  exercisesRepository:
-                                      widget.exercisesRepository,
-                                  workoutsRepository:
-                                      widget.workoutsRepository,
-                                  settingsService: widget.settingsService,
-                                ),
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 32),
-                ],
-
-                // === RECENT SESSIONS ===
-                if (_recentWorkouts.isNotEmpty) ...[
-                  _SectionTitle(label: 'ÚLTIMAS SESIONES'),
-                  const SizedBox(height: 14),
-                  ...List.generate(_recentWorkouts.take(3).length, (i) {
-                    final w = _recentWorkouts[i];
-                    final date = w.startedAt?.toDate();
-                    final dateStr = date != null ? _formatDate(date) : '';
-                    return _RecentSessionRow(
-                      name: w.routineName,
-                      date: dateStr,
-                      duration: '${w.durationMinutes ?? 0} min',
-                      isLast: i == (_recentWorkouts.take(3).length - 1),
-                    );
-                  }),
-                  const SizedBox(height: 32),
-                ],
-
-                // === SLOGAN ROTATIVO ===
-                Container(
-                  padding: const EdgeInsets.symmetric(vertical: 24),
-                  decoration: BoxDecoration(
-                    border: Border(
-                      top: BorderSide(
-                        color: ZarpaColors.primary.withOpacity(0.3),
-                        width: 1,
-                      ),
-                    ),
-                  ),
-                  child: AnimatedOpacity(
-                    opacity: _sloganOpacity,
-                    duration: Duration(
-                        milliseconds: _sloganOpacity == 0.0 ? 300 : 400),
-                    child: Text(
-                      _slogans[_sloganIndex],
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 15,
-                        color: ZarpaColors.primary.withOpacity(0.6),
-                        fontStyle: FontStyle.italic,
-                        fontWeight: FontWeight.w600,
-                        letterSpacing: 1,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
+              ),
             );
-          },
-        ),
+          }
+
+          final featured = routines.first;
+
+          return AnnotatedRegion<SystemUiOverlayStyle>(
+            // El póster es oscuro en ambos modos: iconos de status bar claros.
+            value: SystemUiOverlayStyle.light,
+            child: ListView(
+              padding: EdgeInsets.zero,
+              children: [
+                _PosterHeader(
+                  routine: featured,
+                  word: _displayWords[_wordIndex],
+                  date: _posterDate(),
+                  userName: widget.userName.split(' ').first,
+                  streak: streak,
+                  onTap: () => _openDetail(featured),
+                  onStart: featured.exercises.isEmpty
+                      ? null
+                      : () => _startWorkout(featured),
+                ),
+                _AsphaltStats(
+                  streak: streak,
+                  sessions: _recentWorkouts.length,
+                  minutes: totalMin,
+                ),
+                if (_recentWorkouts.isNotEmpty) ...[
+                  const SizedBox(height: 28),
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    child: _SectionTitle(label: 'ÚLTIMAS SESIONES'),
+                  ),
+                  const SizedBox(height: 8),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Column(
+                      children: [
+                        for (final w in _recentWorkouts.take(3))
+                          _AsphaltSessionRow(
+                            name: w.routineName,
+                            date: w.startedAt != null
+                                ? _formatDate(w.startedAt!.toDate())
+                                : '',
+                            minutes: w.durationMinutes ?? 0,
+                          ),
+                      ],
+                    ),
+                  ),
+                ],
+                if (routines.length > 1) ...[
+                  const SizedBox(height: 28),
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    child: _SectionTitle(label: 'MÁS RUTINAS'),
+                  ),
+                  const SizedBox(height: 14),
+                  SizedBox(
+                    height: 190,
+                    child: ListView.separated(
+                      scrollDirection: Axis.horizontal,
+                      padding: const EdgeInsets.only(left: 20, right: 20),
+                      itemCount: routines.length.clamp(0, 8),
+                      separatorBuilder: (ctx, i) => const SizedBox(width: 10),
+                      itemBuilder: (context, i) {
+                        final r = routines[i];
+                        return _MiniPoster(
+                          routine: r,
+                          onTap: () => _openDetail(r),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+                const SizedBox(height: 32),
+              ],
+            ),
+          );
+        },
       ),
     );
   }
 }
 
 // === WIDGETS PRIVADOS ===
+
+/// Cabecera póster del sistema Instinto: foto full-bleed, palabra de marca
+/// gigante y CTA subrayado. Siempre oscura, en ambos modos de tema.
+class _PosterHeader extends StatelessWidget {
+  const _PosterHeader({
+    required this.routine,
+    required this.word,
+    required this.date,
+    required this.userName,
+    required this.streak,
+    required this.onTap,
+    required this.onStart,
+  });
+
+  final RoutineModel routine;
+  final String word;
+  final String date;
+  final String userName;
+  final int streak;
+  final VoidCallback onTap;
+  final VoidCallback? onStart;
+
+  @override
+  Widget build(BuildContext context) {
+    final height =
+        (MediaQuery.sizeOf(context).height * 0.58).clamp(420.0, 560.0);
+    final exCount = routine.exercises.length;
+    final totalSets = routine.exercises.fold<int>(0, (sum, e) => sum + e.sets);
+
+    return GestureDetector(
+      onTap: onTap,
+      child: SizedBox(
+        height: height,
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            const ColoredBox(color: ZarpaInk.black),
+            Image.network(
+              routineCoverUrl(routine),
+              fit: BoxFit.cover,
+              errorBuilder: (_, __, ___) => const DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [Color(0xFF3B2415), Color(0xFF0A0A0A)],
+                  ),
+                ),
+              ),
+            ),
+            const DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  stops: [0.0, 0.38, 1.0],
+                  colors: [
+                    ZarpaInk.veilTop,
+                    ZarpaInk.veilMid,
+                    ZarpaInk.veilBottom,
+                  ],
+                ),
+              ),
+            ),
+            SafeArea(
+              bottom: false,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 14, 20, 22),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'ZARPAFIT',
+                          style: TextStyle(
+                            fontFamily: ZarpaFonts.mono,
+                            fontSize: 11,
+                            color: ZarpaInk.steel,
+                            letterSpacing: 2,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        Text(
+                          '$date · ${userName.toUpperCase()}',
+                          style: const TextStyle(
+                            fontFamily: ZarpaFonts.mono,
+                            fontSize: 11,
+                            color: ZarpaInk.steel,
+                            letterSpacing: 1.5,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 500),
+                      child: FittedBox(
+                        key: ValueKey(word),
+                        fit: BoxFit.scaleDown,
+                        alignment: Alignment.centerLeft,
+                        child: Text.rich(
+                          TextSpan(
+                            children: [
+                              TextSpan(
+                                text: word,
+                                style:
+                                    const TextStyle(color: ZarpaColors.primary),
+                              ),
+                              const TextSpan(
+                                text: '.',
+                                style: TextStyle(color: ZarpaInk.paper),
+                              ),
+                            ],
+                          ),
+                          style: const TextStyle(
+                            fontFamily: ZarpaFonts.display,
+                            fontSize: 84,
+                            fontWeight: FontWeight.w700,
+                            height: 0.85,
+                            letterSpacing: -2,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const Spacer(),
+                    Text(
+                      routine.name,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontFamily: ZarpaFonts.display,
+                        fontSize: 28,
+                        fontWeight: FontWeight.w700,
+                        color: ZarpaInk.paper,
+                        height: 1.0,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      '$exCount EJERCICIOS · $totalSets SERIES · RACHA $streak',
+                      style: const TextStyle(
+                        fontFamily: ZarpaFonts.mono,
+                        fontSize: 11,
+                        color: ZarpaInk.steel,
+                        letterSpacing: 1.2,
+                      ),
+                    ),
+                    const SizedBox(height: 18),
+                    InkWell(
+                      onTap: onStart,
+                      child: Container(
+                        padding: const EdgeInsets.only(bottom: 5),
+                        decoration: const BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                              color: ZarpaColors.primary,
+                              width: 2,
+                            ),
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              'ENTRENAR AHORA',
+                              style: TextStyle(
+                                fontFamily: ZarpaFonts.display,
+                                fontSize: 18,
+                                fontWeight: FontWeight.w700,
+                                letterSpacing: 2.5,
+                                color: onStart == null
+                                    ? ZarpaInk.steel
+                                    : ZarpaColors.primary,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Icon(
+                              Icons.arrow_forward,
+                              size: 18,
+                              color: onStart == null
+                                  ? ZarpaInk.steel
+                                  : ZarpaColors.primary,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Franja de métricas del sistema Asfalto: números gigantes, retícula de
+/// 1px, sin tarjetas ni esquinas. Sigue el tema (light/dark).
+class _AsphaltStats extends StatelessWidget {
+  const _AsphaltStats({
+    required this.streak,
+    required this.sessions,
+    required this.minutes,
+  });
+
+  final int streak;
+  final int sessions;
+  final int minutes;
+
+  @override
+  Widget build(BuildContext context) {
+    Widget cell(String value, String label, {bool highlight = false}) {
+      return Expanded(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                value,
+                style: TextStyle(
+                  fontFamily: ZarpaFonts.display,
+                  fontSize: 38,
+                  fontWeight: FontWeight.w700,
+                  height: 0.95,
+                  color: highlight
+                      ? ZarpaColors.primary
+                      : ZarpaColors.foreground,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                label,
+                style: TextStyle(
+                  fontFamily: ZarpaFonts.mono,
+                  fontSize: 10,
+                  letterSpacing: 1.5,
+                  color: ZarpaColors.muted,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    final divider = Container(width: 1, color: ZarpaColors.border);
+
+    return Container(
+      decoration: BoxDecoration(
+        border: Border(
+          bottom: BorderSide(color: ZarpaColors.border),
+        ),
+      ),
+      child: IntrinsicHeight(
+        child: Row(
+          children: [
+            cell('$streak', 'RACHA', highlight: true),
+            divider,
+            cell('$sessions', 'SESIONES'),
+            divider,
+            cell('$minutes', 'MINUTOS'),
+          ],
+        ),
+      ),
+    );
+  }
+}
 
 class _SectionTitle extends StatelessWidget {
   const _SectionTitle({required this.label});
@@ -380,22 +576,16 @@ class _SectionTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Container(
-          width: 4,
-          height: 18,
-          decoration: BoxDecoration(
-            color: ZarpaColors.primary,
-            borderRadius: BorderRadius.circular(2),
-          ),
-        ),
+        Container(width: 18, height: 2, color: ZarpaColors.primary),
         const SizedBox(width: 8),
         Text(
           label,
           style: TextStyle(
-            fontSize: 13,
-            fontWeight: FontWeight.w700,
-            color: ZarpaColors.foreground,
+            fontFamily: ZarpaFonts.mono,
+            fontSize: 11,
             letterSpacing: 2,
+            color: ZarpaColors.muted,
+            fontWeight: FontWeight.w500,
           ),
         ),
       ],
@@ -403,63 +593,71 @@ class _SectionTitle extends StatelessWidget {
   }
 }
 
-class _StatMiniCard extends StatelessWidget {
-  const _StatMiniCard({
-    required this.icon,
-    required this.value,
-    required this.label,
-    required this.iconColor,
-    this.highlight = false,
+/// Fila de sesión del sistema Asfalto: divider duro, fecha mono.
+class _AsphaltSessionRow extends StatelessWidget {
+  const _AsphaltSessionRow({
+    required this.name,
+    required this.date,
+    required this.minutes,
   });
-  final IconData icon;
-  final String value;
-  final String label;
-  final Color iconColor;
-  final bool highlight;
+
+  final String name;
+  final String date;
+  final int minutes;
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
+    return InkWell(
+      onTap: () {},
       child: Container(
-        padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: highlight
-              ? ZarpaColors.primary.withOpacity(0.08)
-              : ZarpaColors.surface,
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(
-            color: highlight ? ZarpaColors.primary.withOpacity(0.3) : ZarpaColors.border,
+          border: Border(
+            bottom: BorderSide(color: ZarpaColors.border),
           ),
-          boxShadow: const [
-            BoxShadow(
-              color: Color(0x0A0F172A),
-              blurRadius: 8,
-              offset: Offset(0, 2),
-            ),
-          ],
         ),
-        child: Column(
+        padding: const EdgeInsets.symmetric(vertical: 14),
+        child: Row(
           children: [
-            Icon(icon, size: 20, color: iconColor),
-            const SizedBox(height: 6),
-            Text(
-              value,
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.w800,
-                color: ZarpaColors.foreground,
-                letterSpacing: -0.5,
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    name.toUpperCase(),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontFamily: ZarpaFonts.display,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                      color: ZarpaColors.foreground,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    date,
+                    style: TextStyle(
+                      fontFamily: ZarpaFonts.mono,
+                      fontSize: 11,
+                      color: ZarpaColors.muted,
+                      letterSpacing: 1,
+                    ),
+                  ),
+                ],
               ),
             ),
             Text(
-              label,
-              style: TextStyle(
-                fontSize: 10,
-                fontWeight: FontWeight.w600,
-                color: ZarpaColors.muted,
+              '$minutes MIN',
+              style: const TextStyle(
+                fontFamily: ZarpaFonts.mono,
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+                color: ZarpaColors.primary,
                 letterSpacing: 1,
               ),
             ),
+            const SizedBox(width: 8),
+            Icon(Icons.chevron_right, size: 18, color: ZarpaColors.mutedLight),
           ],
         ),
       ),
@@ -467,346 +665,72 @@ class _StatMiniCard extends StatelessWidget {
   }
 }
 
-class _FeaturedRoutineCard extends StatelessWidget {
-  const _FeaturedRoutineCard({
-    required this.routine,
-    required this.onTap,
-    required this.onStart,
-  });
+/// Mini-póster de rutina: foto con veil y nombre superpuesto.
+class _MiniPoster extends StatelessWidget {
+  const _MiniPoster({required this.routine, required this.onTap});
+
   final RoutineModel routine;
   final VoidCallback onTap;
-  final VoidCallback onStart;
 
   @override
   Widget build(BuildContext context) {
-    final exCount = routine.exercises.length;
-    final totalSets =
-        routine.exercises.fold<int>(0, (sum, e) => sum + e.sets);
-
     return GestureDetector(
       onTap: onTap,
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(
-              color: ZarpaColors.primary.withOpacity(0.3),
-              blurRadius: 20,
-              offset: const Offset(0, 8),
-            ),
-          ],
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(20),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(2),
+        child: SizedBox(
+          width: 150,
           child: Stack(
+            fit: StackFit.expand,
             children: [
-              // Base: gradiente de marca (visible mientras carga la foto
-              // o si falla la red).
-              const Positioned.fill(
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [Color(0xFFF97316), Color(0xFFEA580C)],
-                    ),
-                  ),
-                ),
+              const ColoredBox(color: ZarpaInk.black),
+              Image.network(
+                routineCoverUrl(routine),
+                fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) =>
+                    const ColoredBox(color: Color(0xFF2A221C)),
               ),
-              // Foto de portada de la rutina.
-              Positioned.fill(
-                child: Image.network(
-                  routineCoverUrl(routine),
-                  fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => const SizedBox.shrink(),
-                ),
-              ),
-              // Velo oscuro para legibilidad del texto sobre la foto.
-              Positioned.fill(
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        Colors.black.withOpacity(0.30),
-                        Colors.black.withOpacity(0.72),
-                      ],
-                    ),
+              const DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [ZarpaInk.veilTop, ZarpaInk.veilBottom],
                   ),
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.all(20),
+                padding: const EdgeInsets.all(12),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    // Category badge
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: ZarpaColors.primary,
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: const Text(
-                        'ENTRENAMIENTO DEL DÍA',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 10,
-                          fontWeight: FontWeight.w700,
-                          letterSpacing: 1.5,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 56),
                     Text(
-                      routine.name,
+                      routine.name.toUpperCase(),
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
                         fontFamily: ZarpaFonts.display,
-                        fontSize: 32,
+                        fontSize: 17,
                         fontWeight: FontWeight.w700,
-                        color: Colors.white,
-                        letterSpacing: 0.3,
-                        height: 1.05,
+                        color: ZarpaInk.paper,
+                        height: 0.95,
                       ),
                     ),
-                    if (routine.description != null) ...[
-                      const SizedBox(height: 6),
-                      Text(
-                        routine.description!,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.white.withOpacity(0.9),
-                          height: 1.4,
-                        ),
-                      ),
-                    ],
-                    const SizedBox(height: 14),
-                    Row(
-                      children: [
-                        Icon(Icons.fitness_center,
-                            size: 14, color: Colors.white.withOpacity(0.8)),
-                        const SizedBox(width: 4),
-                        Text(
-                          '$exCount ejercicios',
-                          style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.white.withOpacity(0.9)),
-                        ),
-                        const SizedBox(width: 16),
-                        Icon(Icons.repeat,
-                            size: 14, color: Colors.white.withOpacity(0.8)),
-                        const SizedBox(width: 4),
-                        Text(
-                          '$totalSets series',
-                          style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.white.withOpacity(0.9)),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 18),
-                    SizedBox(
-                      width: double.infinity,
-                      child: FilledButton(
-                        style: FilledButton.styleFrom(
-                          backgroundColor: Colors.white,
-                          foregroundColor: ZarpaColors.primary,
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        onPressed: routine.exercises.isEmpty ? null : onStart,
-                        child: const Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              'COMENZAR',
-                              style: TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w800,
-                                letterSpacing: 1.5,
-                              ),
-                            ),
-                            SizedBox(width: 8),
-                            Icon(Icons.arrow_forward, size: 18),
-                          ],
-                        ),
+                    const SizedBox(height: 6),
+                    Text(
+                      '${routine.exercises.length} EJ',
+                      style: const TextStyle(
+                        fontFamily: ZarpaFonts.mono,
+                        fontSize: 10,
+                        color: ZarpaInk.steel,
+                        letterSpacing: 1.5,
                       ),
                     ),
                   ],
                 ),
               ),
             ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _QuickRoutineCard extends StatelessWidget {
-  const _QuickRoutineCard({required this.routine, required this.onTap});
-  final RoutineModel routine;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: 150,
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: ZarpaColors.surface,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: ZarpaColors.border),
-          boxShadow: const [
-            BoxShadow(
-              color: Color(0x0A0F172A),
-              blurRadius: 8,
-              offset: Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Icon(Icons.fitness_center,
-                size: 24, color: ZarpaColors.primary),
-            const SizedBox(height: 10),
-            Text(
-              routine.name,
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w700,
-                color: ZarpaColors.foreground,
-              ),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-            const Spacer(),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-              decoration: BoxDecoration(
-                color: ZarpaColors.primary.withOpacity(0.15),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Text(
-                '${routine.exercises.length} ej.',
-                style: const TextStyle(
-                  fontSize: 11,
-                  color: ZarpaColors.primary,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _RecentSessionRow extends StatelessWidget {
-  const _RecentSessionRow({
-    required this.name,
-    required this.date,
-    required this.duration,
-    required this.isLast,
-  });
-  final String name;
-  final String date;
-  final String duration;
-  final bool isLast;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.only(bottom: isLast ? 0 : 8),
-      decoration: BoxDecoration(
-        color: ZarpaColors.surface,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: ZarpaColors.border),
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0x0A0F172A),
-            blurRadius: 8,
-            offset: Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Material(
-        color: Colors.transparent,
-        borderRadius: BorderRadius.circular(12),
-        child: InkWell(
-          borderRadius: BorderRadius.circular(12),
-          onTap: () {},
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
-            child: Row(
-              children: [
-                Container(
-                  width: 36,
-                  height: 36,
-                  decoration: BoxDecoration(
-                    color: ZarpaColors.primary.withOpacity(0.12),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: const Icon(
-                    Icons.play_arrow_rounded,
-                    size: 18,
-                    color: ZarpaColors.primary,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        name,
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: ZarpaColors.foreground,
-                        ),
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        date,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: ZarpaColors.muted,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: ZarpaColors.cta.withOpacity(0.12),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    duration,
-                    style: const TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w700,
-                      color: ZarpaColors.cta,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Icon(Icons.chevron_right,
-                    size: 18, color: ZarpaColors.mutedLight),
-              ],
-            ),
           ),
         ),
       ),
@@ -824,7 +748,7 @@ class _EmptyHomeState extends StatelessWidget {
       padding: const EdgeInsets.all(28),
       decoration: BoxDecoration(
         color: ZarpaColors.surface,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(2),
         border: Border.all(color: ZarpaColors.border),
       ),
       child: Column(
@@ -844,12 +768,12 @@ class _EmptyHomeState extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Text(
-            'Despierta la zarpa',
+            'DESPIERTA LA ZARPA',
             style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w800,
+              fontFamily: ZarpaFonts.display,
+              fontSize: 24,
+              fontWeight: FontWeight.w700,
               color: ZarpaColors.foreground,
-              letterSpacing: -0.5,
             ),
           ),
           const SizedBox(height: 8),

@@ -26,6 +26,10 @@ String routineCoverUrl(RoutineModel routine) {
       return exercisePhoto;
     }
   }
-  final hash = routine.name.codeUnits.fold<int>(0, (acc, c) => acc * 31 + c);
-  return _fallbackCovers[hash.abs() % _fallbackCovers.length];
+  // Acotado a 31 bits: en web los int son doubles y un hash sin máscara
+  // pierde los bits bajos con nombres largos (todas las rutinas acababan
+  // con la misma portada).
+  final hash = routine.name.codeUnits
+      .fold<int>(0, (acc, c) => ((acc * 31) + c) & 0x7fffffff);
+  return _fallbackCovers[hash % _fallbackCovers.length];
 }
