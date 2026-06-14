@@ -32,35 +32,45 @@ class HistoryScreen extends StatelessWidget {
             }
             final workouts = snapshot.data ?? [];
 
-            return ListView(
-              padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
-              children: [
-                Text(
-                  'HISTORIAL',
-                  style: TextStyle(
-                    fontFamily: ZarpaFonts.display,
-                    fontSize: 44,
-                    fontWeight: FontWeight.w700,
-                    color: ZarpaColors.foreground,
-                    height: 0.95,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                if (workouts.isNotEmpty)
-                  Text(
-                    '${workouts.length} ${workouts.length == 1 ? 'SESIÓN REGISTRADA' : 'SESIONES REGISTRADAS'}',
-                    style: TextStyle(
-                      fontFamily: ZarpaFonts.mono,
-                      fontSize: 11,
-                      color: ZarpaColors.muted,
-                      letterSpacing: 1.5,
+            return CustomScrollView(
+              slivers: [
+                SliverPadding(
+                  padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+                  sliver: SliverToBoxAdapter(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'HISTORIAL',
+                          style: TextStyle(
+                            fontFamily: ZarpaFonts.display,
+                            fontSize: 44,
+                            fontWeight: FontWeight.w700,
+                            color: ZarpaColors.foreground,
+                            height: 0.95,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        if (workouts.isNotEmpty)
+                          Text(
+                            '${workouts.length} ${workouts.length == 1 ? 'SESIÓN REGISTRADA' : 'SESIONES REGISTRADAS'}',
+                            style: TextStyle(
+                              fontFamily: ZarpaFonts.mono,
+                              fontSize: 11,
+                              color: ZarpaColors.muted,
+                              letterSpacing: 1.5,
+                            ),
+                          ),
+                        const SizedBox(height: 20),
+                      ],
                     ),
                   ),
-                const SizedBox(height: 20),
-                if (workouts.isEmpty) ...[
-                  const SizedBox(height: 60),
-                  Center(
+                ),
+                if (workouts.isEmpty)
+                  SliverFillRemaining(
+                    hasScrollBody: false,
                     child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(Icons.history,
                             size: 64, color: ZarpaColors.mutedLight),
@@ -80,11 +90,19 @@ class HistoryScreen extends StatelessWidget {
                           style: TextStyle(
                               fontSize: 13, color: ZarpaColors.muted),
                         ),
+                        const Spacer(),
                       ],
                     ),
+                  )
+                else
+                  SliverPadding(
+                    padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
+                    sliver: SliverList.builder(
+                      itemCount: workouts.length,
+                      itemBuilder: (context, i) =>
+                          _HistoryRow(workout: workouts[i], months: _months),
+                    ),
                   ),
-                ] else
-                  ...workouts.map((w) => _HistoryRow(workout: w, months: _months)),
               ],
             );
           },
