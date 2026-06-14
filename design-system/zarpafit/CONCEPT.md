@@ -43,6 +43,12 @@ unidos por un ADN común. Decidido con el usuario el 2026-06-12.
 - ✅ Fase 2 (2026-06-12): Workout activo + descanso como HUD Telemetría
   (anillo de descanso `_RestRingPainter`, header con progreso segmentado por
   serie, contador/reloj mono, descanso siempre oscuro `ZarpaInk.black`).
-- ⏳ Fase 3: Stats y workout completion en Asfalto (números gigantes,
-  comparativas VS SEM-1, póster de cierre de sesión compartible).
-- ⏳ Fase 4: login como póster, perfil, empty states del sistema.
+- ✅ Fase 3 (2026-06-12): Stats en Asfalto (racha gigante, bloques de mes con
+  retícula, barras cuadradas, filas duras) y workout completion como póster
+  compartible (cabina oscura, duración protagonista, COMPARTIR al portapapeles).
+- ✅ Fase 4 (2026-06-12): login como póster de bienvenida (palabra rotativa +
+  CTA duro), perfil en Asfalto (stats gigantes + logros en grid duro), detalle
+  de rutina con header póster (SliverAppBar + foto) y lista de ejercicios dura.
+- ⏳ Pendiente menor: editor de rutina, ajustes, listas de ejercicios/programas
+  e historial aún con estilo Material antiguo (pantallas utilitarias, baja
+  prioridad). Empty states del sistema.

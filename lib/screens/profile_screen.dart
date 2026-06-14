@@ -188,18 +188,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
       backgroundColor: ZarpaColors.background,
       body: SafeArea(
         child: ListView(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
           children: [
             // Header
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const Text(
+                Text(
                   'PERFIL',
                   style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: -0.5,
+                    fontFamily: ZarpaFonts.display,
+                    fontSize: 44,
+                    fontWeight: FontWeight.w700,
+                    color: ZarpaColors.foreground,
+                    height: 0.95,
                   ),
                 ),
                 IconButton(
@@ -216,156 +219,118 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             const SizedBox(height: 20),
 
-            // Profile Card
-            Container(
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                color: ZarpaColors.surface,
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: ZarpaColors.border),
-              ),
-              child: Column(
-                children: [
-                  // Avatar
-                  Container(
-                    width: 80,
-                    height: 80,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: ZarpaColors.surface2,
-                      border: Border.all(color: levelColor, width: 3),
-                    ),
-                    child: widget.user.photoURL != null
-                        ? ClipOval(
-                            child: Image.network(
-                              widget.user.photoURL!,
-                              fit: BoxFit.cover,
-                              errorBuilder: (_, __, ___) => Center(
-                                child: Text(
-                                  initial,
-                                  style: const TextStyle(
-                                    fontSize: 32,
-                                    fontWeight: FontWeight.w800,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          )
-                        : Center(
-                            child: Text(
-                              initial,
-                              style: const TextStyle(
-                                fontSize: 32,
-                                fontWeight: FontWeight.w800,
-                              ),
-                            ),
-                          ),
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    widget.user.displayName ?? 'Sin nombre',
-                    style: const TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  // Level badge
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 14, vertical: 6),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      color: levelColor.withOpacity(0.15),
-                      border: Border.all(color: levelColor),
-                    ),
-                    child: Text(
-                      levelName,
-                      style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: 2,
-                        color: levelColor,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 14),
-                  // Progress bar
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(2),
-                    child: LinearProgressIndicator(
-                      value: progress,
-                      minHeight: 4,
-                      backgroundColor: ZarpaColors.border,
-                      valueColor: AlwaysStoppedAnimation(levelColor),
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    totalSessions >= 75
-                        ? 'Nivel máximo alcanzado'
-                        : '$totalSessions / $nextThreshold sesiones para el siguiente nivel',
-                    style: TextStyle(
-                      fontSize: 11,
-                      color: ZarpaColors.muted,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 20),
-
-            // Stats Grid
-            Text(
-              'ESTADÍSTICAS',
-              style: TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.w700,
-                color: ZarpaColors.muted,
-                letterSpacing: 2,
-              ),
-            ),
-            const SizedBox(height: 12),
-            Wrap(
-              spacing: 10,
-              runSpacing: 10,
+            // Identidad: avatar + nombre + nivel.
+            Row(
               children: [
-                _ProfileStatCard(
-                    icon: Icons.fitness_center,
-                    value: '$totalSessions',
-                    label: 'SESIONES'),
-                _ProfileStatCard(
-                    icon: Icons.local_fire_department,
-                    value: '$streak',
-                    label: 'RACHA'),
-                _ProfileStatCard(
-                    icon: Icons.emoji_events,
-                    value: '$bestStreak',
-                    label: 'MEJOR RACHA'),
-                _ProfileStatCard(
-                    icon: Icons.timer,
-                    value: '$totalMin',
-                    label: 'MINUTOS'),
-                _ProfileStatCard(
-                    icon: Icons.star,
-                    value:
-                        '${achievements.where((a) => a.unlocked).length}',
-                    label: 'LOGROS'),
+                Container(
+                  width: 72,
+                  height: 72,
+                  decoration: BoxDecoration(
+                    color: ZarpaColors.surface2,
+                    border: Border.all(color: levelColor, width: 3),
+                  ),
+                  child: widget.user.photoURL != null
+                      ? Image.network(
+                          widget.user.photoURL!,
+                          fit: BoxFit.cover,
+                          errorBuilder: (_, __, ___) => _AvatarInitial(initial),
+                        )
+                      : _AvatarInitial(initial),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        (widget.user.displayName ?? 'SIN NOMBRE').toUpperCase(),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontFamily: ZarpaFonts.display,
+                          fontSize: 26,
+                          fontWeight: FontWeight.w700,
+                          color: ZarpaColors.foreground,
+                          height: 1.0,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 3),
+                        color: levelColor,
+                        child: Text(
+                          levelName,
+                          style: const TextStyle(
+                            fontFamily: ZarpaFonts.mono,
+                            fontSize: 11,
+                            fontWeight: FontWeight.w500,
+                            letterSpacing: 2,
+                            color: ZarpaInk.black,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ],
+            ),
+            const SizedBox(height: 14),
+            // Progreso de nivel
+            LinearProgressIndicator(
+              value: progress,
+              minHeight: 4,
+              backgroundColor: ZarpaColors.border,
+              valueColor: AlwaysStoppedAnimation(levelColor),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              totalSessions >= 75
+                  ? 'NIVEL MÁXIMO ALCANZADO'
+                  : '$totalSessions / $nextThreshold SESIONES PARA EL SIGUIENTE NIVEL',
+              style: TextStyle(
+                fontFamily: ZarpaFonts.mono,
+                fontSize: 10,
+                color: ZarpaColors.muted,
+                letterSpacing: 0.5,
+              ),
             ),
             const SizedBox(height: 28),
 
-            // Achievements
-            Text(
-              'LOGROS',
-              style: TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.w700,
-                color: ZarpaColors.muted,
-                letterSpacing: 2,
+            // Estadísticas — números gigantes con retícula.
+            const _SectionTitle(label: 'ESTADÍSTICAS'),
+            const SizedBox(height: 14),
+            IntrinsicHeight(
+              child: Row(
+                children: [
+                  _BigStatCell(value: '$totalSessions', label: 'SESIONES'),
+                  _GridDivider(),
+                  _BigStatCell(value: '$streak', label: 'RACHA'),
+                  _GridDivider(),
+                  _BigStatCell(value: '$bestStreak', label: 'MEJOR'),
+                ],
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 16),
+            IntrinsicHeight(
+              child: Row(
+                children: [
+                  _BigStatCell(value: '$totalMin', label: 'MINUTOS'),
+                  _GridDivider(),
+                  _BigStatCell(
+                    value: '${achievements.where((a) => a.unlocked).length}',
+                    label: 'LOGROS',
+                  ),
+                  _GridDivider(),
+                  const Expanded(child: SizedBox()),
+                ],
+              ),
+            ),
+            const SizedBox(height: 28),
+
+            // Logros
+            const _SectionTitle(label: 'LOGROS'),
+            const SizedBox(height: 14),
             Wrap(
               spacing: 10,
               runSpacing: 10,
@@ -375,57 +340,56 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             const SizedBox(height: 28),
 
-            // Logout  
+            // Cerrar sesión
             OutlinedButton.icon(
               style: OutlinedButton.styleFrom(
                 foregroundColor: ZarpaColors.error,
                 side: const BorderSide(color: ZarpaColors.error),
                 padding: const EdgeInsets.symmetric(vertical: 14),
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(2)),
+                ),
               ),
               onPressed: () => widget.authService.signOut(),
-              icon: const Icon(Icons.logout),
-              label: const Text('CERRAR SESIÓN',
-                  style: TextStyle(
-                      letterSpacing: 1, fontWeight: FontWeight.w700)),
+              icon: const Icon(Icons.logout, size: 18),
+              label: const Text(
+                'CERRAR SESIÓN',
+                style: TextStyle(
+                  fontFamily: ZarpaFonts.display,
+                  letterSpacing: 1.5,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 15,
+                ),
+              ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 28),
 
             // Brand footer
             Container(
-              padding: const EdgeInsets.symmetric(vertical: 24),
+              padding: const EdgeInsets.only(top: 20),
               decoration: BoxDecoration(
-                border: Border(
-                  top: BorderSide(color: ZarpaColors.surface2),
-                ),
+                border: Border(top: BorderSide(color: ZarpaColors.border)),
               ),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: Image.asset(
-                      'assets/zarpafit_logo.png',
-                      width: 48,
-                      height: 48,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  const Text(
+                  Text(
                     'ZARPAFIT',
                     style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: 4,
+                      fontFamily: ZarpaFonts.mono,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                      letterSpacing: 3,
+                      color: ZarpaColors.muted,
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     'Instinto en movimiento',
                     style: TextStyle(
-                      fontSize: 12,
-                      color: ZarpaColors.muted,
+                      fontSize: 13,
+                      color: ZarpaColors.mutedLight,
                       fontStyle: FontStyle.italic,
-                      letterSpacing: 0.5,
                     ),
                   ),
                 ],
@@ -434,6 +398,103 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _SectionTitle extends StatelessWidget {
+  const _SectionTitle({required this.label});
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Container(width: 18, height: 2, color: ZarpaColors.primary),
+        const SizedBox(width: 8),
+        Text(
+          label,
+          style: TextStyle(
+            fontFamily: ZarpaFonts.mono,
+            fontSize: 11,
+            letterSpacing: 2,
+            color: ZarpaColors.muted,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _AvatarInitial extends StatelessWidget {
+  const _AvatarInitial(this.initial);
+  final String initial;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Text(
+        initial,
+        style: TextStyle(
+          fontFamily: ZarpaFonts.display,
+          fontSize: 32,
+          fontWeight: FontWeight.w700,
+          color: ZarpaColors.foreground,
+        ),
+      ),
+    );
+  }
+}
+
+class _BigStatCell extends StatelessWidget {
+  const _BigStatCell({required this.value, required this.label});
+  final String value;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.centerLeft,
+            child: Text(
+              value,
+              style: TextStyle(
+                fontFamily: ZarpaFonts.display,
+                fontSize: 40,
+                fontWeight: FontWeight.w700,
+                color: ZarpaColors.foreground,
+                height: 0.95,
+              ),
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style: TextStyle(
+              fontFamily: ZarpaFonts.mono,
+              fontSize: 10,
+              color: ZarpaColors.muted,
+              letterSpacing: 1.5,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _GridDivider extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 1,
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      color: ZarpaColors.border,
     );
   }
 }
@@ -446,56 +507,6 @@ class _Achievement {
   const _Achievement(this.title, this.description, this.icon, this.unlocked);
 }
 
-class _ProfileStatCard extends StatelessWidget {
-  const _ProfileStatCard({
-    required this.icon,
-    required this.value,
-    required this.label,
-  });
-  final IconData icon;
-  final String value;
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    final width =
-        (MediaQuery.of(context).size.width - 40 - 20) / 3; // 3 per row
-    return SizedBox(
-      width: width,
-      child: Container(
-        padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(
-          color: ZarpaColors.surface,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: ZarpaColors.border),
-        ),
-        child: Column(
-          children: [
-            Icon(icon, size: 18, color: ZarpaColors.primary),
-            const SizedBox(height: 4),
-            Text(
-              value,
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w800,
-              ),
-            ),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 10,
-                fontWeight: FontWeight.w600,
-                color: ZarpaColors.muted,
-                letterSpacing: 1,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
 class _AchievementCard extends StatelessWidget {
   const _AchievementCard({required this.achievement});
   final _Achievement achievement;
@@ -503,48 +514,53 @@ class _AchievementCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final width = (MediaQuery.of(context).size.width - 40 - 20) / 3;
+    final unlocked = achievement.unlocked;
     return SizedBox(
       width: width,
       child: Opacity(
-        opacity: achievement.unlocked ? 1.0 : 0.5,
+        opacity: unlocked ? 1.0 : 0.45,
         child: Container(
-          padding: const EdgeInsets.all(14),
+          height: 120,
+          padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: ZarpaColors.surface,
-            borderRadius: BorderRadius.circular(12),
+            color: unlocked
+                ? ZarpaColors.primary.withOpacity(0.08)
+                : Colors.transparent,
             border: Border.all(
-              color: achievement.unlocked
-                  ? ZarpaColors.primary
-                  : ZarpaColors.border,
+              color: unlocked ? ZarpaColors.primary : ZarpaColors.border,
             ),
           ),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Icon(
-                achievement.unlocked
-                    ? achievement.icon
-                    : Icons.lock_outline,
-                size: 28,
-                color: achievement.unlocked
-                    ? ZarpaColors.primary
-                    : ZarpaColors.mutedLight,
+                unlocked ? achievement.icon : Icons.lock_outline,
+                size: 26,
+                color: unlocked ? ZarpaColors.primary : ZarpaColors.mutedLight,
               ),
-              const SizedBox(height: 4),
+              const Spacer(),
               Text(
-                achievement.title,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontSize: 11,
+                achievement.title.toUpperCase(),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontFamily: ZarpaFonts.display,
+                  fontSize: 13,
                   fontWeight: FontWeight.w700,
+                  color: ZarpaColors.foreground,
+                  height: 0.95,
                 ),
               ),
+              const SizedBox(height: 2),
               Text(
                 achievement.description,
-                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
                 style: TextStyle(
+                  fontFamily: ZarpaFonts.mono,
                   fontSize: 9,
                   color: ZarpaColors.muted,
-                  height: 1.3,
+                  height: 1.2,
                 ),
               ),
             ],

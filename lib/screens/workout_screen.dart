@@ -699,22 +699,6 @@ class _WorkoutScreenState extends State<WorkoutScreen>
     );
   }
 
-  Widget _stepButton({required IconData icon, required VoidCallback onTap}) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: 36,
-        height: 36,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: ZarpaColors.surface,
-          border: Border.all(color: ZarpaColors.border),
-        ),
-        child: Icon(icon, size: 18, color: ZarpaColors.foreground),
-      ),
-    );
-  }
-
   List<Widget> _buildEditableMetricDisplay(
       WorkoutSet set, MeasurementType mt, int exerciseIndex) {
     final showWeight = _weightEnabledExercises.contains(exerciseIndex);

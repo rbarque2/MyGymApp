@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../services/auth_service.dart';
 import '../theme/zarpafit_theme.dart';
@@ -12,28 +15,30 @@ class LoginScreen extends StatefulWidget {
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen>
-    with SingleTickerProviderStateMixin {
+class _LoginScreenState extends State<LoginScreen> {
   bool _loading = false;
   String? _error;
-  late final AnimationController _pulseController;
-  late final Animation<double> _pulseAnim;
+  int _wordIndex = 0;
+  Timer? _wordTimer;
+
+  static const _words = ['INSTINTO', 'ASFALTO', 'FUERZA', 'ZARPA'];
+
+  // Foto de portada del póster de bienvenida (misma fuente que las rutinas).
+  static const _coverUrl =
+      'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080';
 
   @override
   void initState() {
     super.initState();
-    _pulseController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 1200),
-    )..repeat(reverse: true);
-    _pulseAnim = Tween<double>(begin: 1.0, end: 1.08).animate(
-      CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
-    );
+    _wordTimer = Timer.periodic(const Duration(seconds: 3), (_) {
+      if (!mounted) return;
+      setState(() => _wordIndex = (_wordIndex + 1) % _words.length);
+    });
   }
 
   @override
   void dispose() {
-    _pulseController.dispose();
+    _wordTimer?.cancel();
     super.dispose();
   }
 
@@ -62,107 +67,147 @@ class _LoginScreenState extends State<LoginScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: ZarpaColors.primary,
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(32),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Logo animado con pulso
-              ScaleTransition(
-                scale: _pulseAnim,
-                child: Container(
-                  width: 120,
-                  height: 120,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(24),
-                    boxShadow: [
-                      BoxShadow(
-                        color: ZarpaColors.primary.withOpacity(0.4),
-                        blurRadius: 40,
-                        spreadRadius: 8,
+    // Póster de bienvenida: cabina oscura full-bleed, en ambos temas.
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle.light,
+      child: Scaffold(
+        backgroundColor: ZarpaInk.black,
+        body: Stack(
+          fit: StackFit.expand,
+          children: [
+            const ColoredBox(color: ZarpaInk.black),
+            Image.network(
+              _coverUrl,
+              fit: BoxFit.cover,
+              errorBuilder: (_, __, ___) => const DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [Color(0xFF3B2415), Color(0xFF0A0A0A)],
+                  ),
+                ),
+              ),
+            ),
+            const DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  stops: [0.0, 0.45, 1.0],
+                  colors: [
+                    ZarpaInk.veilTop,
+                    ZarpaInk.veilMid,
+                    ZarpaInk.veilBottom,
+                  ],
+                ),
+              ),
+            ),
+            SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(24, 20, 24, 28),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'ZARPAFIT',
+                      style: TextStyle(
+                        fontFamily: ZarpaFonts.mono,
+                        fontSize: 12,
+                        color: ZarpaInk.steel,
+                        letterSpacing: 3,
                       ),
+                    ),
+                    const Spacer(),
+                    // Palabra de marca gigante rotativa.
+                    AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 450),
+                      child: Text(
+                        _words[_wordIndex],
+                        key: ValueKey(_wordIndex),
+                        style: const TextStyle(
+                          fontFamily: ZarpaFonts.display,
+                          fontSize: 76,
+                          fontWeight: FontWeight.w700,
+                          color: ZarpaColors.primary,
+                          height: 0.9,
+                          letterSpacing: -1,
+                        ),
+                      ),
+                    ),
+                    const Text(
+                      'EN MOVIMIENTO.',
+                      style: TextStyle(
+                        fontFamily: ZarpaFonts.display,
+                        fontSize: 40,
+                        fontWeight: FontWeight.w700,
+                        color: ZarpaInk.paper,
+                        height: 0.95,
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+                    const Text(
+                      'Sin ruido. Sin excusas. Despierta la zarpa.',
+                      style: TextStyle(
+                        fontFamily: ZarpaFonts.body,
+                        fontSize: 15,
+                        color: ZarpaInk.steel,
+                        height: 1.4,
+                      ),
+                    ),
+                    const SizedBox(height: 32),
+                    if (_error != null) ...[
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 10),
+                        decoration: BoxDecoration(
+                          color: ZarpaColors.error.withOpacity(0.15),
+                          border:
+                              Border.all(color: ZarpaColors.error.withOpacity(0.5)),
+                        ),
+                        child: Text(
+                          _error!,
+                          style: const TextStyle(color: Color(0xFFF09595)),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
                     ],
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(24),
-                    child: Image.asset(
-                      'assets/zarpafit_logo.png',
-                      fit: BoxFit.cover,
+                    SizedBox(
+                      width: double.infinity,
+                      height: 56,
+                      child: FilledButton.icon(
+                        style: FilledButton.styleFrom(
+                          backgroundColor: ZarpaInk.paper,
+                          foregroundColor: ZarpaInk.black,
+                          shape: const RoundedRectangleBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(2)),
+                          ),
+                          textStyle: const TextStyle(
+                            fontFamily: ZarpaFonts.display,
+                            fontWeight: FontWeight.w700,
+                            fontSize: 17,
+                            letterSpacing: 1.5,
+                          ),
+                        ),
+                        onPressed: _loading ? null : _signIn,
+                        icon: _loading
+                            ? const SizedBox(
+                                width: 18,
+                                height: 18,
+                                child: CircularProgressIndicator(
+                                    strokeWidth: 2, color: ZarpaInk.black),
+                              )
+                            : const Icon(Icons.login, size: 20),
+                        label: const Text('ENTRAR CON GOOGLE'),
+                      ),
                     ),
-                  ),
+                  ],
                 ),
               ),
-              const SizedBox(height: 32),
-              const Text(
-                'ZARPAFIT',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 32,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: 4,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Instinto en movimiento',
-                style: TextStyle(
-                  color: Colors.white.withOpacity(0.6),
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  letterSpacing: 1,
-                ),
-              ),
-              const SizedBox(height: 48),
-              if (_error != null) ...[
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                  decoration: BoxDecoration(
-                    color: ZarpaColors.error.withOpacity(0.15),
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: ZarpaColors.error.withOpacity(0.3)),
-                  ),
-                  child: Text(
-                    _error!,
-                    style: const TextStyle(color: ZarpaColors.error),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-                const SizedBox(height: 16),
-              ],
-              SizedBox(
-                width: double.infinity,
-                height: 52,
-                child: FilledButton.icon(
-                  style: FilledButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    foregroundColor: ZarpaColors.primary,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    textStyle: const TextStyle(
-                      fontWeight: FontWeight.w700,
-                      fontSize: 16,
-                      letterSpacing: 0.5,
-                    ),
-                  ),
-                  onPressed: _loading ? null : _signIn,
-                  icon: _loading
-                      ? const SizedBox(
-                          width: 18,
-                          height: 18,
-                          child: CircularProgressIndicator(
-                              strokeWidth: 2, color: ZarpaColors.primary),
-                        )
-                      : const Icon(Icons.login),
-                  label: const Text('ENTRAR CON GOOGLE'),
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
