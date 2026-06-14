@@ -12,8 +12,11 @@ import 'repositories/exercises_repository.dart';
 import 'repositories/routines_repository.dart';
 import 'repositories/workouts_repository.dart';
 import 'screens/home_tab_screen.dart';
+import 'screens/login_screen.dart';
+import 'screens/routine_detail_screen.dart';
 import 'screens/stats_screen.dart';
 import 'screens/workout_completion_screen.dart';
+import 'services/auth_service.dart';
 import 'services/settings_service.dart';
 import 'theme/zarpafit_theme.dart';
 
@@ -190,6 +193,18 @@ class _PreviewLauncher extends StatelessWidget {
                   totalSets: 21,
                   durationMinutes: 47,
                   exerciseCount: 6,
+                ),
+              ),
+              btn('LOGIN PÓSTER', LoginScreen(authService: AuthService())),
+              btn(
+                'DETALLE RUTINA',
+                RoutineDetailScreen(
+                  ownerUid: 'preview',
+                  routine: _routines.first,
+                  routinesRepository: _FakeRoutinesRepository(),
+                  exercisesRepository: ExercisesRepository(),
+                  workoutsRepository: _FakeWorkoutsRepository(),
+                  settingsService: SettingsService(),
                 ),
               ),
             ],

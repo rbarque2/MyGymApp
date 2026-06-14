@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../models/routine_model.dart';
 import '../repositories/exercises_repository.dart';
@@ -6,6 +7,7 @@ import '../repositories/routines_repository.dart';
 import '../repositories/workouts_repository.dart';
 import '../services/settings_service.dart';
 import '../theme/zarpafit_theme.dart';
+import '../widgets/routine_cover.dart';
 import 'routine_editor_screen.dart';
 import 'workout_screen.dart';
 
@@ -60,55 +62,102 @@ class RoutineDetailScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: ZarpaColors.background,
-      body: Column(
-        children: [
-          // Header
-          SafeArea(
-            bottom: false,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-              decoration: BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(color: ZarpaColors.border),
-                ),
+      body: CustomScrollView(
+        slivers: [
+          // Header póster con foto de portada.
+          SliverAppBar(
+            expandedHeight: 280,
+            pinned: true,
+            backgroundColor: ZarpaInk.black,
+            foregroundColor: ZarpaInk.paper,
+            systemOverlayStyle: SystemUiOverlayStyle.light,
+            leading: IconButton(
+              icon: const Icon(Icons.chevron_left, size: 28),
+              onPressed: () => Navigator.pop(context),
+            ),
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.edit, size: 20),
+                onPressed: () => _editRoutine(context),
               ),
-              child: Row(
+            ],
+            flexibleSpace: FlexibleSpaceBar(
+              background: Stack(
+                fit: StackFit.expand,
                 children: [
-                  GestureDetector(
-                    onTap: () => Navigator.pop(context),
-                    child: Container(
-                      width: 40,
-                      height: 40,
+                  const ColoredBox(color: ZarpaInk.black),
+                  Image.network(
+                    routineCoverUrl(routine),
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => const DecoratedBox(
                       decoration: BoxDecoration(
-                        color: ZarpaColors.surface,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: const Icon(Icons.chevron_left, size: 24),
-                    ),
-                  ),
-                  Expanded(
-                    child: Center(
-                      child: Text(
-                        'RUTINA',
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w700,
-                          color: ZarpaColors.muted,
-                          letterSpacing: 2,
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [Color(0xFF3B2415), Color(0xFF0A0A0A)],
                         ),
                       ),
                     ),
                   ),
-                  GestureDetector(
-                    onTap: () => _editRoutine(context),
-                    child: Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        color: ZarpaColors.surface,
-                        borderRadius: BorderRadius.circular(8),
+                  const DecoratedBox(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        stops: [0.0, 0.4, 1.0],
+                        colors: [
+                          ZarpaInk.veilTop,
+                          ZarpaInk.veilMid,
+                          ZarpaInk.veilBottom,
+                        ],
                       ),
-                      child: const Icon(Icons.edit, size: 18),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 4),
+                          color: ZarpaColors.primary,
+                          child: const Text(
+                            'RUTINA',
+                            style: TextStyle(
+                              fontFamily: ZarpaFonts.mono,
+                              color: ZarpaInk.black,
+                              fontSize: 10,
+                              fontWeight: FontWeight.w500,
+                              letterSpacing: 1.5,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Text(
+                          routine.name.toUpperCase(),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontFamily: ZarpaFonts.display,
+                            fontSize: 34,
+                            fontWeight: FontWeight.w700,
+                            color: ZarpaInk.paper,
+                            height: 0.95,
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          '${routine.exercises.length} EJERCICIOS · $totalSets SERIES',
+                          style: const TextStyle(
+                            fontFamily: ZarpaFonts.mono,
+                            fontSize: 11,
+                            color: ZarpaInk.steel,
+                            letterSpacing: 1.2,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
@@ -116,105 +165,27 @@ class RoutineDetailScreen extends StatelessWidget {
             ),
           ),
 
-          // Content
-          Expanded(
-            child: ListView(
-              padding: const EdgeInsets.fromLTRB(20, 20, 20, 100),
-              children: [
-                // Hero Card
-                Container(
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: ZarpaColors.surface,
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border(
-                      left: BorderSide(color: ZarpaColors.primary, width: 4),
-                      top: BorderSide(color: ZarpaColors.border),
-                      right: BorderSide(color: ZarpaColors.border),
-                      bottom: BorderSide(color: ZarpaColors.border),
+          SliverPadding(
+            padding: const EdgeInsets.fromLTRB(20, 24, 20, 120),
+            sliver: SliverList(
+              delegate: SliverChildListDelegate([
+                if (routine.description != null) ...[
+                  Text(
+                    routine.description!,
+                    style: TextStyle(
+                      fontFamily: ZarpaFonts.body,
+                      fontSize: 15,
+                      color: ZarpaColors.muted,
+                      height: 1.5,
                     ),
                   ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Category badge
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: ZarpaColors.primary,
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: const Text(
-                          'RUTINA',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 10,
-                            fontWeight: FontWeight.w700,
-                            letterSpacing: 1.5,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      const Icon(Icons.fitness_center,
-                          size: 40, color: ZarpaColors.primary),
-                      const SizedBox(height: 12),
-                      Text(
-                        routine.name,
-                        style: const TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.w800,
-                          letterSpacing: -0.5,
-                        ),
-                      ),
-                      if (routine.description != null) ...[
-                        const SizedBox(height: 6),
-                        Text(
-                          routine.description!,
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: ZarpaColors.muted,
-                            height: 1.5,
-                          ),
-                        ),
-                      ],
-                      const SizedBox(height: 14),
-                      // Meta chips
-                      Row(
-                        children: [
-                          _MetaChip(
-                            icon: Icons.fitness_center,
-                            label:
-                                '${routine.exercises.length} ejercicios',
-                          ),
-                          const SizedBox(width: 8),
-                          _MetaChip(
-                            icon: Icons.repeat,
-                            label: '$totalSets series',
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 28),
-
-                // Section title
-                Text(
-                  'EJERCICIOS',
-                  style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w700,
-                    color: ZarpaColors.muted,
-                    letterSpacing: 2,
-                  ),
-                ),
-                const SizedBox(height: 12),
-
-                // Exercise list
+                  const SizedBox(height: 24),
+                ],
+                const _SectionTitle(label: 'EJERCICIOS'),
+                const SizedBox(height: 6),
                 if (routine.exercises.isEmpty)
                   Padding(
-                    padding: EdgeInsets.symmetric(vertical: 40),
+                    padding: const EdgeInsets.symmetric(vertical: 40),
                     child: Center(
                       child: Text(
                         'Sin ejercicios. Edita la rutina para añadirlos.',
@@ -226,13 +197,14 @@ class RoutineDetailScreen extends StatelessWidget {
                     ),
                   )
                 else
-                  ...List.generate(routine.exercises.length, (i) {
-                    return _ExerciseRow(
+                  ...List.generate(
+                    routine.exercises.length,
+                    (i) => _ExerciseRow(
                       index: i,
                       exercise: routine.exercises[i],
-                    );
-                  }),
-              ],
+                    ),
+                  ),
+              ]),
             ),
           ),
         ],
@@ -243,17 +215,10 @@ class RoutineDetailScreen extends StatelessWidget {
           ? Container(
               padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
               decoration: BoxDecoration(
-                color: ZarpaColors.surface,
+                color: ZarpaColors.background,
                 border: Border(
                   top: BorderSide(color: ZarpaColors.border),
                 ),
-                boxShadow: const [
-                  BoxShadow(
-                    color: Color(0x0F0F172A),
-                    blurRadius: 12,
-                    offset: Offset(0, -4),
-                  ),
-                ],
               ),
               child: SizedBox(
                 width: double.infinity,
@@ -261,8 +226,8 @@ class RoutineDetailScreen extends StatelessWidget {
                   style: FilledButton.styleFrom(
                     backgroundColor: ZarpaColors.primary,
                     padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(2)),
                     ),
                   ),
                   onPressed: () => _startWorkout(context),
@@ -274,9 +239,10 @@ class RoutineDetailScreen extends StatelessWidget {
                       Text(
                         'INICIAR ENTRENAMIENTO',
                         style: TextStyle(
-                          fontSize: 15,
+                          fontFamily: ZarpaFonts.display,
+                          fontSize: 16,
                           fontWeight: FontWeight.w700,
-                          letterSpacing: 1.5,
+                          letterSpacing: 2,
                           color: Colors.white,
                         ),
                       ),
@@ -290,30 +256,27 @@ class RoutineDetailScreen extends StatelessWidget {
   }
 }
 
-class _MetaChip extends StatelessWidget {
-  const _MetaChip({required this.icon, required this.label});
-  final IconData icon;
+class _SectionTitle extends StatelessWidget {
+  const _SectionTitle({required this.label});
   final String label;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-      decoration: BoxDecoration(
-        color: ZarpaColors.surface2,
-        borderRadius: BorderRadius.circular(6),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 14, color: ZarpaColors.mutedLight),
-          const SizedBox(width: 6),
-          Text(
-            label,
-            style: TextStyle(fontSize: 12, color: ZarpaColors.muted),
+    return Row(
+      children: [
+        Container(width: 18, height: 2, color: ZarpaColors.primary),
+        const SizedBox(width: 8),
+        Text(
+          label,
+          style: TextStyle(
+            fontFamily: ZarpaFonts.mono,
+            fontSize: 11,
+            letterSpacing: 2,
+            color: ZarpaColors.muted,
+            fontWeight: FontWeight.w500,
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
@@ -326,58 +289,49 @@ class _ExerciseRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final restStr = exercise.restSeconds > 0
-        ? ' · ${exercise.restSeconds}s descanso'
+        ? ' · ${exercise.restSeconds}S DESC'
         : '';
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.symmetric(vertical: 14),
       decoration: BoxDecoration(
-        color: ZarpaColors.surface,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: ZarpaColors.border),
+        border: Border(bottom: BorderSide(color: ZarpaColors.border)),
       ),
       child: Row(
         children: [
-          // Number
-          Container(
-            width: 36,
-            height: 36,
-            decoration: BoxDecoration(
-              color: ZarpaColors.surface2,
-              borderRadius: BorderRadius.circular(6),
-            ),
-            child: Center(
-              child: Text(
-                (index + 1).toString().padLeft(2, '0'),
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w700,
-                  color: ZarpaColors.muted,
-                ),
-              ),
+          Text(
+            (index + 1).toString().padLeft(2, '0'),
+            style: TextStyle(
+              fontFamily: ZarpaFonts.display,
+              fontSize: 28,
+              fontWeight: FontWeight.w700,
+              color: ZarpaColors.primary,
             ),
           ),
-          const SizedBox(width: 12),
-          // Info
+          const SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  exercise.exerciseName,
-                  style: const TextStyle(
-                    fontSize: 15,
+                  exercise.exerciseName.toUpperCase(),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontFamily: ZarpaFonts.display,
+                    fontSize: 18,
                     fontWeight: FontWeight.w700,
+                    color: ZarpaColors.foreground,
                   ),
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  '${exercise.sets} series × ${exercise.reps} reps$restStr',
+                  '${exercise.sets} × ${exercise.reps} REPS$restStr',
                   style: const TextStyle(
-                    fontSize: 11,
+                    fontFamily: ZarpaFonts.mono,
+                    fontSize: 10,
                     color: ZarpaColors.primary,
-                    fontWeight: FontWeight.w600,
+                    letterSpacing: 0.5,
                   ),
                 ),
               ],
