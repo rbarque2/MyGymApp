@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' as math;
 import 'dart:ui';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -46,6 +47,9 @@ class _WorkoutScreenState extends State<WorkoutScreen>
   int _currentExerciseIndex = 0;
   int _currentSetInExercise = 0;
   bool _showingRest = false;
+
+  /// Total del descanso en curso, para el anillo del HUD (remaining/total).
+  int _restTotalSeconds = 1;
 
   late AnimationController _pulseController;
   late PageController _pageController;
@@ -172,6 +176,7 @@ class _WorkoutScreenState extends State<WorkoutScreen>
       final restSeconds = _currentExercise.restSeconds > 0
           ? _currentExercise.restSeconds
           : widget.settingsService.defaultRestSeconds;
+      _restTotalSeconds = restSeconds;
       _timer.start(restSeconds);
       _showingRest = true;
 
@@ -367,7 +372,8 @@ class _WorkoutScreenState extends State<WorkoutScreen>
                   if (_showingRest)
                     Positioned.fill(
                       child: Container(
-                        color: ZarpaColors.background,
+                        // El descanso es cabina: siempre oscuro, en ambos temas.
+                        color: ZarpaInk.black,
                         child: _buildRestView(),
                       ),
                     ),
@@ -385,7 +391,7 @@ class _WorkoutScreenState extends State<WorkoutScreen>
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
       decoration: BoxDecoration(
         border: Border(
-          bottom: BorderSide(color: ZarpaColors.surface2),
+          bottom: BorderSide(color: ZarpaColors.border),
         ),
       ),
       child: Column(
@@ -398,8 +404,8 @@ class _WorkoutScreenState extends State<WorkoutScreen>
                   width: 40,
                   height: 40,
                   decoration: BoxDecoration(
-                    color: ZarpaColors.surface,
-                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: ZarpaColors.border),
+                    borderRadius: BorderRadius.circular(2),
                   ),
                   child: const Icon(Icons.close, size: 20),
                 ),
@@ -411,19 +417,24 @@ class _WorkoutScreenState extends State<WorkoutScreen>
                   children: [
                     Text(
                       widget.routine.name.toUpperCase(),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                        fontSize: 12,
+                        fontFamily: ZarpaFonts.display,
+                        fontSize: 16,
                         fontWeight: FontWeight.w700,
-                        letterSpacing: 1.5,
-                        color: ZarpaColors.muted,
+                        letterSpacing: 1,
+                        color: ZarpaColors.foreground,
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 2),
                     Text(
-                      '${_completedCount}/${_sets.length} series',
+                      '${_completedCount.toString().padLeft(2, '0')}/${_sets.length.toString().padLeft(2, '0')} SERIES',
                       style: TextStyle(
-                        fontSize: 11,
-                        color: ZarpaColors.mutedLight,
+                        fontFamily: ZarpaFonts.mono,
+                        fontSize: 10,
+                        letterSpacing: 1.5,
+                        color: ZarpaColors.muted,
                       ),
                     ),
                   ],
@@ -432,41 +443,50 @@ class _WorkoutScreenState extends State<WorkoutScreen>
               // Elapsed time
               Container(
                 padding: const EdgeInsets.symmetric(
-                    horizontal: 12, vertical: 6),
+                    horizontal: 12, vertical: 7),
                 decoration: BoxDecoration(
-                  color: ZarpaColors.surface,
-                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: ZarpaColors.border),
+                  borderRadius: BorderRadius.circular(2),
                 ),
-                child: Row(
-                  children: [
-                    Icon(Icons.timer_outlined,
-                        size: 14, color: ZarpaColors.muted),
-                    const SizedBox(width: 4),
-                    Text(
-                      _formatElapsed(),
-                      style: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        fontFeatures: [FontFeature.tabularFigures()],
-                      ),
-                    ),
-                  ],
+                child: Text(
+                  _formatElapsed(),
+                  style: TextStyle(
+                    fontFamily: ZarpaFonts.mono,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                    color: ZarpaColors.foreground,
+                    letterSpacing: 1,
+                    fontFeatures: const [FontFeature.tabularFigures()],
+                  ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 10),
-          // Progress bar
-          ClipRRect(
-            borderRadius: BorderRadius.circular(2),
-            child: LinearProgressIndicator(
+          const SizedBox(height: 12),
+          // Progreso segmentado: un bloque por serie (telemetría).
+          if (_sets.length <= 40)
+            Row(
+              children: [
+                for (int i = 0; i < _sets.length; i++)
+                  Expanded(
+                    child: Container(
+                      height: 3,
+                      margin: EdgeInsets.only(
+                          right: i == _sets.length - 1 ? 0 : 2),
+                      color: i < _completedCount
+                          ? ZarpaColors.primary
+                          : ZarpaColors.surface2,
+                    ),
+                  ),
+              ],
+            )
+          else
+            LinearProgressIndicator(
               value: progress,
               minHeight: 3,
               backgroundColor: ZarpaColors.surface2,
-              valueColor:
-                  const AlwaysStoppedAnimation(ZarpaColors.primary),
+              valueColor: const AlwaysStoppedAnimation(ZarpaColors.primary),
             ),
-          ),
         ],
       ),
     );
@@ -610,8 +630,8 @@ class _WorkoutScreenState extends State<WorkoutScreen>
                     ? ZarpaColors.primary
                     : ZarpaColors.muted,
                 padding: const EdgeInsets.symmetric(vertical: 18),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(2)),
                 ),
               ),
               onPressed: isCurrentExercise
@@ -638,9 +658,10 @@ class _WorkoutScreenState extends State<WorkoutScreen>
                         ? 'SERIE COMPLETADA'
                         : 'IR AL EJERCICIO ACTUAL',
                     style: const TextStyle(
-                      fontSize: 16,
+                      fontFamily: ZarpaFonts.display,
+                      fontSize: 17,
                       fontWeight: FontWeight.w700,
-                      letterSpacing: 1.5,
+                      letterSpacing: 2.5,
                       color: Colors.white,
                     ),
                   ),
@@ -655,33 +676,24 @@ class _WorkoutScreenState extends State<WorkoutScreen>
 
   Widget _restAdjustButton({
     required String label,
-    required IconData icon,
     required VoidCallback onTap,
   }) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 12),
         decoration: BoxDecoration(
-          color: ZarpaColors.surface,
-          borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: ZarpaColors.border),
+          border: Border.all(color: const Color(0xFF333333)),
         ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, size: 16, color: ZarpaColors.foreground),
-            const SizedBox(width: 6),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w700,
-                color: ZarpaColors.foreground,
-                letterSpacing: 0.5,
-              ),
-            ),
-          ],
+        child: Text(
+          label,
+          style: const TextStyle(
+            fontFamily: ZarpaFonts.mono,
+            fontSize: 13,
+            fontWeight: FontWeight.w500,
+            color: ZarpaInk.paper,
+            letterSpacing: 1.5,
+          ),
         ),
       ),
     );
@@ -1221,160 +1233,173 @@ class _WorkoutScreenState extends State<WorkoutScreen>
   }
 
   Widget _buildRestView() {
+    final ringProgress = _restTotalSeconds <= 0
+        ? 0.0
+        : (_timer.remainingSeconds / _restTotalSeconds).clamp(0.0, 1.0);
+
     return Column(
       children: [
         const Spacer(flex: 2),
 
-        // Rest icon
-        Container(
-          width: 80,
-          height: 80,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: ZarpaColors.primary.withOpacity(0.1),
-          ),
-          child: const Icon(
-            Icons.hourglass_bottom,
-            size: 40,
-            color: ZarpaColors.primary,
-          ),
-        ),
-        const SizedBox(height: 20),
-
-        Text(
+        const Text(
           'DESCANSO',
           style: TextStyle(
+            fontFamily: ZarpaFonts.mono,
             fontSize: 12,
-            fontWeight: FontWeight.w700,
-            color: ZarpaColors.muted,
-            letterSpacing: 2,
+            fontWeight: FontWeight.w500,
+            color: ZarpaInk.steel,
+            letterSpacing: 3,
           ),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 24),
 
-        // Giant timer
+        // Anillo de telemetría con countdown gigante.
         AnimatedBuilder(
           animation: _pulseController,
           builder: (context, child) {
             return Transform.scale(
-              scale: 1.0 + (_pulseController.value * 0.05),
-              child: Text(
-                _timer.display,
-                style: const TextStyle(
-                  fontSize: 80,
-                  fontWeight: FontWeight.w900,
-                  color: ZarpaColors.primary,
-                  height: 1,
-                  fontFeatures: [FontFeature.tabularFigures()],
-                ),
-              ),
+              scale: 1.0 + (_pulseController.value * 0.02),
+              child: child,
             );
           },
-        ),
-        const SizedBox(height: 8),
-        Text(
-          '${_timer.remainingSeconds}s restantes',
-          style: TextStyle(
-            fontSize: 14,
-            color: ZarpaColors.muted,
+          child: SizedBox(
+            width: 230,
+            height: 230,
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                Positioned.fill(
+                  child: CustomPaint(
+                    painter: _RestRingPainter(progress: ringProgress),
+                  ),
+                ),
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      _timer.display,
+                      style: const TextStyle(
+                        fontFamily: ZarpaFonts.display,
+                        fontSize: 64,
+                        fontWeight: FontWeight.w700,
+                        color: ZarpaInk.paper,
+                        height: 1,
+                        fontFeatures: [FontFeature.tabularFigures()],
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    const Text(
+                      'RESTANTES',
+                      style: TextStyle(
+                        fontFamily: ZarpaFonts.mono,
+                        fontSize: 10,
+                        color: ZarpaInk.steel,
+                        letterSpacing: 2,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
 
-        const SizedBox(height: 16),
+        const SizedBox(height: 24),
 
         // ± 10s controls
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             _restAdjustButton(
-              label: '-10s',
-              icon: Icons.remove,
+              label: '-10S',
               onTap: () => _timer.adjustSeconds(-10),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: 10),
             _restAdjustButton(
-              label: '+10s',
-              icon: Icons.add,
+              label: '+10S',
               onTap: () => _timer.adjustSeconds(10),
             ),
           ],
         ),
 
-        const SizedBox(height: 24),
+        const SizedBox(height: 28),
 
         // Next up info
         if (_currentExerciseIndex < _exercises.length)
           Container(
-            margin: const EdgeInsets.symmetric(horizontal: 40),
-            padding: const EdgeInsets.all(16),
+            margin: const EdgeInsets.symmetric(horizontal: 24),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
             decoration: BoxDecoration(
-              color: ZarpaColors.surface,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: ZarpaColors.border),
+              border: Border.all(color: const Color(0xFF2A2A2A)),
             ),
             child: Row(
               children: [
-                const Icon(Icons.fitness_center,
-                    size: 24, color: ZarpaColors.primary),
-                const SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        'SIGUIENTE',
+                      const Text(
+                        'SIGUIENTE BLOQUE',
                         style: TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.w700,
-                          color: ZarpaColors.muted,
+                          fontFamily: ZarpaFonts.mono,
+                          fontSize: 9,
+                          color: ZarpaInk.steel,
                           letterSpacing: 1.5,
                         ),
                       ),
+                      const SizedBox(height: 3),
                       Text(
-                        _currentExercise.exerciseName,
+                        _currentExercise.exerciseName.toUpperCase(),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
-                          fontSize: 15,
+                          fontFamily: ZarpaFonts.display,
+                          fontSize: 19,
                           fontWeight: FontWeight.w700,
+                          color: ZarpaInk.paper,
                         ),
                       ),
+                      const SizedBox(height: 2),
                       Text(
-                        'Serie ${_currentSetInExercise + 1} · ${_nextUpDetail()}',
+                        'SERIE ${_currentSetInExercise + 1} · ${_nextUpDetail().toUpperCase()}',
                         style: const TextStyle(
-                          fontSize: 12,
+                          fontFamily: ZarpaFonts.mono,
+                          fontSize: 11,
                           color: ZarpaColors.primary,
-                          fontWeight: FontWeight.w600,
+                          letterSpacing: 1,
                         ),
                       ),
                     ],
                   ),
                 ),
+                const Icon(Icons.play_arrow,
+                    size: 22, color: ZarpaColors.primary),
               ],
             ),
           ),
 
         const Spacer(flex: 3),
 
-        // Skip rest button
+        // Skip rest
         Padding(
-          padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
-          child: SizedBox(
-            width: double.infinity,
-            child: OutlinedButton(
-              style: OutlinedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                side: BorderSide(color: ZarpaColors.border),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
+          padding: const EdgeInsets.only(bottom: 28),
+          child: InkWell(
+            onTap: _skipRest,
+            child: Container(
+              padding: const EdgeInsets.only(bottom: 5),
+              decoration: const BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(color: ZarpaInk.steel, width: 2),
                 ),
               ),
-              onPressed: _skipRest,
-              child: Text(
+              child: const Text(
                 'SALTAR DESCANSO',
                 style: TextStyle(
-                  fontSize: 14,
+                  fontFamily: ZarpaFonts.display,
+                  fontSize: 16,
                   fontWeight: FontWeight.w700,
-                  letterSpacing: 1.5,
-                  color: ZarpaColors.foreground,
+                  letterSpacing: 2.5,
+                  color: ZarpaInk.paper,
                 ),
               ),
             ),
@@ -1383,6 +1408,41 @@ class _WorkoutScreenState extends State<WorkoutScreen>
       ],
     );
   }
+}
+
+/// Anillo de descanso del HUD: track oscuro + arco naranja (remaining/total).
+class _RestRingPainter extends CustomPainter {
+  _RestRingPainter({required this.progress});
+
+  final double progress;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = Offset(size.width / 2, size.height / 2);
+    final radius = (size.shortestSide / 2) - 6;
+    final track = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 10
+      ..color = const Color(0xFF222222);
+    final arc = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 10
+      ..strokeCap = StrokeCap.butt
+      ..color = ZarpaColors.primary;
+
+    canvas.drawCircle(center, radius, track);
+    canvas.drawArc(
+      Rect.fromCircle(center: center, radius: radius),
+      -math.pi / 2,
+      2 * math.pi * progress,
+      false,
+      arc,
+    );
+  }
+
+  @override
+  bool shouldRepaint(_RestRingPainter oldDelegate) =>
+      oldDelegate.progress != progress;
 }
 
 enum _QuitChoice { cancel, discard, save }

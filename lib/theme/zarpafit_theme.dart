@@ -99,10 +99,23 @@ abstract final class ZarpaColors {
   static Color get darkBorder => _p.navBorder;
 }
 
-/// Tipografía de marca: Barlow Condensed para titulares, Barlow para cuerpo.
+/// Tipografía de marca: Barlow Condensed para titulares, Barlow para cuerpo,
+/// IBM Plex Mono para microetiquetas técnicas (fechas, metadatos, telemetría).
 abstract final class ZarpaFonts {
   static const body = 'Barlow';
   static const display = 'BarlowCondensed';
+  static const mono = 'IBMPlexMono';
+}
+
+/// Tinta del sistema híbrido (póster/HUD/asfalto): tonos fijos que NO cambian
+/// con el modo de tema — se usan sobre fotografía o en pantallas dark-first.
+abstract final class ZarpaInk {
+  static const black = Color(0xFF0A0A0A);
+  static const veilTop = Color(0x73000000); // negro 45% (legibilidad header)
+  static const veilMid = Color(0x1A000000); // negro 10% (foto respira)
+  static const veilBottom = Color(0xDB000000); // negro 86%
+  static const paper = Color(0xFFF8FAFC);
+  static const steel = Color(0xFFC7BEB5); // gris cálido para mono sobre foto
 }
 
 ThemeData zarpaFitTheme() => _buildTheme(_light, Brightness.light);

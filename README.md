@@ -32,6 +32,14 @@ App para gestionar entrenamientos de gimnasio. Organiza tus ejercicios, crea rut
 
 > Registro de actualizaciones. Cada día con cambios se publica como una versión nueva.
 
+### 2026-06-12
+
+- **Pantalla de entreno como HUD Telemetría (Fase 2 del sistema híbrido)**: la vista de descanso pasa a ser una "cabina" siempre oscura con anillo de progreso (CustomPaint, remaining/total) y countdown gigante en Barlow Condensed; el header lleva título condensado + contador y reloj en IBM Plex Mono; la barra de progreso se segmenta en un bloque por serie (se rellenan de naranja al completar); controles −10S/+10S y "siguiente bloque" con retícula de 1px; "saltar descanso" subrayado. CTA "SERIE COMPLETADA" con esquinas duras.
+- **Home rediseñado como póster (sistema híbrido Instinto/Asfalto)**: cabecera full-bleed con foto de la rutina destacada, palabra de marca rotativa gigante en Barlow Condensed (INSTINTO/ZARPA/ASFALTO/FUERZA/RITMO), metadatos en mono, CTA "ENTRENAR AHORA" subrayado; franja de stats estilo Asfalto (números gigantes con retícula de 1px, sin tarjetas), sesiones recientes como filas duras con fecha mono y rutinas como mini-pósters fotográficos. El póster es siempre oscuro, el resto sigue el tema. ADN del sistema documentado en `design-system/zarpafit/CONCEPT.md`.
+- **Fuente IBM Plex Mono** añadida (`ZarpaFonts.mono`) para microetiquetas técnicas del sistema (fechas, metadatos, telemetría).
+- **Fix de portadas en web**: el hash de respaldo de `routineCoverUrl` perdía bits en dart2js (int = double) y todas las rutinas acababan con la misma foto; ahora se acota a 31 bits.
+- **Preview sin login para diseño**: nuevo entrypoint `lib/main_preview.dart` con repositorios fake (`flutter build web -t lib/main_preview.dart`) para revisar pantallas sin pasar por Google Sign-In.
+
 ### 2026-06-10
 
 - **Logo rebrandeado a naranja**: `assets/zarpafit_logo.png` y `assets/zarpafit-icon.png` pasan del azul antiguo al naranja de marca `#F97316` (generados con `tool/rebrand_logo.py`), además de reducir su peso de 6,1 MB a 1,9 MB.
