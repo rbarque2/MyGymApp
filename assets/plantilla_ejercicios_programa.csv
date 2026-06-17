@@ -48,6 +48,31 @@ prog_calistenia_inicio,3,Flexiones,3,12,,,,60,reps,,,
 prog_calistenia_inicio,4,Sentadilla pistol asistida,3,5,,,,60,reps,,,Sujetarse a TRX o poste
 prog_calistenia_inicio,5,L-sit en paralelas,3,,,,10,,60,time,,,Piernas dobladas si necesario
 prog_calistenia_inicio,6,Plancha frontal,3,,,,30,,45,time,,,
+prog_calistenia_4d_empuje,1,Fondos asistidos,4,10,,,,120,reps,,,Rango objetivo 8-10 reps. Reduce asistencia cuando completes todas las series
+prog_calistenia_4d_empuje,2,Flexiones lastradas o declinadas,4,15,,,,90,reps,,,Rango objetivo 10-15 reps. Mantén cuerpo rígido y controla la bajada
+prog_calistenia_4d_empuje,3,Press militar con mancuernas,3,10,,,,90,reps,,,Rango objetivo 8-10 reps. Prioriza hombro estable
+prog_calistenia_4d_empuje,4,Pike Push Ups,3,12,,,,90,reps,,,Rango objetivo 8-12 reps. Cadera alta y cabeza hacia el suelo
+prog_calistenia_4d_empuje,5,Extensión de tríceps en polea,3,12,,,,60,reps,,,Bloquea codos sin balancear el torso
+prog_calistenia_4d_empuje,6,Plancha,3,,,60,,60,time,,,Core firme y respiración controlada
+prog_calistenia_4d_tiron,1,Dominadas asistidas,4,10,,,,120,reps,,,Rango objetivo 8-10 reps. Reduce asistencia al completar 4x10 con técnica
+prog_calistenia_4d_tiron,2,Dominadas negativas,3,5,,,,120,reps,,,Bajada controlada de 5-6 segundos
+prog_calistenia_4d_tiron,3,Remo australiano,4,12,,,,90,reps,,,Rango objetivo 10-12 reps. Mantén el cuerpo recto
+prog_calistenia_4d_tiron,4,Scapular Pull Ups,3,12,,,,60,reps,,,Movimiento solo de escápulas sin flexionar codos
+prog_calistenia_4d_tiron,5,Curl de bíceps,3,12,,,,60,reps,,,Rango objetivo 10-12 reps. Última serie cerca del fallo
+prog_calistenia_4d_tiron,6,Curl martillo,3,12,,,,60,reps,,,Rango objetivo 10-12 reps. Fortalece antebrazo y braquial
+prog_calistenia_4d_tiron,7,Elevaciones de piernas colgado,3,15,,,,60,reps,,,Rango objetivo 10-15 reps. Evita el balanceo
+prog_calistenia_4d_pierna,1,Sentadilla búlgara,4,10,,,,90,reps,,,10 reps por pierna. Controla rodilla y profundidad
+prog_calistenia_4d_pierna,2,Sentadilla Goblet,4,12,,,,90,reps,,,Rango objetivo 10-12 reps. Mantén torso alto
+prog_calistenia_4d_pierna,3,Peso muerto rumano,3,10,,,,90,reps,,,Rango objetivo 8-10 reps. Cadera atrás y espalda neutra
+prog_calistenia_4d_pierna,4,Hip Thrust,3,12,,,,90,reps,,,Pausa arriba apretando glúteos
+prog_calistenia_4d_pierna,5,Gemelos,4,20,,,,60,reps,,,Rango objetivo 15-20 reps. Pausa arriba y rango completo
+prog_calistenia_4d_pierna,6,Dragon Flag progresión,3,8,,,,90,reps,,,Rango objetivo 5-8 reps. Mantén pelvis en retroversión
+prog_calistenia_4d_skills,1,Handstand en pared,5,,,30,,90,time,,,Bloques de 30 segundos. Empuja fuerte el suelo
+prog_calistenia_4d_skills,2,L-Sit,4,,,20,,90,time,,,Bloques de 20 segundos. Usa progresión tuck si hace falta
+prog_calistenia_4d_skills,3,Front Lever Tuck,4,,,15,,90,time,,,Bloques de 15 segundos. Escápulas activas y core firme
+prog_calistenia_4d_skills,4,Dominadas libres o asistidas,3,10,,,,120,reps,,,Reps máximas con buena técnica. Usa asistencia si pierdes rango
+prog_calistenia_4d_skills,5,Fondos,3,12,,,,90,reps,,,Rango objetivo 10-12 reps. Baja controlado y sube fuerte
+prog_calistenia_4d_skills,6,Farmer Walk,3,,,,30,90,distance,,,30 metros por serie. Agarre fuerte y postura alta
 prog_hiit_4semanas,1,Burpees,4,,,,40,,20,time,,,
 prog_hiit_4semanas,2,Sentadilla con salto,4,,,,40,,20,time,,,
 prog_hiit_4semanas,3,Mountain climbers,4,,,,40,,20,time,,,
