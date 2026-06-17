@@ -7,6 +7,10 @@ rapido_hiit;HIIT en 15 min;rapidos;intermedio;Alta intensidad · Sin material;15
 prog_running_inicio;Running inicio;programas;inicio;De cero a correr 20 min;;4;3;;Running|Cardio;🏃;;5;;;Programa progresivo para empezar a correr desde cero.
 prog_running_avanzado;Running avanzado;programas;avanzado;Mejora tu ritmo y distancia;;6;4;;Running|Cardio;🏃;;0;;;Series + fartlek + carrera continua. Mejora tu marca.
 prog_calistenia_inicio;Calistenia inicio;programas;inicio;Técnica + fuerza corporal;;6;3;;Calistenia;🤸;;1;;;Dominadas asistidas + fondos + pistols. Progresiones.
+prog_calistenia_4d_empuje;Calistenia 4D · Lunes Empuje;programas;intermedio;Empuje · fuerza e hipertrofia;70;16;4;6;Calistenia|Fuerza|Hipertrofia|Skills;🤸;Gym + peso corporal;1;;;Día de empuje del plan Calistenia 4 Días. Prioriza fondos flexiones hombro y core.
+prog_calistenia_4d_tiron;Calistenia 4D · Martes Tirón;programas;intermedio;Tirón · dominadas y muscle-up;70;16;4;7;Calistenia|Fuerza|Dominadas|Skills;🤸;Gym + peso corporal;2;;;Día de tirón para progresar hacia dominadas estrictas muscle-up y fuerza escapular.
+prog_calistenia_4d_pierna;Calistenia 4D · Jueves Pierna;programas;intermedio;Pierna · unilateral y core;70;16;4;6;Calistenia|Pierna|Fuerza|Core;🤸;Gym + peso corporal;4;;;Día de pierna con trabajo unilateral cadena posterior gemelos y progresión de dragon flag.
+prog_calistenia_4d_skills;Calistenia 4D · Viernes Skills;programas;intermedio;Full body · handstand y front lever;70;16;4;6;Calistenia|Skills|Full Body|Fuerza;🤸;Gym + peso corporal;5;;;Día full body técnico para handstand L-sit front lever dominadas fondos y agarre.
 prog_hiit_4semanas;Alta intensidad 4 semanas;programas;intermedio;Quema grasa y gana resistencia;;4;4;;HIIT;⚡;;4;;;4 semanas de HIIT progresivo. Resultados visibles.
 calent_superior;Calentamiento tren superior;calentamientos;todos;Hombro / pecho / espalda;8;;;; Movilidad;🔥;;3;;;Rotaciones de hombro + activación escapular + movilidad torácica.
 calent_inferior;Calentamiento tren inferior;calentamientos;todos;Cadera / rodilla / tobillo;10;;;;Movilidad;🔥;;4;;;Sentadilla profunda + zancadas + movilidad de cadera.
